@@ -15,8 +15,10 @@ export const UserHeader = () => {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
-        (desktopDropdownRef.current && desktopDropdownRef.current.contains(e.target)) ||
-        (mobileDropdownRef.current && mobileDropdownRef.current.contains(e.target))
+        (desktopDropdownRef.current &&
+          desktopDropdownRef.current.contains(e.target)) ||
+        (mobileDropdownRef.current &&
+          mobileDropdownRef.current.contains(e.target))
       ) {
         return;
       }
@@ -33,7 +35,7 @@ export const UserHeader = () => {
         <Link to="/" className="flex items-center">
           <img
             src={logo}
-            alt="FlyNow Logo"
+            alt="FlyTix Logo"
             className="w-24 sm:w-28 object-contain"
           />
         </Link>
@@ -139,19 +141,34 @@ export const UserHeader = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-6 text-[15px] font-semibold text-pink-900">
-          <a href="#home" className="flex items-center gap-2 hover:text-gray-900 transition">
+          <a
+            href="#home"
+            className="flex items-center gap-2 hover:text-gray-900 transition"
+          >
             <i className="fa-solid fa-house"></i> Home
           </a>
-          <Link to="/flights" className="flex items-center gap-2 hover:text-gray-900 transition">
+          <Link
+            to="/flights"
+            className="flex items-center gap-2 hover:text-gray-900 transition"
+          >
             <i className="fa-solid fa-plane-up"></i> Flights
           </Link>
-          <a href="#how-it-works" className="flex items-center gap-2 hover:text-gray-900 transition">
+          <a
+            href="#how-it-works"
+            className="flex items-center gap-2 hover:text-gray-900 transition"
+          >
             <i className="fa-solid fa-compass"></i> Explore
           </a>
-          <a href="#why-flynow" className="flex items-center gap-2 hover:text-gray-900 transition">
+          <a
+            href="#why-flynow"
+            className="flex items-center gap-2 hover:text-gray-900 transition"
+          >
             <i className="fa-solid fa-gem"></i> Benefits
           </a>
-          <a href="#cheapest-fares" className="flex items-center gap-2 hover:text-gray-900 transition">
+          <a
+            href="#cheapest-fares"
+            className="flex items-center gap-2 hover:text-gray-900 transition"
+          >
             <i className="fa-solid fa-map-location-dot"></i> Destinations
           </a>
         </nav>
@@ -246,16 +263,28 @@ export const UserHeader = () => {
           <a href="#home" className="flex items-center sm:justify-center gap-2">
             <i className="fa-solid fa-house"></i> Home
           </a>
-          <Link to="/flights" className="flex items-center sm:justify-center gap-2">
+          <Link
+            to="/flights"
+            className="flex items-center sm:justify-center gap-2"
+          >
             <i className="fa-solid fa-plane-up"></i> Flights
           </Link>
-          <a href="#how-it-works" className="flex items-center sm:justify-center gap-2">
+          <a
+            href="#how-it-works"
+            className="flex items-center sm:justify-center gap-2"
+          >
             <i className="fa-solid fa-compass"></i> Explore
           </a>
-          <a href="#why-flynow" className="flex items-center sm:justify-center gap-2">
+          <a
+            href="#why-flynow"
+            className="flex items-center sm:justify-center gap-2"
+          >
             <i className="fa-solid fa-gem"></i> Benefits
           </a>
-          <a href="#cheapest-fares" className="flex items-center sm:justify-center gap-2">
+          <a
+            href="#cheapest-fares"
+            className="flex items-center sm:justify-center gap-2"
+          >
             <i className="fa-solid fa-map-location-dot"></i> Destinations
           </a>
 
