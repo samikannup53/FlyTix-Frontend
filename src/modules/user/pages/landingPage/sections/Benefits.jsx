@@ -45,9 +45,13 @@ export const Benefits = () => {
     <section className="py-16">
       <div className="max-w-[1600px] mx-auto px-6">
         {/* Section Title */}
-        <h3 className="text-2xl font-bold text-gray-800 mb-10">
-          Why Choose FlyNow?
-        </h3>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">
+          Why Choose &nbsp;
+          <span className="bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent">
+            FlyTix
+          </span> &nbsp;
+          ?
+        </h2>
 
         {/* Responsive Flex Grid */}
         <div className="flex flex-wrap gap-6 justify-center xl:justify-between">

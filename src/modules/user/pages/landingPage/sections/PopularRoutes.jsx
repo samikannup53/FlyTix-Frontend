@@ -43,7 +43,7 @@ export const PopularRoutes = () => {
   const visibleRoutes = showAll ? routes : routes.slice(0, 6);
 
   return (
-    <section className="py-16 bg-yellow-100/50 text-left">
+    <section className="py-16 text-left">
       <div className="max-w-[1600px] mx-auto px-6">
         {/* Section Title */}
         <h2 className="text-2xl font-bold text-gray-900 mb-8">

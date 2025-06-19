@@ -43,10 +43,12 @@ export const Features = () => {
     <section className="pt-36 pb-10">
       <div className="max-w-[1600px] mx-auto px-6">
         {/* Section Title */}
-        <h3 className="text-2xl font-bold text-gray-800 mb-10">
-          Book | Board | Fly with Ease
-        </h3>
-
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">
+          Book | Board | Fly with &nbsp;
+          <span className="bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent">
+            Ease
+          </span>
+        </h2>
         {/* Features Flex Container */}
         <div className="flex flex-wrap justify-center xl:justify-between gap-6">
           {features.map((feature, idx) => (
@@ -61,7 +63,9 @@ export const Features = () => {
                 className="w-14 h-14 object-contain mr-4 drop-shadow-md"
               />
               <div className="text-left">
-                <h4 className={`text-2xl font-semibold mb-1 ${feature.textColor}`}>
+                <h4
+                  className={`text-2xl font-semibold mb-1 ${feature.textColor}`}
+                >
                   {feature.title}
                 </h4>
                 <p className={`text-sm leading-snug ${feature.descColor}`}>

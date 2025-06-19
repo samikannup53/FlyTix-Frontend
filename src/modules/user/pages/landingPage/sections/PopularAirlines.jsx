@@ -57,9 +57,12 @@ const airlines = [
 export const PopularAirlines = () => (
   <section className="py-8 max-w-[1600px] mx-auto">
     <div className="max-w-8xl mx-auto px-6">
-      <h3 className="text-2xl font-bold text-gray-800 mb-6 text-left">
-        Popular Domestic Airlines
-      </h3>
+      <h2 className="text-2xl font-bold text-gray-900 mb-8">
+          Popular{" "}
+          <span className="bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent">
+            Domestic Airlines
+          </span>
+        </h2>
 
       <div className="flex flex-wrap justify-center xl:justify-between gap-4">
         {airlines.map(({ name, image, gradient, hoverShadow }) => (
