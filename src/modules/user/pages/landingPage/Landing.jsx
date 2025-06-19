@@ -4,6 +4,7 @@ import { UserHeader } from "../../components/UserHeader";
 import { HeroSection } from "./sections/Hero";
 import { PopularAirlines } from "./sections/PopularAirlines";
 import { Benefits } from "./sections/Benefits";
+import { PopularRoutes } from "./sections/PopularRoutes";
 
 export const Landing = () => {
   return (
@@ -12,6 +13,7 @@ export const Landing = () => {
       <HeroSection />
       <Features />
       <Benefits />
+      <PopularRoutes />
       <PopularAirlines />
       <LandingFooter />
     </>
