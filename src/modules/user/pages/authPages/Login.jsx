@@ -59,8 +59,10 @@ export const Login = () => {
           <div className="w-full md:w-1/2 px-8 py-14 sm:px-6 sm:py-18 lg:px-14 lg:py-20 flex items-center justify-center bg-white backdrop-blur-lg shadow-lg relative">
             {/* Back */}
             <span className="absolute top-4 left-4 sm:top-6 sm:left-6 text-pink-700 flex items-center gap-2 hover:text-pink-800 transition-all">
-              <i className="fas fa-chevron-left text-sm sm:text-base mb-[3px]"></i>
-              <Link to="/" className="text-sm sm:text-base font-semibold">Back</Link>
+              <i className="fas fa-house text-sm sm:text-base mb-[3px]"></i>
+              <Link to="/" className="text-sm sm:text-base font-medium">
+                Home
+              </Link>
             </span>
             <div className="w-full max-w-sm sm:max-w-md space-y-5 sm:space-y-6">
               <h2 className="text-center text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent drop-shadow-sm">
