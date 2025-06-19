@@ -42,15 +42,15 @@ const benefits = [
 // React Component
 export const Benefits = () => {
   return (
-    <section className="py-16">
+    <section className="py-8">
       <div className="max-w-[1600px] mx-auto px-6">
         {/* Section Title */}
         <h2 className="text-2xl font-bold text-gray-900 mb-8">
           Why Choose &nbsp;
           <span className="bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent">
             FlyTix
-          </span> &nbsp;
-          ?
+          </span>{" "}
+          &nbsp; ?
         </h2>
 
         {/* Responsive Flex Grid */}
@@ -66,7 +66,9 @@ export const Benefits = () => {
                 className="w-12 h-12 mr-4 object-contain"
               />
               <div>
-                <h4 className="text-base font-semibold mb-1">{benefit.title}</h4>
+                <h4 className="text-base font-semibold mb-1">
+                  {benefit.title}
+                </h4>
                 <p className="text-sm">{benefit.description}</p>
               </div>
             </div>

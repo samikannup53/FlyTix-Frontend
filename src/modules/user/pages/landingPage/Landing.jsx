@@ -12,11 +12,13 @@ export const Landing = () => {
     <>
       <UserHeader />
       <HeroSection />
-      <Features />
-      <Benefits />
-      <Deals />
-      <PopularRoutes />
-      <PopularAirlines />
+      <main className="bg-gradient-to-tr from-orange-50/50 via-pink-50/50 to-orange-50/50">
+        <Features />
+        <Benefits />
+        <Deals />
+        <PopularRoutes />
+        <PopularAirlines />
+      </main>
       <LandingFooter />
     </>
   );

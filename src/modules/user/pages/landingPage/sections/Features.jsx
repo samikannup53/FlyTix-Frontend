@@ -40,7 +40,7 @@ const features = [
 
 export const Features = () => {
   return (
-    <section className="pt-36 pb-10">
+    <section className="pt-36 pb-10 ">
       <div className="max-w-[1600px] mx-auto px-6">
         {/* Section Title */}
         <h2 className="text-2xl font-bold text-gray-900 mb-8">

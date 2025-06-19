@@ -62,7 +62,7 @@ export const Deals = () => {
   const visibleDeals = showAll ? flightDeals : flightDeals.slice(0, 5);
 
   return (
-    <section className="py-16 text-left">
+    <section className="py-8 text-left">
       <div className="max-w-[1600px] mx-auto px-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">
           Featured{" "}
@@ -120,7 +120,9 @@ export const Deals = () => {
           >
             {showAll ? "View Less" : "View More"}
             <i
-              className={`fa-solid ${showAll ? "fa-chevron-up" : "fa-chevron-down"}`}
+              className={`fa-solid ${
+                showAll ? "fa-chevron-up" : "fa-chevron-down"
+              }`}
             ></i>
           </button>
         </div>
