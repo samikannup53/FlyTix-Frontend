@@ -7,7 +7,7 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-yellow-100/50 to-yellow-200/50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50">
       {/* Header */}
       <header className="p-4 sm:p-6">
         <Link to="/" className="flex items-center">
@@ -56,18 +56,18 @@ export const Login = () => {
           </div>
 
           {/* Right Side - Login Form */}
-          <div className="w-full md:w-1/2 px-8 py-14 sm:px-6 sm:py-18 lg:px-14 lg:py-20 flex items-center justify-center bg-white/70 backdrop-blur-lg shadow-lg relative">
+          <div className="-full md:w-1/2 px-8 py-14 sm:px-6 sm:py-18 lg:px-14 lg:py-20 flex items-center justify-center bg-white backdrop-blur-lg shadow-lg relative">
             {/* Back */}
             <span className="absolute top-4 left-4 sm:top-6 sm:left-6 text-pink-700 flex items-center gap-2 hover:text-pink-800 transition-all">
               <i className="fas fa-chevron-left text-sm sm:text-base mb-[3px]"></i>
               <Link to="/" className="text-sm sm:text-base font-semibold">Back</Link>
             </span>
             <div className="w-full max-w-sm sm:max-w-md space-y-5 sm:space-y-6">
-              <h2 className="text-center text-3xl sm:text-4xl font-extrabold text-pink-700 drop-shadow-sm">
-                Welcome Back
+              <h2 className="text-center text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent drop-shadow-sm">
+                 Welcome Back
               </h2>
               <p className="text-center text-sm text-gray-700">
-                Login to <span className="text-pink-600 font-semibold">FlyTix</span> and explore your journeys.
+                Login to <span className="text-pink-700 font-semibold">FlyTix</span> and explore your journeys.
               </p>
 
               <form className="space-y-4 sm:space-y-5">
@@ -102,7 +102,7 @@ export const Login = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-br from-orange-600 to-pink-600 hover:from-orange-700 hover:to-pink-700 text-white font-semibold py-2 rounded-xl shadow-lg transition flex items-center justify-center gap-2"
+                  className="cursor-pointer w-full bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white font-semibold py-2 rounded-xl shadow-lg transition flex items-center justify-center gap-2"
                 >
                   <i className="fas fa-sign-in-alt text-white text-lg"></i> Login
                 </button>
