@@ -3,7 +3,7 @@ import footerLogo from "../../../assets/images/footer_logo.png";
 export const LandingFooter = () => {
   return (
     <footer className="bg-gradient-to-r from-orange-900 to-pink-900 text-white pt-12 pb-6">
-      <div className="max-w-8xl mx-auto px-6 flex flex-col md:flex-row gap-10">
+      <div className="max-w-[1600px] mx-auto px-6 flex flex-col md:flex-row gap-10">
         {/* Left: Brand Info */}
         <div className="w-full md:w-1/3">
           <img
