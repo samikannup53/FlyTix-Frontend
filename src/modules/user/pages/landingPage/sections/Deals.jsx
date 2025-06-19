@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const flightDeals = [
   {
     from: "Salem",
@@ -44,11 +46,23 @@ const flightDeals = [
     image:
       "https://images-cf.ixigo.workers.dev/v2/images_by_id/5e7367cfe4b06d000103f10a.jpg?cityName=Pune",
   },
+  {
+    from: "Madurai",
+    to: "Bangalore",
+    date: "Tomorrow",
+    stops: "Express",
+    fare: "₹2,299",
+    image:
+      "https://images-cf.ixigo.workers.dev/v2/images_by_id/5d9dbf37bb2a4c9c2c4f728b.jpg?cityName=Madurai",
+  },
 ];
 
 export const Deals = () => {
+  const [showAll, setShowAll] = useState(false);
+  const visibleDeals = showAll ? flightDeals : flightDeals.slice(0, 5);
+
   return (
-    <section className="py-16 bg-yellow-100/50 text-left">
+    <section className="py-16 text-left">
       <div className="max-w-[1600px] mx-auto px-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">
           Featured{" "}
@@ -57,11 +71,11 @@ export const Deals = () => {
           </span>
         </h2>
 
-        <div className="flex flex-wrap gap-6 justify-start">
-          {flightDeals.map((deal, index) => (
+        <div className="flex flex-wrap gap-6 justify-center xl:justify-between">
+          {visibleDeals.map((deal, index) => (
             <div
               key={index}
-              className="bg-white border border-gray-200 rounded-xl w-full sm:w-[48%] xl:w-[30%] shadow-sm hover:shadow-md transition overflow-hidden flex flex-col"
+              className="bg-white border border-gray-200 rounded-xl w-full sm:w-[30%] xl:w-[18%] shadow-sm hover:shadow-[0_4px_20px_rgba(236,72,153,0.25)] transition overflow-hidden flex flex-col"
             >
               <img
                 src={deal.image}
@@ -69,14 +83,12 @@ export const Deals = () => {
                 className="w-full h-40 object-cover"
               />
               <div className="p-4 flex flex-col flex-grow">
-                {/* Route */}
                 <div className="flex items-center text-pink-800 font-semibold text-base mb-2">
                   {deal.from}
                   <i className="fa-solid fa-plane mx-2 text-sm"></i>
                   {deal.to}
                 </div>
 
-                {/* Date + Stops */}
                 <div className="flex justify-between items-center text-sm text-gray-700 mb-4">
                   <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">
                     {deal.date}
@@ -84,10 +96,8 @@ export const Deals = () => {
                   <span className="text-gray-600 text-xs">{deal.stops}</span>
                 </div>
 
-                {/* Spacer */}
                 <div className="flex-grow" />
 
-                {/* Fare & CTA */}
                 <div className="flex justify-between items-center mt-auto">
                   <p className="text-lg font-bold text-pink-800">{deal.fare}</p>
                   <a
@@ -100,6 +110,19 @@ export const Deals = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Toggle Button */}
+        <div className="text-center mt-10">
+          <button
+            onClick={() => setShowAll((prev) => !prev)}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 text-white px-6 py-2.5 rounded-full shadow-md hover:opacity-90 transition-all text-sm sm:text-base font-semibold"
+          >
+            {showAll ? "View Less" : "View More"}
+            <i
+              className={`fa-solid ${showAll ? "fa-chevron-up" : "fa-chevron-down"}`}
+            ></i>
+          </button>
         </div>
       </div>
     </section>
