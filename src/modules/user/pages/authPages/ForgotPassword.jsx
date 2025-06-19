@@ -111,10 +111,15 @@ export const ForgotPassword = () => {
             </span>
 
             <div className="w-full max-w-sm sm:max-w-md space-y-5 min-h-[404px]">
-              <h2 className="text-center text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent">
-                Reset Password
+              <h2 className="text-center text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent drop-shadow-sm">
+                Forgot Password?
               </h2>
-
+              <p className="text-center text-sm text-gray-700">
+                Reset Password and Resume Your &nbsp;
+                <span className="text-pink-700 font-semibold">
+                  Booking
+                </span>{" "}
+              </p>
               {/* Step 1 - Email */}
               {step === 1 && (
                 <form onSubmit={handleGenerateOtp} className="space-y-5">
@@ -147,7 +152,10 @@ export const ForgotPassword = () => {
 
               {/* Step 2 - OTP & New Password */}
               {step === 2 && (
-                <form onSubmit={handleUpdatePassword} className="space-y-5">
+                <form
+                  onSubmit={handleUpdatePassword}
+                  className="space-y-[10px]"
+                >
                   <div>
                     <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
                       Enter OTP
