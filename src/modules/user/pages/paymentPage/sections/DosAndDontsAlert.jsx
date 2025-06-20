@@ -1,8 +1,8 @@
 export const DosAndDontsAlert = () => {
   return (
-    <section className="max-w-[1600px] mx-auto px-6">
+    <section className="max-w-7xl mx-auto px-6">
       <div className="bg-white rounded-xl shadow-lg px-4 py-3  border-l-4 border-orange-500">
-        <div className="text-orange-800 text-xs md:text-sm font-medium flex flex-wrap gap-x-12 gap-y-4">
+        <div className="text-orange-800 text-xs md:text-sm font-medium flex justify-around flex-wrap gap-4">
           {/* Alert 1 */}
           <span className="flex items-center gap-2">
             <span className="font-bold">1.</span>

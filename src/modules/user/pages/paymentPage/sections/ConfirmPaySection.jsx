@@ -5,7 +5,7 @@ import { FareSummary } from './FareSummary'
 
 export const ConfirmPaySection = () => {
   return (
-    <section className='max-w-[1600px] px-6 mx-auto mt-4'>
+    <section className='max-w-7xl px-6 mx-auto mt-4'>
         <div className='bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-8 border border-orange-100'>        
             
             {/* Title */}
