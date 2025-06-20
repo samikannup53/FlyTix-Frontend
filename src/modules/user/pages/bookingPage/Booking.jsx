@@ -12,8 +12,8 @@ export const Booking = () => {
   return (
     <>
       <BookingHeader />
-      <main className="bg-gradient-to-br from-yellow-100 via-orange-100 to-pink-200 min-h-screen pt-6">
-        <section className="max-w-[1600px] mx-auto px-6 flex flex-col lg:flex-row gap-6">
+      <section className="bg-gradient-to-br from-yellow-100 via-orange-100 to-pink-200 min-h-screen pt-6">
+        <main className="max-w-[1600px] mx-auto px-6 flex flex-col lg:flex-row gap-6">
           {/* Left Side Fare Summary Section */}
           <aside className="lg:w-1/3 w-full h-fit sticky top-5 text-sm text-gray-800 space-y-6">
             <BookingFareSummary/>
@@ -28,8 +28,8 @@ export const Booking = () => {
             <BookingBillingAddress/>
             <BookingContinue/>
           </section>        
-        </section>        
-      </main>
+        </main>        
+      </section>
       <BookingFooter />
     </>
   );
