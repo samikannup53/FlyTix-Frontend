@@ -53,7 +53,7 @@ export const FlightResultCard = ({
       <div className="flex flex-col items-end justify-between h-full">
         <p className="text-xl font-bold text-orange-600">{price}</p>
         <Link
-          to={"/booking"}
+          to={"/booking/details"}
           className="mt-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm font-medium transition-all duration-200"
         >
           Book Now

@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
+
 export const BookingContinue = () => {
   return (
-    <div className="sticky bottom-0 z-50 bg-gradient-to-br from-orange-200 to-yellow-100 rounded-t-xl shadow-md py-4 px-6 flex items-center justify-between">
+    <div className="sticky bottom-0 z-50 bg-gradient-to-tr from-orange-300 to-pink-300 rounded-t-xl shadow-md py-4 px-6 flex items-center justify-between">
       {/* Left: Price & Travelers */}
       <div className="flex items-center gap-4 text-gray-800 text-sm">
         <div className="flex items-center gap-1">
@@ -15,10 +17,10 @@ export const BookingContinue = () => {
       </div>
 
       {/* Right: Continue Button */}
-      <button className="flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-md transition duration-200">
+      <Link to={'/booking/payment'} className="flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-md transition duration-200">
         Continue
         <i className="fas fa-arrow-right"></i>
-      </button>
+      </Link>
     </div>
   );
 };

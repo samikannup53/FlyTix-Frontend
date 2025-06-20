@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import mapImage from "../../../../../assets/images/map.png";
 import swapIcon from "../../../../../assets/images/swap.png";
 
@@ -22,12 +23,12 @@ export const HeroSection = () => {
           <blockquote className="italic text-pink-700 mb-6 sm:mb-8 xl:mb-10 text-sm sm:text-base">
             “Adventure awaits. Let your journey take flight.”
           </blockquote>
-          <a
-            href="#"
+          <Link
+            to={'/flights'}
             className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-md hover:opacity-90 transition-all text-sm sm:text-base font-semibold"
           >
             Book Now <i className="fa-solid fa-arrow-right"></i>
-          </a>
+          </Link>
         </div>
 
         {/* Right Image */}
