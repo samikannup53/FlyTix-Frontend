@@ -141,12 +141,12 @@ export const UserHeader = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-6 text-[15px] font-semibold text-pink-900">
-          <a
-            href="#home"
+          <Link
+            to="/"
             className="flex items-center gap-2 hover:text-gray-900 transition"
           >
             <i className="fa-solid fa-house"></i> Home
-          </a>
+          </Link>
           <Link
             to="/flights"
             className="flex items-center gap-2 hover:text-gray-900 transition"
@@ -159,12 +159,12 @@ export const UserHeader = () => {
           >
             <i className="fa-solid fa-compass"></i> Explore
           </a>
-          <a
-            href="#why-flynow"
+          <Link
+            to="/#benefits"
             className="flex items-center gap-2 hover:text-gray-900 transition"
           >
             <i className="fa-solid fa-gem"></i> Benefits
-          </a>
+          </Link>
           <a
             href="#cheapest-fares"
             className="flex items-center gap-2 hover:text-gray-900 transition"
@@ -260,9 +260,9 @@ export const UserHeader = () => {
       {/* Mobile & Tablet Dropdown Menu */}
       {menuOpen && (
         <div className="lg:hidden bg-orange-100/80 backdrop-blur-md px-4 py-4 text-[15px] space-y-4 font-semibold text-pink-900">
-          <a href="#home" className="flex items-center sm:justify-center gap-2">
+          <Link to="/" className="flex items-center sm:justify-center gap-2">
             <i className="fa-solid fa-house"></i> Home
-          </a>
+          </Link>
           <Link
             to="/flights"
             className="flex items-center sm:justify-center gap-2"
@@ -275,12 +275,12 @@ export const UserHeader = () => {
           >
             <i className="fa-solid fa-compass"></i> Explore
           </a>
-          <a
-            href="#why-flynow"
+          <Link
+            to="/#benefits"
             className="flex items-center sm:justify-center gap-2"
           >
             <i className="fa-solid fa-gem"></i> Benefits
-          </a>
+          </Link>
           <a
             href="#cheapest-fares"
             className="flex items-center sm:justify-center gap-2"

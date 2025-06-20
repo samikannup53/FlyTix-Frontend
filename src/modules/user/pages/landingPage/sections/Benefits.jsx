@@ -42,7 +42,7 @@ const benefits = [
 // React Component
 export const Benefits = () => {
   return (
-    <section className="py-8">
+    <section className="py-8" id="benefits">
       <div className="max-w-[1600px] mx-auto px-6">
         {/* Section Title */}
         <h2 className="text-2xl font-bold text-gray-900 mb-8">
