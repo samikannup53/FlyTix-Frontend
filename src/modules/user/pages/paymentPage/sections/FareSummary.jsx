@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import razorpayLogo from '../../../../../assets/images/razorpay.png'; // adjust path if needed
 
 export const FareSummary = () => {
@@ -27,12 +28,13 @@ export const FareSummary = () => {
 
       {/* Payment Button Section */}
       <div className="text-center">
-        <button
+        <Link
+        to={'/booking/confirm'}
           onClick={() => console.log("Start Razorpay")} // replace later with real Razorpay logic
           className="w-full flex justify-center items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 text-white font-semibold text-sm shadow-md hover:brightness-110 transition-all duration-300"
         >
           Pay <span><i className="fa-solid fa-indian-rupee-sign"></i></span>3,399
-        </button>
+        </Link>
 
         <p className="text-xs text-gray-500 mt-2 flex items-center justify-center gap-2">
           <i className="fas fa-lock text-green-600 text-sm"></i>
