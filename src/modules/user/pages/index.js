@@ -4,4 +4,5 @@ export { Register } from "../pages/authPages/Register";
 export { ForgotPassword } from "../pages/authPages/ForgotPassword";
 export { Flights } from "../pages/flightPage/Flights";
 export { Booking } from "../pages/bookingPage/Booking";
-export {Payment} from "../pages/paymentPage/Payment"
+export { Payment } from "../pages/paymentPage/Payment";
+export { Dashboard } from "../pages/bookingsDashboard/Dashboard";

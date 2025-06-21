@@ -27,7 +27,7 @@ export const FareDetails = () => {
       {/* CTA Buttons */}
       <div className="space-y-3">
         <Link
-          to="/bookings"
+          to="/dashboard"
           className="w-full flex justify-center items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 text-white font-semibold text-sm hover:brightness-110 transition-all duration-300"
         >
           <i className="fas fa-folder-open"></i> Go to Bookings
