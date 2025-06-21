@@ -1,9 +1,9 @@
 import { BookingFooter, UserHeader } from "../../components";
 import { Assurance } from "./sections/Assurance";
-import { ProfileSection } from "./sections/ProfileSection";
+import { ChangePassword } from "./sections/ChangePassword";
 import { Sidebar } from "./sections/Sidebar";
 
-export const Profile = () => {
+export const Password = () => {
   return (
     <>
       <UserHeader />
@@ -12,7 +12,7 @@ export const Profile = () => {
           <div className="flex justify-start rounded-2xl overflow-hidden shadow-lg border border-orange-100 min-h-[80vh]">
             <Sidebar />
             <div className="w-full md:w-3/4 bg-white p-6 overflow-y-auto space-y-12">
-              <ProfileSection/>
+              <ChangePassword/>
             </div>
           </div>
         </main>

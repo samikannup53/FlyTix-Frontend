@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { Landing, Login, Register, ForgotPassword, Flights, Booking, Payment, Dashboard, Profile } from "../modules/user/pages";
+import { Landing, Login, Register, ForgotPassword, Flights, Booking, Payment, Dashboard, Profile, Travellers, Password } from "../modules/user/pages";
 import { BookingConfirm } from "../modules/user/pages/confirmPage/BookingConfirm";
 
 
@@ -16,6 +16,8 @@ const UserRoutes = () => {
         <Route path="/booking/confirm" element={<BookingConfirm/>}></Route>
         <Route path="/dashboard" element={<Dashboard/>}></Route>
         <Route path="/profile" element={<Profile/>}></Route>
+        <Route path="/travellers" element={<Travellers/>}></Route>
+        <Route path="/change-password" element={<Password/>}></Route>
     </Routes>
   )
 }

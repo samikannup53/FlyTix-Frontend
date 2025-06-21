@@ -7,3 +7,5 @@ export { Booking } from "../pages/bookingPage/Booking";
 export { Payment } from "../pages/paymentPage/Payment";
 export { Dashboard } from "../pages/bookingsDashboard/Dashboard";
 export { Profile } from "../pages/profilePage/Profile";
+export { Password } from "../pages/profilePage/Password";
+export { Travellers } from "../pages/profilePage/Travellers";
