@@ -1,6 +1,6 @@
 export const ThankYouSection = () => {
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center mt-8">
       <div className="flex items-center gap-4">
         {/* Icon Box */}
         <div className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-orange-300 text-orange-600 text-xl">

@@ -8,7 +8,7 @@ export const HeroSection = () => {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-8 md:px-10 py-14 sm:py-16  flex flex-col-reverse md:flex-row items-center md:items-start lg:items-center gap-8 sm:gap-10 md:gap-12">
         {/* Left Content */}
         <div className="md:w-1/2 text-center md:text-left">
-          <h2 className="text-3xl md:text-[1.85rem] lg:text-4xl xl:text-[3.5rem] font-bold text-gray-900 mb-1 lg:mb-2 xl:mb-6 leading-snug sm:leading-snug md:leading-tight">
+          <h2 className="text-3xl md:text-[1.85rem] lg:text-4xl xl:text-[3rem] font-bold text-gray-900 mb-1 lg:mb-2 xl:mb-6 leading-snug sm:leading-snug md:leading-tight">
             Book{" "}
             <span className="bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent">
               Flights
@@ -24,7 +24,7 @@ export const HeroSection = () => {
             “Adventure awaits. Let your journey take flight.”
           </blockquote>
           <Link
-            to={'/flights'}
+            to={"/flights"}
             className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-md hover:opacity-90 transition-all text-sm sm:text-base font-semibold"
           >
             Book Now <i className="fa-solid fa-arrow-right"></i>
@@ -127,7 +127,8 @@ export const HeroSection = () => {
             {/* Search Button */}
             <div className="flex items-center">
               <button className="h-full w-full px-5 py-2 lg:text-xl font-semibold text-white bg-gradient-to-br from-rose-600 via-rose-600 to-orange-700 hover:opacity-90 rounded-r-xl shadow transition-all flex items-center justify-center gap-2">
-                <i className="fa-solid fa-magnifying-glass"></i> <span className="hidden lg:block">Search</span>
+                <i className="fa-solid fa-magnifying-glass"></i>{" "}
+                <span className="hidden lg:block">Search</span>
               </button>
             </div>
           </form>
