@@ -10,7 +10,7 @@ export const UserHeader = () => {
   const desktopDropdownRef = useRef();
   const mobileDropdownRef = useRef();
 
-  const isLoggedIn = false;
+  const isLoggedIn = true;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -93,7 +93,7 @@ export const UserHeader = () => {
                     </div>
                   </Link>
                   <Link
-                    to="/bookings"
+                    to="/dashboard"
                     className="block px-6 py-4 transition hover:bg-orange-50"
                   >
                     <div className="flex items-center gap-4">
@@ -218,7 +218,7 @@ export const UserHeader = () => {
                     </div>
                   </Link>
                   <Link
-                    to="/bookings"
+                    to="/dashboard"
                     className="block px-6 py-4 transition hover:bg-orange-50 rounded-xl"
                   >
                     <div className="flex items-center gap-4">

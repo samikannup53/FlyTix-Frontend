@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { Landing, Login, Register, ForgotPassword, Flights, Booking, Payment, Dashboard } from "../modules/user/pages";
+import { Landing, Login, Register, ForgotPassword, Flights, Booking, Payment, Dashboard, Profile } from "../modules/user/pages";
 import { BookingConfirm } from "../modules/user/pages/confirmPage/BookingConfirm";
 
 
@@ -12,9 +12,10 @@ const UserRoutes = () => {
         <Route path="/forgot-password" element={<ForgotPassword/>}> </Route>
         <Route path='/flights' element={<Flights/>}></Route>
         <Route path="/booking/details" element={<Booking/>}></Route>
-        <Route path='booking/payment' element={<Payment/>}></Route>
-        <Route path="booking/confirm" element={<BookingConfirm/>}></Route>
-        <Route path='dashboard' element={<Dashboard/>}></Route>
+        <Route path="/booking/payment" element={<Payment/>}></Route>
+        <Route path="/booking/confirm" element={<BookingConfirm/>}></Route>
+        <Route path="/dashboard" element={<Dashboard/>}></Route>
+        <Route path="/profile" element={<Profile/>}></Route>
     </Routes>
   )
 }

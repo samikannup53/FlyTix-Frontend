@@ -18,15 +18,7 @@ export const PassengerInfo = () => {
             <span>|</span>
             <span>28</span>
             <span>|</span>
-            <span>M</span>
-            <span>|</span>
-            <span
-              className="material-symbols-outlined text-orange-500"
-              title="Seat Preference"
-            >
-              airline_seat_recline_extra
-            </span>
-            <span>Window</span>
+            <span>M</span>          
           </div>
 
           {/* Passenger 2 */}
@@ -37,14 +29,6 @@ export const PassengerInfo = () => {
             <span>26</span>
             <span>|</span>
             <span>F</span>
-            <span>|</span>
-            <span
-              className="material-symbols-outlined text-orange-500"
-              title="Seat Preference"
-            >
-              airline_seat_recline_extra
-            </span>
-            <span>Aisle</span>
           </div>
         </div>
 
