@@ -10,7 +10,7 @@ export const UserHeader = () => {
   const desktopDropdownRef = useRef();
   const mobileDropdownRef = useRef();
 
-  const isLoggedIn = true;
+  const isLoggedIn = false;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
