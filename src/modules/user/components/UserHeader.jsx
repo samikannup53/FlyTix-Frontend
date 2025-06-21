@@ -105,7 +105,7 @@ export const UserHeader = () => {
                     </div>
                   </Link>
                   <Link
-                    to="/settings"
+                    to="/change-password"
                     className="block px-6 py-4 transition hover:bg-orange-50"
                   >
                     <div className="flex items-center gap-4">
@@ -230,7 +230,7 @@ export const UserHeader = () => {
                     </div>
                   </Link>
                   <Link
-                    to="/settings"
+                    to="/change-password"
                     className="block px-6 py-4 transition hover:bg-orange-50 rounded-xl"
                   >
                     <div className="flex items-center gap-4">
