@@ -1,17 +1,50 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { fetchAPI } from "../../../../api/flytix";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthHeader } from "./authComponents/AuthHeader";
 import { AuthFooter } from "./authComponents/AuthFooter";
 import { AuthLeftPanel } from "./authComponents/AuthLeftPanel";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  // Handle Input Changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  // Handle Form Submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.msg || "Login failed");
+      }
+
+      navigate("/profile");
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50">
       {/* Header */}
-      <AuthHeader/>
+      <AuthHeader />
 
       {/* Main Container */}
       <main className="flex-grow flex items-center justify-center px-4 py-4">
@@ -28,13 +61,13 @@ export const Login = () => {
                 Your next adventure begins now. <br />
                 <span className="font-medium">
                   <span className="text-yellow-300">Sign up</span> today and let
-                  <span className="text-yellow-300"> FlyTix </span>take you to the skies.
+                  <span className="text-yellow-300"> FlyTix </span>take you to
+                  the skies.
                 </span>
               </>
             }
             quote={`"Every journey begins with a single click"`}
           />
-          
 
           {/* Right Side - Login Form */}
           <div className="w-full md:w-1/2 px-8 py-14 sm:px-6 sm:py-18 lg:px-14 lg:py-20 flex items-center justify-center bg-white backdrop-blur-lg shadow-lg relative">
@@ -47,38 +80,71 @@ export const Login = () => {
             </span>
             <div className="w-full max-w-sm sm:max-w-md space-y-5 sm:space-y-6">
               <h2 className="text-center text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent drop-shadow-sm">
-                 Welcome Back
+                Welcome Back
               </h2>
               <p className="text-center text-sm text-gray-700">
-                Login to <span className="text-pink-700 font-semibold">FlyTix</span> and explore your journeys.
+                Login to{" "}
+                <span className="text-pink-700 font-semibold">FlyTix</span> and
+                explore your journeys.
               </p>
 
-              <form className="space-y-4 sm:space-y-5">
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-sm">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
+                    Email
+                  </label>
                   <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-white/70 px-3 py-2 focus-within:border-pink-500 focus-within:bg-white">
                     <i className="fas fa-envelope text-pink-700 text-sm"></i>
-                    <input type="email" placeholder="Enter Your Email" className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Enter Your Email"
+                      className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
+                    />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">Password</label>
+                  <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
+                    Password
+                  </label>
                   <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-white/70 px-3 py-2 focus-within:border-pink-500 focus-within:bg-white">
                     <i className="fas fa-lock text-pink-700"></i>
-                    <input type={showPassword ? "text" : "password"} placeholder="Enter Your Password" className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="Enter Your Password"
+                      className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
+                    />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="text-pink-700 hover:text-pink-800 focus:outline-none"
                     >
-                      <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+                      <i
+                        className={`fas ${
+                          showPassword ? "fa-eye-slash" : "fa-eye"
+                        }`}
+                      ></i>
                     </button>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <Link to="/forgot-password" className="text-sm text-pink-700 hover:underline font-medium">
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-pink-700 hover:underline font-medium"
+                  >
                     Forgot Password?
                   </Link>
                 </div>
@@ -87,13 +153,17 @@ export const Login = () => {
                   type="submit"
                   className="cursor-pointer w-full bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white font-semibold py-2 rounded-xl shadow-lg transition flex items-center justify-center gap-2"
                 >
-                  <i className="fas fa-sign-in-alt text-white text-lg"></i> Login
+                  <i className="fas fa-sign-in-alt text-white text-lg"></i>{" "}
+                  Login
                 </button>
               </form>
 
               <p className="text-center text-sm text-gray-700">
                 Don’t have an account?
-                <Link to="/register" className="text-pink-700 hover:underline font-semibold">
+                <Link
+                  to="/register"
+                  className="text-pink-700 hover:underline font-semibold"
+                >
                   Sign up now
                 </Link>
               </p>
@@ -103,7 +173,7 @@ export const Login = () => {
       </main>
 
       {/* Footer */}
-      <AuthFooter/>
+      <AuthFooter />
     </div>
   );
 };
