@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
 import { useState, useEffect, useRef } from "react";
+import { useAuth } from "../../../shared/contexts/AuthContext";
 
 export const UserHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, isLoggedIn, logout, loading, refreshUser } = useAuth();
 
   // Separate refs for desktop and mobile/tablet dropdowns
   const desktopDropdownRef = useRef();
   const mobileDropdownRef = useRef();
-
-  const isLoggedIn = false;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -27,6 +27,8 @@ export const UserHeader = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  if (loading) return null;
 
   return (
     <header className="bg-gradient-to-tr from-orange-300 to-pink-300 sticky top-0 z-50 shadow-md">
@@ -87,7 +89,7 @@ export const UserHeader = () => {
                     <div className="flex items-center gap-4">
                       <i className="fa-solid fa-user text-orange-500 text-lg" />
                       <div>
-                        <p className="font-semibold">FlyNower</p>
+                        <p className="font-semibold">Flyer</p>
                         <p className="text-xs text-gray-500">My Profile</p>
                       </div>
                     </div>
@@ -118,13 +120,17 @@ export const UserHeader = () => {
                       </div>
                     </div>
                   </Link>
-                  <Link
-                    to="/logout"
+                  <button
+                    onClick={() => {
+                      logout();
+                      refreshUser();
+                      setDropdownOpen(false);
+                    }}
                     className="flex items-center gap-4 px-6 py-4 mt-2 border-t border-gray-100 text-red-600 hover:bg-red-50 transition"
                   >
                     <i className="fa-solid fa-right-from-bracket text-lg" />
                     <span className="font-semibold text-[15px]">Logout</span>
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>
@@ -243,13 +249,17 @@ export const UserHeader = () => {
                       </div>
                     </div>
                   </Link>
-                  <Link
-                    to="/logout"
+                  <button
+                    onClick={() => {
+                      logout();
+                      refreshUser();
+                      setDropdownOpen(false);
+                    }}
                     className="flex items-center gap-4 px-6 py-4 mt-2 border-t border-gray-100 text-red-600 hover:bg-red-50 transition rounded-xl"
                   >
                     <i className="fa-solid fa-right-from-bracket text-lg" />
                     <span className="font-semibold text-[15px]">Logout</span>
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>

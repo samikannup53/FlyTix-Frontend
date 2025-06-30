@@ -1,3 +1,4 @@
+import { useAuth } from "../../../../shared/contexts/AuthContext";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthHeader } from "./authComponents/AuthHeader";
@@ -9,6 +10,7 @@ export const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
   // Handle Input Changes
   const handleChange = (e) => {
@@ -35,6 +37,7 @@ export const Login = () => {
         throw new Error(data.msg || "Login failed");
       }
 
+      await refreshUser();
       navigate("/profile");
     } catch (error) {
       setError(error.message);
