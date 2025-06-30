@@ -1,3 +1,4 @@
+import { useAuth } from "../../../../shared/contexts/AuthContext";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthHeader } from "./authComponents/AuthHeader";
@@ -8,15 +9,17 @@ export const Register = () => {
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const { refreshUser } = useAuth();
 
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
     gender: "",
     dob: "",
     password: "",
     confirmPassword: "",
-    acceptedTerms: false,
+    termsAccepted: false,
   });
 
   const handleChange = (e) => {
@@ -29,9 +32,40 @@ export const Register = () => {
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    nextStep(); // On successful register
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords Do Not Match");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          gender: formData.gender,
+          dob: formData.dob,
+          password: formData.password,
+          termsAccepted: formData.termsAccepted,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.msg || "Registration Failed");
+      }
+      await refreshUser();
+      nextStep();
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (
@@ -50,8 +84,9 @@ export const Register = () => {
             }
             subtitle={
               <>
-                Book, relax, and let
-                &nbsp; <span className="text-yellow-300">FlyTix</span> &nbsp; handle the rest.
+                Book, relax, and let &nbsp;{" "}
+                <span className="text-yellow-300">FlyTix</span> &nbsp; handle
+                the rest.
               </>
             }
             quote={`"Adventure awaits with every booking"`}
@@ -75,6 +110,12 @@ export const Register = () => {
                 start booking today.
               </p>
 
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-sm">
+                  {error}
+                </div>
+              )}
+
               {step <= 3 && (
                 <form
                   className="space-y-4 sm:space-y-5"
@@ -91,9 +132,9 @@ export const Register = () => {
                           <i className="fas fa-user text-pink-700 text-sm"></i>
                           <input
                             type="text"
-                            name="name"
+                            name="fullName"
                             placeholder="Enter Your Full Name"
-                            value={formData.name}
+                            value={formData.fullName}
                             onChange={handleChange}
                             required
                             className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
@@ -181,7 +222,6 @@ export const Register = () => {
                             placeholder="Enter Your Password"
                             value={formData.password}
                             onChange={handleChange}
-                            required
                             className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                           />
                           <button
@@ -211,7 +251,6 @@ export const Register = () => {
                             placeholder="Confirm Password"
                             value={formData.confirmPassword}
                             onChange={handleChange}
-                            required
                             className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                           />
                           <button
@@ -234,10 +273,9 @@ export const Register = () => {
                       <div className="flex items-start gap-2 text-sm">
                         <input
                           type="checkbox"
-                          name="acceptedTerms"
-                          checked={formData.acceptedTerms}
+                          name="termsAccepted"
+                          checked={formData.termsAccepted}
                           onChange={handleChange}
-                          required
                         />
                         <label>
                           I accept the{" "}
@@ -271,7 +309,8 @@ export const Register = () => {
                       </button>
                     ) : (
                       <button
-                        type="submit"
+                        type="button"
+                        onClick={handleSubmit}
                         className="ml-auto flex items-center gap-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 text-white font-semibold py-2 px-5 rounded-xl shadow-lg hover:from-orange-700 hover:to-pink-700"
                       >
                         <i className="fas fa-user-plus"></i> Sign Up
