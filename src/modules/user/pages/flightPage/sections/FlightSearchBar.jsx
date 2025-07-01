@@ -2,7 +2,7 @@ import swapIcon from "../../../../../assets/images/swap.png";
 
 export const FlightSearchBar = () => {
   return (
-    <div className="sticky top-0 z-50 bg-gradient-to-r from-orange-900 to-pink-900 text-white shadow-xl">
+    <div className="sticky top-0 z-40 bg-gradient-to-r from-orange-900 to-pink-900 text-white shadow-xl">
       <div className="max-w-[1600px] mx-auto p-5">
         {/* Trip Type Toggle */}
         <div className="flex gap-3 mb-3">

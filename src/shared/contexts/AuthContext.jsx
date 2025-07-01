@@ -1,10 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const fetchUser = async () => {
     try {
@@ -35,11 +38,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = async () => {
-    await fetch("http://localhost:8000/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-    await refreshUser();
+    try {
+      await fetch("http://localhost:8000/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      await refreshUser();
+      navigate("/");
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (

@@ -31,7 +31,7 @@ export const UserHeader = () => {
   if (loading) return null;
 
   return (
-    <header className="bg-gradient-to-tr from-orange-300 to-pink-300 sticky top-0 z-50 shadow-md">
+    <header className="bg-gradient-to-tr from-orange-300 to-pink-300 sticky top-0 z-30 shadow-md">
       <div className="max-w-[1600px] mx-auto px-6 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center">
@@ -255,7 +255,7 @@ export const UserHeader = () => {
                       refreshUser();
                       setDropdownOpen(false);
                     }}
-                    className="flex items-center gap-4 px-6 py-4 mt-2 border-t border-gray-100 text-red-600 hover:bg-red-50 transition rounded-xl"
+                    className="w-full flex items-center gap-4 px-6 py-4 mt-2 border-t border-gray-100 text-red-600 hover:bg-red-50 transition rounded-b-2xl"
                   >
                     <i className="fa-solid fa-right-from-bracket text-lg" />
                     <span className="font-semibold text-[15px]">Logout</span>

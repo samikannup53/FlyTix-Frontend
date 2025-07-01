@@ -90,7 +90,7 @@ export const ProfileSection = () => {
   }
 
   return (
-    <section className="px-4 sm:px-6 lg:px-8">
+    <section>
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-orange-200 pb-4 mb-8">
         <h2 className="text-2xl font-bold text-pink-800 flex items-center gap-3">
@@ -119,9 +119,9 @@ export const ProfileSection = () => {
 
       {/* Display Card */}
       {!showForm && (
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-3xl shadow-xl border border-pink-200 bg-white/70 backdrop-blur-md transition-all duration-300">
+        <div className="flex gap-6">
           {/* Avatar */}
-          <div className="flex flex-col items-center text-center space-y-4 md:col-span-1">
+          <div className="flex flex-col items-center text-center space-y-4 w-1/4 ">
             <div className="relative">
               <img
                 src="https://i.pravatar.cc/150?img=13"
@@ -143,60 +143,63 @@ export const ProfileSection = () => {
               <i className="fas fa-user-edit mr-1"></i> Edit Profile
             </button>
           </div>
+          <div className=" w-full max-w-6xl mx-auto flex justify-around p-6 rounded-3xl shadow-xl border border-pink-200 bg-white/70 backdrop-blur-md transition-all duration-300">
+            {/* Personal Info */}
+            <div className="space-y-4 mt-2">
+              <h3 className="text-lg font-semibold text-pink-700 flex items-center gap-2">
+                <i className="fas fa-user-circle text-pink-600"></i> Personal
+                Info
+              </h3>
+              <ul className="text-gray-700 space-y-3 text-sm">
+                <li className="flex items-center gap-3">
+                  <i className="fas fa-id-badge text-pink-500 w-5"></i>
+                  <span>
+                    <strong>Name:</strong> {userData?.fullName}
+                  </span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <i className="fas fa-birthday-cake text-pink-500 w-5"></i>
+                  <span>
+                    <strong>DOB:</strong> {userData?.dob?.split("T")[0]}
+                  </span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <i className="fas fa-venus-mars text-pink-500 w-5"></i>
+                  <span>
+                    <strong>Gender:</strong> {userData?.gender}
+                  </span>
+                </li>
+              </ul>
+            </div>
 
-          {/* Personal Info */}
-          <div className="md:col-span-1 space-y-4">
-            <h3 className="text-lg font-semibold text-pink-700 flex items-center gap-2">
-              <i className="fas fa-user-circle text-pink-600"></i> Personal Info
-            </h3>
-            <ul className="text-gray-700 space-y-3 text-sm">
-              <li className="flex items-center gap-3">
-                <i className="fas fa-id-badge text-pink-500 w-5"></i>
-                <span>
-                  <strong>Name:</strong> {userData?.fullName}
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <i className="fas fa-birthday-cake text-pink-500 w-5"></i>
-                <span>
-                  <strong>DOB:</strong> {userData?.dob?.split("T")[0]}
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <i className="fas fa-venus-mars text-pink-500 w-5"></i>
-                <span>
-                  <strong>Gender:</strong> {userData?.gender}
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div className="md:col-span-1 space-y-4">
-            <h3 className="text-lg font-semibold text-pink-700 flex items-center gap-2">
-              <i className="fas fa-address-book text-pink-600"></i> Contact Info
-            </h3>
-            <ul className="text-gray-700 space-y-3 text-sm">
-              <li className="flex items-center gap-3">
-                <i className="fas fa-phone-alt text-pink-500 w-5"></i>
-                <span>
-                  <strong>Phone:</strong> +91 {userData?.mobile}
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <i className="fas fa-envelope text-pink-500 w-5"></i>
-                <span>
-                  <strong>Email:</strong> {userData?.email}
-                </span>
-              </li>
-            </ul>
+            {/* Contact Info */}
+            <div className="space-y-4 mt-2">
+              <h3 className="text-lg font-semibold text-pink-700 flex items-center gap-2">
+                <i className="fas fa-address-book text-pink-600"></i> Contact
+                Info
+              </h3>
+              <ul className="text-gray-700 space-y-3 text-sm">
+                <li className="flex items-center gap-3">
+                  <i className="fas fa-phone-alt text-pink-500 w-5"></i>
+                  <span>
+                    <strong>Phone:</strong> +91 {userData?.mobile}
+                  </span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <i className="fas fa-envelope text-pink-500 w-5"></i>
+                  <span>
+                    <strong>Email:</strong> {userData?.email}
+                  </span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       )}
 
       {/* Update Form */}
       {showForm && (
-        <div className="max-w-6xl mx-auto bg-white/70 backdrop-blur-md border border-pink-200 rounded-3xl shadow-lg p-6 md:p-10 transition-all duration-300">
+        <div className="max-w-6xl mx-auto bg-white/70 backdrop-blur-md border border-pink-200 rounded-3xl shadow-lg p-6 transition-all duration-300">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-2xl font-bold text-pink-800 flex items-center gap-3">
               <i className="fas fa-user-edit text-pink-600 text-xl"></i> Update
