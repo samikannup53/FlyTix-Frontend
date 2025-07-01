@@ -126,40 +126,42 @@ export const SavedTravellers = () => {
 
       {/* Travellers List */}
       {!showForm && (
-        <div className="max-w-5xl mx-auto mt-6 flex flex-col gap-4 p-6 rounded-2xl shadow-md backdrop-blur-sm border border-pink-100 bg-white/70">
+        <div className="max-w-5xl mx-auto">
           {travellers.length === 0 ? (
             <div className="text-center text-pink-700 text-lg py-12">
               <i className="fas fa-user-slash text-4xl mb-3"></i>
               <p>No travellers added yet.</p>
             </div>
           ) : (
-            travellers.map((traveller) => (
-              <div
-                key={traveller._id}
-                className="flex justify-between items-center text-gray-700"
-              >
-                <div className="flex items-center gap-4">
-                  <i className="fas fa-user-circle text-pink-700 text-2xl"></i>
-                  <div>
-                    <p className="font-semibold text-pink-700">
-                      {traveller.title} {traveller.firstName}{" "}
-                      {traveller.lastName}
-                    </p>
-                    <p>
-                      Age: {traveller.age} &nbsp; | &nbsp; Gender:{" "}
-                      {traveller.gender} &nbsp; | &nbsp; Category:{" "}
-                      {traveller.category}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleDelete(traveller._id)}
-                  className="text-red-700 hover:text-red-800 transition"
+            <div className="flex flex-col gap-3 max-h-[350px] 2xl:max-h-[600px] overflow-y-auto pr-2 scrollbar-hide">
+              {travellers.map((traveller) => (
+                <div
+                  key={traveller._id}
+                  className="flex justify-between items-center text-gray-700 py-2 px-4 rounded-2xl shadow-md backdrop-blur-sm border border-pink-100 bg-white/70"
                 >
-                  <i className="fas fa-trash-alt"></i>
-                </button>
-              </div>
-            ))
+                  <div className="flex items-center gap-4">
+                    <i className="fas fa-user-circle text-pink-700 text-2xl"></i>
+                    <div>
+                      <p className="font-semibold text-pink-700">
+                        {traveller.title} {traveller.firstName}{" "}
+                        {traveller.lastName}
+                      </p>
+                      <p className="text-sm">
+                        Age: {traveller.age} &nbsp; | &nbsp; Gender:{" "}
+                        {traveller.gender} &nbsp; | &nbsp; Category:{" "}
+                        {traveller.category}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDelete(traveller._id)}
+                    className="text-red-700 hover:text-red-800 transition"
+                  >
+                    <i className="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
