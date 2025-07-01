@@ -50,7 +50,7 @@ export const ForgotPassword = () => {
       setSuccess("OTP Sent to your Email");
       setStep(2);
     } catch (error) {
-      setError(rror.message);
+      setError(error.message);
     }
   };
 
@@ -215,6 +215,15 @@ export const ForgotPassword = () => {
                         onChange={handleChange}
                         className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                       />
+                    </div>
+                    <div className="flex justify-end  text-sm mt-1">
+                      <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        className="text-pink-700 font-semibold cursor-pointer"
+                      >
+                        Resend OTP
+                      </button>
                     </div>
                   </div>
 
