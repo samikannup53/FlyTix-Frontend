@@ -50,7 +50,7 @@ export const ForgotPassword = () => {
       setSuccess("OTP Sent to your Email");
       setStep(2);
     } catch (error) {
-      setError(rror.message);
+      setError(error.message);
     }
   };
 
