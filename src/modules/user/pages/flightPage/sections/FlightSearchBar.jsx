@@ -1,6 +1,37 @@
+import { useState } from "react";
 import swapIcon from "../../../../../assets/images/swap.png";
 
-export const FlightSearchBar = () => {
+export const FlightSearchBar = ({ onSearch }) => {
+  const [from, setFrom] = useState("Chennai");
+  const [to, setTo] = useState("Trivandrum");
+  const [departureDate, setDepartureDate] = useState("2025-06-27");
+  const [returnDate, setReturnDate] = useState("");
+  const [travelClass, setTravelClass] = useState("ECONOMY");
+  const [passengersText, setPassengersText] = useState("1 Adult · Economy");
+  const [adults] = useState(1); // hardcoded for now
+  const [children] = useState(0);
+  const [infants] = useState(0);
+
+  const handleSwap = () => {
+    const temp = from;
+    setFrom(to);
+    setTo(temp);
+  };
+
+  const handleSearch = () => {
+    const searchParams = {
+      from,
+      to,
+      date: departureDate,
+      returnDate,
+      travelClass,
+      adults,
+      children,
+      infants,
+    };
+    onSearch?.(searchParams);
+  };
+
   return (
     <div className="sticky top-0 z-40 bg-gradient-to-r from-orange-900 to-pink-900 text-white shadow-xl">
       <div className="max-w-[1600px] mx-auto p-5">
@@ -21,12 +52,14 @@ export const FlightSearchBar = () => {
             <label className="block text-xs text-white mb-1">From</label>
             <input
               type="text"
-              defaultValue="Chennai"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
               className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/70"
             />
             {/* Swap Icon */}
             <div className="absolute top-4 -right-4 z-10">
               <button
+                onClick={handleSwap}
                 className="bg-gradient-to-br from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white p-1 rounded-full shadow-lg"
                 title="Swap"
               >
@@ -40,7 +73,8 @@ export const FlightSearchBar = () => {
             <label className="block text-xs text-white mb-1 ml-3">To</label>
             <input
               type="text"
-              defaultValue="Trivandrum"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
               className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/70 ml-3"
             />
           </div>
@@ -49,8 +83,9 @@ export const FlightSearchBar = () => {
           <div className="flex-1 px-2 py-1.5 bg-white/20 border-b-4 border-transparent transition-all focus-within:border-yellow-300">
             <label className="block text-xs text-white mb-1">Departure</label>
             <input
-              type="text"
-              defaultValue="27 Jun 2025"
+              type="date"
+              value={departureDate}
+              onChange={(e) => setDepartureDate(e.target.value)}
               className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/70"
             />
           </div>
@@ -59,27 +94,30 @@ export const FlightSearchBar = () => {
           <div className="flex-1 px-2 py-1.5 bg-white/20 border-b-4 border-transparent transition-all focus-within:border-yellow-300">
             <label className="block text-xs text-white mb-1">Return</label>
             <input
-              type="text"
-              defaultValue="--"
+              type="date"
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
               className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/70"
             />
           </div>
 
           {/* Passengers & Class */}
           <div className="flex-1 px-2 py-1.5 bg-white/20 border-b-4 border-transparent transition-all focus-within:border-yellow-300">
-            <label className="block text-xs text-white mb-1">
-              Passengers & Class
-            </label>
+            <label className="block text-xs text-white mb-1">Passengers & Class</label>
             <input
               type="text"
-              defaultValue="1 Adult · Economy"
+              value={passengersText}
+              readOnly
               className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/70"
             />
           </div>
 
           {/* Search Button */}
           <div>
-            <button className="h-full px-5 py-1.5 text-sm font-semibold text-white bg-gradient-to-br from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 rounded-r-lg shadow transition-all flex items-center gap-2">
+            <button
+              onClick={handleSearch}
+              className="h-full px-5 py-1.5 text-sm font-semibold text-white bg-gradient-to-br from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 rounded-r-lg shadow transition-all flex items-center gap-2"
+            >
               <i className="fa-solid fa-magnifying-glass"></i>
               Search
             </button>
