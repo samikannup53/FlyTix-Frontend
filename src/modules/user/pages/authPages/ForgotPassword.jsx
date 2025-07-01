@@ -5,6 +5,8 @@ import { AuthFooter } from "./authComponents/AuthFooter";
 import { AuthLeftPanel } from "./authComponents/AuthLeftPanel";
 
 export const ForgotPassword = () => {
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     email: "",
@@ -23,17 +25,95 @@ export const ForgotPassword = () => {
     }));
   };
 
-  const handleGenerateOtp = (e) => {
+  const handleGenerateOtp = async (e) => {
     e.preventDefault();
-    setStep(2);
+    setError("");
+    setSuccess("");
+    try {
+      const res = await fetch(
+        "http://localhost:8000/api/auth/forgot-password/initiate",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email: formData.email }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.msg || "Something Went Wrong");
+        return;
+      }
+
+      setSuccess("OTP Sent to your Email");
+      setStep(2);
+    } catch (error) {
+      setError(rror.message);
+    }
   };
 
-  const handleUpdatePassword = (e) => {
+  const handleUpdatePassword = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
     if (formData.newPassword !== formData.confirmNewPassword) {
-      return alert("Passwords do not match.");
+      setError("Passwords do not Match");
+      return;
     }
-    setStep(3);
+    try {
+      const res = await fetch(
+        "http://localhost:8000/api/auth/forgot-password/reset",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            otp: formData.otp,
+            newPassword: formData.newPassword,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.msg || "Something Went Wrong");
+        return;
+      }
+
+      setSuccess("Password Reset Successful");
+      setStep(3);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await fetch(
+        "http://localhost:8000/api/auth/forgot-password/resend-otp",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.msg || "Failed to resend OTP");
+        return;
+      }
+
+      setSuccess("OTP resent successfully!");
+    } catch (err) {
+      setError("Server Error. Please try again.");
+    }
   };
 
   return (
@@ -51,9 +131,7 @@ export const ForgotPassword = () => {
               </>
             }
             subtitle={
-              <p>
-                Reclaim your journey – we’ll help you get back on track.
-              </p>
+              <>Reclaim your journey – we’ll help you get back on track.</>
             }
             quote={`"Secure travels begin with secure accounts"`}
           />
@@ -78,6 +156,17 @@ export const ForgotPassword = () => {
                 </span>{" "}
               </p>
               {/* Step 1 - Email */}
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-sm">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md text-sm">
+                  {success}
+                </div>
+              )}
               {step === 1 && (
                 <form onSubmit={handleGenerateOtp} className="space-y-5">
                   <div>
@@ -92,7 +181,6 @@ export const ForgotPassword = () => {
                         placeholder="Enter your email"
                         value={formData.email}
                         onChange={handleChange}
-                        required
                         className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                       />
                     </div>
@@ -125,7 +213,6 @@ export const ForgotPassword = () => {
                         placeholder="Enter OTP"
                         value={formData.otp}
                         onChange={handleChange}
-                        required
                         className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                       />
                     </div>
@@ -143,7 +230,6 @@ export const ForgotPassword = () => {
                         placeholder="New Password"
                         value={formData.newPassword}
                         onChange={handleChange}
-                        required
                         className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                       />
                       <button
@@ -172,7 +258,6 @@ export const ForgotPassword = () => {
                         placeholder="Confirm Password"
                         value={formData.confirmNewPassword}
                         onChange={handleChange}
-                        required
                         className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                       />
                       <button
