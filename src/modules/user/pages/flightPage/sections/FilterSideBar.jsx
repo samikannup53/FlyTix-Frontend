@@ -7,15 +7,15 @@ export const FiltersSideBar = () => {
 
       {/* Stops */}
       <div>
-        <h3 className="text-md font-semibold text-gray-700 mb-3 flex items-center gap-2">
+        <h3 className="text-md font-semibold text-gray-700 mb-4 flex items-center gap-2">
           <i className="fa-solid fa-route text-orange-500" /> Stops
         </h3>
 
-        <div className="">
+        <div className="space-y-4 px-2">
           {["Non-stop", "1 Stop", "2+ Stops"].map((label, index) => (
             <label
               key={index}
-              className="flex justify-between items-center px-4 py-2 cursor-pointer "
+              className="flex justify-between items-center cursor-pointer "
             >
               <span className="text-sm font-medium text-gray-700">{label}</span>
               <input
@@ -30,15 +30,15 @@ export const FiltersSideBar = () => {
 
       {/* Airlines */}
       <div>
-        <h3 className="text-md font-semibold text-gray-700 mb-3 flex items-center gap-2">
+        <h3 className="text-md font-semibold text-gray-700 mb-4 flex items-center gap-2">
           <i className="fa-solid fa-plane text-orange-500" /> Airlines
         </h3>
 
-        <div className="">
+        <div className="space-y-4 px-2">
           {["IndiGo", "Air India", "SpiceJet", "Vistara"].map((label) => (
             <label
               key={label}
-              className="flex items-center justify-between px-3 py-2 cursor-pointer"
+              className="flex items-center justify-between cursor-pointer"
             >
               <span className="text-sm font-medium text-gray-800">{label}</span>
 
