@@ -103,7 +103,9 @@ export const FlightSearchBar = ({ onSearch }) => {
 
           {/* Passengers & Class */}
           <div className="flex-1 px-2 py-1.5 bg-white/20 border-b-4 border-transparent transition-all focus-within:border-yellow-300">
-            <label className="block text-xs text-white mb-1">Passengers & Class</label>
+            <label className="block text-xs text-white mb-1">
+              Passengers & Class
+            </label>
             <input
               type="text"
               value={passengersText}
