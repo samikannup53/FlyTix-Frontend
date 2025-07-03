@@ -24,7 +24,7 @@ export const FlightResultCard = ({
   );
 
   return (
-    <div className="relative bg-white px-6 py-4 rounded-xl shadow-md flex flex-col gap-6">
+    <div className="relative bg-white/80 px-6 py-4 rounded-xl shadow-md flex flex-col gap-6">
       {/* Badge Section */}
       <div className="absolute -top-2 left-4 flex flex-wrap gap-2 z-10">
         {/* Refundable Badge */}
@@ -148,11 +148,11 @@ export const FlightResultCard = ({
 
       {/* Bottom Actions */}
       <div className="flex justify-end items-center gap-2">
-        <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition">
+        <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer">
           <i className="fa fa-plus-circle"></i> Add to Compare
         </button>
         <span className="text-pink-700">|</span>
-        <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition">
+        <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer">
           <i className="fa-solid fa-magnifying-glass"></i> View Details
         </button>
       </div>

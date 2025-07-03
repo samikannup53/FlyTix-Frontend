@@ -3,7 +3,6 @@ import { LandingFooter, UserHeader } from "../../components";
 import { FiltersSideBar } from "./sections/FilterSideBar";
 import { FlightResults } from "./sections/FlightResults";
 import { FlightSearchBar } from "./sections/FlightSearchBar";
-import { FlightDateSlider } from "./sections/FlightDateSlider";
 import { SortBySection } from "./sections/SortBySection";
 
 export const Flights = () => {
@@ -156,7 +155,6 @@ export const Flights = () => {
           />
           <div className="lg:w-3/4 w-full no-scrollbar pr-2">
             <div className="space-y-6">
-              <FlightDateSlider />
               <SortBySection
                 selectedSortOption={sortOption}
                 onSortChange={setSortOption}
