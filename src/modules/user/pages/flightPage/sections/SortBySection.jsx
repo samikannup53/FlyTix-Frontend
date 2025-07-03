@@ -10,7 +10,7 @@ export const SortBySection = ({ selectedSortOption, onSortChange }) => {
     <div className="w-full">
       {/* Sort By Header */}
       <div className="flex items-center gap-2 mb-3 text-gray-800 font-semibold text-base">
-        <i className="fa-solid fa-arrow-up-wide-short text-orange-500"></i>
+        <i className="fa-solid fa-arrow-up-wide-short text-pink-700"></i>
         <span>Sort By</span>
       </div>
 

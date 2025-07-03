@@ -10,51 +10,92 @@ export const FlightResultCard = ({
   isFastest,
   isDirect,
 }) => {
-  const segment = outbound.segments[0]; // first leg
+  const segment = outbound.segments[0]; // First leg of the flight
+
+  // Utility function to render a badge with icon and styles
+  const Badge = ({ icon, text, bgColor, textColor, borderColor }) => (
+    <span
+      className={`text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 border 
+        ${bgColor} ${textColor} ${borderColor}`}
+    >
+      <i className={`fa-solid ${icon}`} />
+      {text}
+    </span>
+  );
 
   return (
-    <div className="relative bg-white/80 p-6 rounded-xl shadow-md flex flex-col gap-4">
+    <div className="relative bg-white px-6 py-4 rounded-xl shadow-md flex flex-col gap-6">
       {/* Badge Section */}
-      <div className="absolute top-3 left-4 flex flex-wrap gap-2 z-10">
+      <div className="absolute -top-2 left-4 flex flex-wrap gap-2 z-10">
+        {/* Refundable Badge */}
         {refundable && refundable !== "Not Specified" && (
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+          <Badge
+            icon={
               refundable === "Refundable"
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}
-          >
-            {refundable}
-          </span>
+                ? "fa-circle-check"
+                : "fa-circle-xmark"
+            }
+            text={refundable}
+            bgColor={refundable === "Refundable" ? "bg-green-50" : "bg-red-50"}
+            textColor={
+              refundable === "Refundable" ? "text-green-700" : "text-red-700"
+            }
+            borderColor={
+              refundable === "Refundable"
+                ? "border-green-300"
+                : "border-red-300"
+            }
+          />
         )}
 
+        {/* Cheapest Badge */}
         {isBestValue && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-medium">
-            Best Value
-          </span>
+          <Badge
+            icon="fa-tag"
+            text="Cheapest"
+            bgColor="bg-yellow-50"
+            textColor="text-yellow-700"
+            borderColor="border-yellow-300"
+          />
         )}
 
+        {/* Fastest Badge */}
         {isFastest && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
-            Fastest Flight
-          </span>
+          <Badge
+            icon="fa-bolt"
+            text="Fastest"
+            bgColor="bg-blue-50"
+            textColor="text-blue-700"
+            borderColor="border-blue-300"
+          />
         )}
 
+        {/* Non-Stop Badge */}
         {isDirect && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">
-            Direct Flight
-          </span>
+          <Badge
+            icon="fa-route"
+            text="Non-stop"
+            bgColor="bg-indigo-50"
+            textColor="text-indigo-700"
+            borderColor="border-indigo-300"
+          />
         )}
 
+        {/* Limited Time Badge */}
         {isLimitedTime && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium">
-            Limited Time
-          </span>
+          <Badge
+            icon="fa-hourglass-half"
+            text="Limited Time"
+            bgColor="bg-orange-50"
+            textColor="text-orange-700"
+            borderColor="border-orange-300"
+          />
         )}
       </div>
 
-      {/* Top Section: Airline Info + Flight Info */}
+      {/* Top Section: Airline & Flight Info */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        {/* Airline */}
         <div className="flex items-center gap-4">
           <img
             src={FlightTailLogo}
@@ -67,6 +108,7 @@ export const FlightResultCard = ({
           </div>
         </div>
 
+        {/* Departure */}
         <div className="text-left">
           <p className="text-lg font-semibold text-gray-700">
             {segment.departure.time}
@@ -76,6 +118,7 @@ export const FlightResultCard = ({
           </p>
         </div>
 
+        {/* Duration and Stops */}
         <div className="text-center">
           <p className="text-sm text-gray-600">{outbound.duration}</p>
           <div className="w-24 h-px bg-gray-400 mx-auto my-1"></div>
@@ -84,6 +127,7 @@ export const FlightResultCard = ({
           </p>
         </div>
 
+        {/* Arrival */}
         <div className="text-right">
           <p className="text-lg font-semibold text-gray-700">
             {segment.arrival.time}
@@ -93,23 +137,23 @@ export const FlightResultCard = ({
           </p>
         </div>
 
+        {/* Fare + Book Button */}
         <div className="text-center">
-          <p className="text-xl font-bold text-orange-600">₹{fare.totalFare}</p>
-          <button className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-md text-sm font-medium hover:bg-orange-600 transition">
+          <p className="text-xl font-bold text-pink-700">₹{fare.totalFare}</p>
+          <button className="mt-2 px-4 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer">
             Book Now
           </button>
         </div>
       </div>
 
-      {/* Bottom Buttons Section */}
-      <div className="flex justify-start items-center gap-6 mt-2">
-        <button className="flex items-center gap-2 text-orange-600 font-medium hover:text-orange-700 transition">
-          <i className="fa-regular fa-square-plus"></i>
-          Add to Compare
+      {/* Bottom Actions */}
+      <div className="flex justify-end items-center gap-2">
+        <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition">
+          <i className="fa fa-plus-circle"></i> Add to Compare
         </button>
-        <button className="flex items-center gap-2 text-orange-600 font-medium hover:text-orange-700 transition">
-          <i className="fa-solid fa-magnifying-glass"></i>
-          View Details
+        <span className="text-pink-700">|</span>
+        <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition">
+          <i className="fa-solid fa-magnifying-glass"></i> View Details
         </button>
       </div>
     </div>
