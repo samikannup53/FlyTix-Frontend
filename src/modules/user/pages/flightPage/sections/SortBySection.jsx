@@ -1,4 +1,11 @@
-export const SortBySection = () => {
+export const SortBySection = ({ selectedSortOption, onSortChange }) => {
+  const sortOptions = [
+    { key: "smart", label: "Smart Sort", icon: "fa-wand-magic-sparkles" },
+    { key: "price", label: "Price", icon: "fa-indian-rupee-sign" },
+    { key: "fastest", label: "Fastest", icon: "fa-gauge-high" },
+    { key: "earliest", label: "Earliest", icon: "fa-clock" },
+  ];
+
   return (
     <div className="w-full">
       {/* Sort By Header */}
@@ -9,18 +16,20 @@ export const SortBySection = () => {
 
       {/* Sort Options */}
       <div className="bg-white rounded-lg shadow flex divide-x divide-gray-200 text-sm font-medium overflow-hidden">
-        <button className="flex-1 px-4 py-2 hover:bg-orange-100 text-gray-700 flex items-center justify-center gap-2">
-          <i className="fa-solid fa-wand-magic-sparkles text-orange-500"></i> Smart Sort
-        </button>
-        <button className="flex-1 px-4 py-2 hover:bg-orange-100 text-gray-700 flex items-center justify-center gap-2">
-          <i className="fa-solid fa-indian-rupee-sign text-orange-500"></i> Price
-        </button>
-        <button className="flex-1 px-4 py-2 hover:bg-orange-100 text-gray-700 flex items-center justify-center gap-2">
-          <i className="fa-solid fa-gauge-high text-orange-500"></i> Fastest
-        </button>
-        <button className="flex-1 px-4 py-2 hover:bg-orange-100 text-gray-700 flex items-center justify-center gap-2">
-          <i className="fa-solid fa-clock text-orange-500"></i> Earliest
-        </button>
+        {sortOptions.map(({ key, label, icon }) => (
+          <button
+            key={key}
+            onClick={() => onSortChange(key)}
+            className={`flex-1 px-4 py-2 hover:bg-pink-100 flex items-center justify-center gap-2 ${
+              selectedSortOption === key
+                ? "text-pink-700 font-semibold bg-pink-100"
+                : "text-gray-700"
+            }`}
+          >
+            <i className={`fa-solid ${icon} text-pink-700`} />
+            {label}
+          </button>
+        ))}
       </div>
     </div>
   );

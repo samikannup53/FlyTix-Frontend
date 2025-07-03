@@ -1,5 +1,3 @@
-import { FlightDateSlider } from "./FlightDateSlider";
-import { SortBySection } from "./SortBySection";
 import { FlightResultCard } from "./FlightResultCard";
 
 export const FlightResults = ({ flights, loading }) => {
@@ -28,52 +26,47 @@ export const FlightResults = ({ flights, loading }) => {
     : null;
 
   return (
-    <section className="lg:w-3/4 w-full no-scrollbar pr-2">
-      <div className="space-y-6">
-        <FlightDateSlider />
-        <SortBySection />
-
-        {/* Heading */}
-        <div className="flex items-center justify-between">
-          <div className="text-lg font-semibold text-gray-800">
-            {flights.length > 0
-              ? `${flights[0].outbound.segments[0].departure.city} → ${flights[0].outbound.segments[0].arrival.city}`
-              : "Search Results"}
-          </div>
-          <div className="text-sm text-gray-600">
-            {loading ? "Loading..." : `${flights.length} Flights Found`}
-          </div>
+    <>
+      {/* Heading */}
+      <div className="flex items-center justify-between">
+        <div className="text-lg font-semibold text-gray-800">
+          {flights.length > 0
+            ? `${flights[0].outbound.segments[0].departure.city} → ${flights[0].outbound.segments[0].arrival.city}`
+            : "Search Results"}
         </div>
-
-        {/* Results */}
-        {loading ? (
-          <p className="text-center text-gray-500">Fetching flights...</p>
-        ) : flights.length === 0 ? (
-          <p className="text-center text-red-500">No flights found</p>
-        ) : (
-          flights.map((flight, index) => {
-            const flightFare = Number(flight.fare.totalFare);
-            const flightDuration = parseDuration(flight.outbound.duration);
-
-            const isBestValue = Math.abs(flightFare - bestFare) < 0.01;
-            const isFastest = flightDuration === bestDuration;
-            const isLimitedTime = isWithinDays(flight.lastTicketingDate, 3);
-            const isDirect = flight.outbound.stops === 0;
-
-            return (
-              <FlightResultCard
-                key={flight.flightId || index}
-                {...flight}
-                refundable={flight.refundable}
-                isBestValue={isBestValue}
-                isFastest={isFastest}
-                isLimitedTime={isLimitedTime}
-                isDirect={isDirect}
-              />
-            );
-          })
-        )}
+        <div className="text-sm text-gray-600">
+          {loading ? "Loading..." : `${flights.length} Flights Found`}
+        </div>
       </div>
-    </section>
+
+      {/* Results */}
+      {loading ? (
+        <p className="text-center text-gray-500">Fetching flights...</p>
+      ) : flights.length === 0 ? (
+        <p className="text-center text-red-500">No flights found</p>
+      ) : (
+        flights.map((flight, index) => {
+          const flightFare = Number(flight.fare.totalFare);
+          const flightDuration = parseDuration(flight.outbound.duration);
+
+          const isBestValue = Math.abs(flightFare - bestFare) < 0.01;
+          const isFastest = flightDuration === bestDuration;
+          const isLimitedTime = isWithinDays(flight.lastTicketingDate, 3);
+          const isDirect = flight.outbound.stops === 0;
+
+          return (
+            <FlightResultCard
+              key={flight.flightId || index}
+              {...flight}
+              refundable={flight.refundable}
+              isBestValue={isBestValue}
+              isFastest={isFastest}
+              isLimitedTime={isLimitedTime}
+              isDirect={isDirect}
+            />
+          );
+        })
+      )}
+    </>
   );
 };
