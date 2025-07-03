@@ -8,17 +8,51 @@ export const Flights = () => {
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (searchParams) => {
+  // const handleSearch = async (searchParams) => {
+  //   try {
+  //     setLoading(true);
+  //     setFlights([]); // clear old data
+
+  //     const res = await fetch("http://localhost:8000/api/flights/search", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(searchParams),
+  //     });
+
+  //     const data = await res.json();
+
+  //     if (!res.ok) {
+  //       throw new Error(data.msg || "Failed to fetch flights");
+  //     }
+
+  //     setFlights(data.data);
+  //   } catch (err) {
+  //     console.error("Flight fetch error:", err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleSearch = async (searchInput) => {
+    // If using mock: searchInput will have { results: [...] }
+    if (searchInput?.results) {
+      setFlights(searchInput.results); // use mock results
+      return;
+    }
+
+    // Otherwise, fallback to real API
     try {
       setLoading(true);
-      setFlights([]); // clear old data
+      setFlights([]); // clear old results
 
       const res = await fetch("http://localhost:8000/api/flights/search", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(searchParams),
+        body: JSON.stringify(searchInput), // input is params
       });
 
       const data = await res.json();

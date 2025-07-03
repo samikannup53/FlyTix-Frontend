@@ -1,10 +1,11 @@
 import { useState } from "react";
 import swapIcon from "../../../../../assets/images/swap.png";
+import { mockFlightResults } from "../../../../../data/mockFlightResults";
 
 export const FlightSearchBar = ({ onSearch }) => {
   const [from, setFrom] = useState("Chennai");
   const [to, setTo] = useState("Trivandrum");
-  const [departureDate, setDepartureDate] = useState("2025-06-27");
+  const [departureDate, setDepartureDate] = useState(new Date().toISOString().split("T")[0]);
   const [returnDate, setReturnDate] = useState("");
   const [travelClass, setTravelClass] = useState("ECONOMY");
   const [passengersText, setPassengersText] = useState("1 Adult · Economy");
@@ -29,7 +30,14 @@ export const FlightSearchBar = ({ onSearch }) => {
       children,
       infants,
     };
-    onSearch?.(searchParams);
+
+    
+
+    // Simulate search with mock data instead of API call
+    onSearch?.({
+      results: mockFlightResults, // Use mock data here
+      // params: searchParams, 
+    });
   };
 
   return (
