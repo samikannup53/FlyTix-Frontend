@@ -10,13 +10,13 @@ export const Flights = () => {
   const [originalFlights, setOriginalFlights] = useState([]); // Raw API response
   const [loading, setLoading] = useState(false); // Loading state
 
-  // Filters state
+  // Filters State
   const [selectedStops, setSelectedStops] = useState([]);
   const [selectedAirlines, setSelectedAirlines] = useState([]);
   const [maxPrice, setMaxPrice] = useState(20000);
   const [selectedTimes, setSelectedTimes] = useState([]);
 
-  // Sort Staet
+  // Sort State
   const [sortOption, setSortOption] = useState("smart");
 
   // Static list of Indian domestic airline codes
@@ -26,13 +26,13 @@ export const Flights = () => {
   const handleSearch = async (searchInput) => {
     // If using mock data
     if (searchInput?.results) {
-      setFlights(searchInput.results);
-      setOriginalFlights(searchInput.results); // Store raw data for filtering
+      setFlights(searchInput.results.data);
+      setOriginalFlights(searchInput.results.data); // Store raw data for filtering
       return;
     }
 
     try {
-      setLoading(true); // Show loading spinner
+      setLoading(true);
       setFlights([]);
       setOriginalFlights([]);
 
@@ -105,30 +105,54 @@ export const Flights = () => {
       return stopsMatch && airlineMatch && priceMatch && timeMatch;
     })
     .sort((a, b) => {
+      // Utility: Convert ISO duration like "PT2H30M" to total minutes
+      const parseDuration = (isoDuration) => {
+        const match = isoDuration.match(/PT(\d+H)?(\d+M)?/);
+        const hours = match[1] ? parseInt(match[1]) : 0;
+        const minutes = match[2] ? parseInt(match[2]) : 0;
+        return hours * 60 + minutes;
+      };
+
+      // Compute total duration in minutes for A
+      const aOutboundDuration = parseDuration(a.outbound.duration || "PT0M");
+      const aReturnDuration = a.returnTrip
+        ? parseDuration(a.returnTrip.duration || "PT0M")
+        : 0;
+      const aTotalDuration = aOutboundDuration + aReturnDuration;
+
+      // Compute total duration in minutes for B
+      const bOutboundDuration = parseDuration(b.outbound.duration || "PT0M");
+      const bReturnDuration = b.returnTrip
+        ? parseDuration(b.returnTrip.duration || "PT0M")
+        : 0;
+      const bTotalDuration = bOutboundDuration + bReturnDuration;
+
+      // Price Sort
       if (sortOption === "price") {
         return parseFloat(a.fare.totalFare) - parseFloat(b.fare.totalFare);
+
+        // Fastest Duration Sort
       } else if (sortOption === "fastest") {
-        return a.totalDurationMinutes - b.totalDurationMinutes;
+        return aTotalDuration - bTotalDuration;
+
+        // Earliest Departure Time Sort (based on outbound segment 0)
       } else if (sortOption === "earliest") {
         const aTime = a.outbound.segments?.[0]?.departure?.time || "00:00";
         const bTime = b.outbound.segments?.[0]?.departure?.time || "00:00";
         return aTime.localeCompare(bTime);
+
+        // Smart Sort: Mix of price + duration + departure hour (weighted)
       } else {
-        // Smart Sort: weighted sum of price, duration, and departure time
         const aTime = a.outbound.segments?.[0]?.departure?.time || "00:00";
         const bTime = b.outbound.segments?.[0]?.departure?.time || "00:00";
 
-        const aHour = parseInt(aTime.split(":")[0]);
-        const bHour = parseInt(bTime.split(":")[0]);
+        const aHour = parseInt(aTime.split(":")[0]) || 0;
+        const bHour = parseInt(bTime.split(":")[0]) || 0;
 
         const aScore =
-          parseFloat(a.fare.totalFare) +
-          a.totalDurationMinutes * 0.5 +
-          aHour * 1.5;
+          parseFloat(a.fare.totalFare) + aTotalDuration * 0.5 + aHour * 1.5;
         const bScore =
-          parseFloat(b.fare.totalFare) +
-          b.totalDurationMinutes * 0.5 +
-          bHour * 1.5;
+          parseFloat(b.fare.totalFare) + bTotalDuration * 0.5 + bHour * 1.5;
 
         return aScore - bScore;
       }
@@ -150,7 +174,7 @@ export const Flights = () => {
             setMaxPrice={setMaxPrice}
             selectedTimes={selectedTimes}
             setSelectedTimes={setSelectedTimes}
-            airlineOptions={indianAirlines} // ✅ Static Indian airlines
+            airlineOptions={indianAirlines}
             onClearFilters={handleClearFilters}
           />
           <div className="lg:w-3/4 w-full no-scrollbar pr-2">

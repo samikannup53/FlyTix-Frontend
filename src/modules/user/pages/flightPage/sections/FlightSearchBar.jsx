@@ -87,7 +87,7 @@ export const FlightSearchBar = ({ onSearch }) => {
     };
 
     onSearch?.({
-      results: mockFlightResults,
+      results: mockFlightResults.data,
       tripType,
       // params: searchParams,
     });
