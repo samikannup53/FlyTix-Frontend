@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import swapIcon from "../../../../../assets/images/swap.png";
 import { mockFlightResults } from "../../../../../data/mockFlightResults";
 import { fetchAirports } from "../../../services/airportService";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export const FlightSearchBar = ({ onSearch }) => {
   const [from, setFrom] = useState("");
@@ -10,12 +12,10 @@ export const FlightSearchBar = ({ onSearch }) => {
   const [fromCode, setFromCode] = useState("");
   const [toCode, setToCode] = useState("");
 
-  const [departureDate, setDepartureDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [departureDate, setDepartureDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
-  const [travelClass] = useState("ECONOMY");
-  const [passengersText] = useState("1 Adult, Economy");
+  const [travelClass] = useState("");
+  const [passengersText] = useState("");
 
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
@@ -44,8 +44,8 @@ export const FlightSearchBar = ({ onSearch }) => {
     const searchParams = {
       from: fromCode,
       to: toCode,
-      date: departureDate,
-      returnDate,
+      date: departureDate ? departureDate.toISOString().split("T")[0] : null,
+      returnDate: returnDate ? returnDate.toISOString().split("T")[0] : null,
       travelClass,
       adults: 1,
       children: 0,
@@ -232,22 +232,41 @@ export const FlightSearchBar = ({ onSearch }) => {
           {/* Departure */}
           <div className="flex-1 px-2 py-1.5 bg-white/20">
             <label className="block text-xs text-white mb-1">Departure</label>
-            <input
-              type="date"
-              value={departureDate}
-              onChange={(e) => setDepartureDate(e.target.value)}
+            <DatePicker
+              selected={departureDate}
+              onChange={(date) => {
+                setDepartureDate(date);
+                setReturnDate(null); // Optional: reset return when departure changes
+              }}
+              minDate={new Date()}
+              maxDate={new Date(new Date().setDate(new Date().getDate() + 60))}
+              dateFormat="yyyy-MM-dd"
               className="w-full bg-transparent text-sm text-white outline-none"
+              wrapperClassName="w-full"
+              placeholderText="Departure Date"
             />
           </div>
 
           {/* Return */}
           <div className="flex-1 px-2 py-1.5 bg-white/20">
             <label className="block text-xs text-white mb-1">Return</label>
-            <input
-              type="date"
-              value={returnDate}
-              onChange={(e) => setReturnDate(e.target.value)}
+            <DatePicker
+              selected={returnDate}
+              onChange={(date) => setReturnDate(date)}
+              minDate={departureDate}
+              maxDate={
+                departureDate
+                  ? new Date(
+                      new Date(departureDate).setDate(
+                        new Date(departureDate).getDate() + 60
+                      )
+                    )
+                  : new Date(new Date().setDate(new Date().getDate() + 60))
+              }
+              dateFormat="yyyy-MM-dd"
               className="w-full bg-transparent text-sm text-white outline-none"
+              wrapperClassName="w-full"
+              placeholderText="Return Date"
             />
           </div>
 
