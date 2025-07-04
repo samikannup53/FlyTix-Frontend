@@ -11,8 +11,60 @@ export const RoundTripFlightCard = ({
   isFastest,
   isDirect,
 }) => {
-  const outboundSeg = outbound.segments[0];
-  const returnSeg = returnTrip?.segments?.[0];
+  const renderFlightRow = (label, segmentData) => {
+    const segment = segmentData.segments[0];
+    return (
+      <div className="w-full flex flex-col gap-3">
+        <p className="text-sm font-semibold text-gray-800">
+          {label}:{" "}
+          <span className="text-gray-700 font-normal ">
+            {segment.flightNumber}
+          </span>
+        </p>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          {/* Airline Logo + Name */}
+          <div className="">
+            <img
+              src={FlightTailLogo}
+              alt={validatingAirline}
+              className="w-10 object-contain"
+            />
+          </div>
+
+          {/* Departure */}
+          <div className="text-left w-1/5">
+            <p className="text-lg font-semibold text-gray-700">
+              {segment.departure.time}
+            </p>
+            <p className="text-sm text-gray-500">
+              {segment.departure.city} ({segment.departure.cityCode})
+            </p>
+          </div>
+
+          {/* Duration + Stops */}
+          <div className="text-center w-1/5">
+            <p className="text-sm text-gray-600">{segmentData.duration}</p>
+            <div className="w-20 h-px bg-gray-400 mx-auto my-1"></div>
+            <p className="text-xs text-gray-500">
+              {segmentData.stops === 0
+                ? "Non-stop"
+                : `${segmentData.stops} stop(s)`}
+            </p>
+          </div>
+
+          {/* Arrival */}
+          <div className="text-right w-1/5">
+            <p className="text-lg font-semibold text-gray-700">
+              {segment.arrival.time}
+            </p>
+            <p className="text-sm text-gray-500">
+              {segment.arrival.city} ({segment.arrival.cityCode})
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const Badge = ({ icon, text, bgColor, textColor, borderColor }) => (
     <span
@@ -25,8 +77,8 @@ export const RoundTripFlightCard = ({
   );
 
   return (
-    <div className="relative bg-white/80 px-6 py-4 rounded-xl shadow-md flex flex-col gap-6">
-      {/* Badge Section */}
+    <div className="relative bg-white/80 px-6 py-5 rounded-xl shadow-md hover:shadow-lg border border-gray-200 transition duration-300 flex flex-col gap-6">
+      {/* Badge Row */}
       <div className="absolute -top-2 left-4 flex flex-wrap gap-2 z-10">
         {refundable && refundable !== "Not Specified" && (
           <Badge
@@ -47,7 +99,6 @@ export const RoundTripFlightCard = ({
             }
           />
         )}
-
         {isBestValue && (
           <Badge
             icon="fa-tag"
@@ -57,7 +108,6 @@ export const RoundTripFlightCard = ({
             borderColor="border-yellow-300"
           />
         )}
-
         {isFastest && (
           <Badge
             icon="fa-bolt"
@@ -67,7 +117,6 @@ export const RoundTripFlightCard = ({
             borderColor="border-blue-300"
           />
         )}
-
         {isDirect && (
           <Badge
             icon="fa-route"
@@ -77,7 +126,6 @@ export const RoundTripFlightCard = ({
             borderColor="border-indigo-300"
           />
         )}
-
         {isLimitedTime && (
           <Badge
             icon="fa-hourglass-half"
@@ -89,95 +137,35 @@ export const RoundTripFlightCard = ({
         )}
       </div>
 
-      {/* Outbound & Return Flight Sections */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Outbound */}
-        <div className="flex-1">
-          <h4 className="text-sm font-medium text-gray-600 mb-2">Outbound</h4>
-          <div className="flex items-center gap-4">
-            <img
-              src={FlightTailLogo}
-              alt={validatingAirline}
-              className="w-12 object-contain"
-            />
-            <div>
-              <h3 className="font-semibold text-gray-800">{validatingAirline}</h3>
-              <p className="text-xs text-gray-500">{outboundSeg.flightNumber}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex justify-between items-center">
-            <div className="text-left">
-              <p className="text-lg font-semibold text-gray-700">{outboundSeg.departure.time}</p>
-              <p className="text-sm text-gray-500">
-                {outboundSeg.departure.city} ({outboundSeg.departure.cityCode})
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600">{outbound.duration}</p>
-              <div className="w-24 h-px bg-gray-400 my-1 mx-auto" />
-              <p className="text-xs text-gray-500">
-                {outbound.stops === 0 ? "Non-stop" : `${outbound.stops} stop(s)`}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-semibold text-gray-700">{outboundSeg.arrival.time}</p>
-              <p className="text-sm text-gray-500">
-                {outboundSeg.arrival.city} ({outboundSeg.arrival.cityCode})
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* Onward & Return Flight Rows */}
+      <div className="flex gap-4">
+        {renderFlightRow("Onward", outbound)}
 
-        {/* Return */}
-        <div className="flex-1">
-          <h4 className="text-sm font-medium text-gray-600 mb-2">Return</h4>
-          {returnSeg ? (
-            <>
-              <div className="flex items-center gap-4">
-                <img
-                  src={FlightTailLogo}
-                  alt={validatingAirline}
-                  className="w-12 object-contain"
-                />
-                <div>
-                  <h3 className="font-semibold text-gray-800">{validatingAirline}</h3>
-                  <p className="text-xs text-gray-500">{returnSeg.flightNumber}</p>
-                </div>
-              </div>
-              <div className="mt-4 flex justify-between items-center">
-                <div className="text-left">
-                  <p className="text-lg font-semibold text-gray-700">{returnSeg.departure.time}</p>
-                  <p className="text-sm text-gray-500">
-                    {returnSeg.departure.city} ({returnSeg.departure.cityCode})
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm text-gray-600">{returnTrip.duration}</p>
-                  <div className="w-24 h-px bg-gray-400 my-1 mx-auto" />
-                  <p className="text-xs text-gray-500">
-                    {returnTrip.stops === 0 ? "Non-stop" : `${returnTrip.stops} stop(s)`}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-semibold text-gray-700">{returnSeg.arrival.time}</p>
-                  <p className="text-sm text-gray-500">
-                    {returnSeg.arrival.city} ({returnSeg.arrival.cityCode})
-                  </p>
-                </div>
-              </div>
-            </>
-          ) : (
-            <p className="text-sm text-red-500">Return trip data missing</p>
-          )}
-        </div>
+        <div className="border-l border-gray-300" />
+
+        {returnTrip && renderFlightRow("Return", returnTrip)}
       </div>
 
-      {/* Bottom Section */}
-      <div className="flex justify-between items-center pt-4">
-        <div className="text-xl font-bold text-pink-700">₹{fare.totalFare}</div>
-        <button className="px-4 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer">
-          Book Now
-        </button>
+      {/* Bottom Action Row */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-gray-200 pt-4">
+        {/* Left: Actions */}
+        <div className="flex gap-4">
+          <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer">
+            <i className="fa fa-plus-circle"></i> Add to Compare
+          </button>
+          <span className="text-pink-700">|</span>
+          <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer">
+            <i className="fa-solid fa-magnifying-glass"></i> View Details
+          </button>
+        </div>
+
+        {/* Right: Fare + Button */}
+        <div className="text-center flex items-center gap-6">
+          <p className="text-xl font-bold text-pink-700">₹{fare.totalFare}</p>
+          <button className="px-4 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer">
+            Book Now
+          </button>
+        </div>
       </div>
     </div>
   );
