@@ -1,8 +1,21 @@
+import { useState } from "react";
 import { FlightResultCard } from "./FlightResultCard";
 import { RoundTripFlightCard } from "./RoundTripFlightCard";
+import { FlightDetailsModal } from "./FlightDetailsModal";
 
 export const FlightResults = ({ flights, loading, tripType }) => {
-  // -------- Utility Functions --------
+  const [selectedFlight, setSelectedFlight] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleViewDetails = (flight) => {
+    setSelectedFlight(flight);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedFlight(null);
+    setShowModal(false);
+  };
 
   // Convert duration string like 'PT2H30M' into total minutes
   const parseDuration = (durationStr) => {
@@ -78,12 +91,25 @@ export const FlightResults = ({ flights, loading, tripType }) => {
           const key = flight.flightId || index;
 
           return tripType === "roundtrip" ? (
-            <RoundTripFlightCard key={key} {...commonProps} />
+            <RoundTripFlightCard
+              key={key}
+              {...commonProps}
+              onViewDetails={() => handleViewDetails(flight)}
+            />
           ) : (
-            <FlightResultCard key={key} {...commonProps} />
+            <FlightResultCard
+              key={key}
+              {...commonProps}
+              onViewDetails={() => handleViewDetails(flight)}
+            />
           );
         })
       )}
+      <FlightDetailsModal
+        isOpen={showModal}
+        flight={selectedFlight}
+        onClose={handleCloseModal}
+      />
     </>
   );
 };

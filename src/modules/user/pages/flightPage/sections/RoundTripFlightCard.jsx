@@ -10,6 +10,7 @@ export const RoundTripFlightCard = ({
   isLimitedTime,
   isFastest,
   isDirect,
+  onViewDetails,
 }) => {
   const renderFlightRow = (label, segmentData) => {
     const segment = segmentData.segments[0];
@@ -154,7 +155,10 @@ export const RoundTripFlightCard = ({
             <i className="fa fa-plus-circle"></i> Add to Compare
           </button>
           <span className="text-pink-700">|</span>
-          <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer">
+          <button
+            onClick={onViewDetails}
+            className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer"
+          >
             <i className="fa-solid fa-magnifying-glass"></i> View Details
           </button>
         </div>
