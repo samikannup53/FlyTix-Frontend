@@ -1,6 +1,7 @@
 import { FlightResultCard } from "./FlightResultCard";
+import { RoundTripFlightCard } from "./RoundTripFlightCard";
 
-export const FlightResults = ({ flights, loading }) => {
+export const FlightResults = ({ flights, loading, tripType }) => {
   // -------- Utility Functions --------
 
   // Convert duration string like 'PT2H30M' into total minutes
@@ -54,12 +55,10 @@ export const FlightResults = ({ flights, loading }) => {
         <p className="text-center text-red-500">No flights found</p>
       ) : (
         flights.map((flight, index) => {
-          // -------- Flight-specific calculations --------
           const flightFare = parseFloat(flight.fare.totalFare);
           const flightDuration = parseDuration(flight.outbound.duration);
           const stops = flight.outbound.stops;
 
-          // -------- Badge Logic --------
           const isCheapest = flightFare === lowestFare;
           const isFastest = flightDuration === shortestDuration;
           const isNonStop = stops === 0;
@@ -67,16 +66,21 @@ export const FlightResults = ({ flights, loading }) => {
           const isRefundable =
             flight.refundable && flight.refundable !== "Not Specified";
 
-          return (
-            <FlightResultCard
-              key={flight.flightId || index}
-              {...flight}
-              refundable={isRefundable ? flight.refundable : null}
-              isCheapest={isCheapest}
-              isFastest={isFastest}
-              isNonStop={isNonStop}
-              isLimitedTime={isLimitedTime}
-            />
+          const commonProps = {
+            ...flight,
+            refundable: isRefundable ? flight.refundable : null,
+            isCheapest,
+            isFastest,
+            isNonStop,
+            isLimitedTime,
+          };
+
+          const key = flight.flightId || index;
+
+          return tripType === "roundtrip" ? (
+            <RoundTripFlightCard key={key} {...commonProps} />
+          ) : (
+            <FlightResultCard key={key} {...commonProps} />
           );
         })
       )}

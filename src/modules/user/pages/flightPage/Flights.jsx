@@ -10,6 +10,8 @@ export const Flights = () => {
   const [originalFlights, setOriginalFlights] = useState([]); // Raw API response
   const [loading, setLoading] = useState(false); // Loading state
 
+  const [tripType, setTripType] = useState("oneway");
+
   // Filters State
   const [selectedStops, setSelectedStops] = useState([]);
   const [selectedAirlines, setSelectedAirlines] = useState([]);
@@ -26,8 +28,9 @@ export const Flights = () => {
   const handleSearch = async (searchInput) => {
     // If using mock data
     if (searchInput?.results) {
-      setFlights(searchInput.results.data);
-      setOriginalFlights(searchInput.results.data); // Store raw data for filtering
+      setFlights(searchInput.results);
+      setOriginalFlights(searchInput.results); // Store raw data for filtering
+      setTripType(searchInput.tripType); // ✅ capture tripType
       return;
     }
 
@@ -52,6 +55,7 @@ export const Flights = () => {
 
       setFlights(data.data);
       setOriginalFlights(data.data);
+      setTripType(searchInput.tripType);
     } catch (err) {
       console.error("Flight fetch error:", err.message);
     } finally {
@@ -183,7 +187,11 @@ export const Flights = () => {
                 selectedSortOption={sortOption}
                 onSortChange={setSortOption}
               />
-              <FlightResults flights={filteredFlights} loading={loading} />
+              <FlightResults
+                flights={filteredFlights}
+                loading={loading}
+                tripType={tripType}
+              />
             </div>
           </div>
         </div>
