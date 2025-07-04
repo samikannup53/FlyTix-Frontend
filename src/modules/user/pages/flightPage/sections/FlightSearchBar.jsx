@@ -15,7 +15,13 @@ export const FlightSearchBar = ({ onSearch }) => {
   const [departureDate, setDepartureDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [travelClass] = useState("");
-  const [passengersText] = useState("");
+
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [infants, setInfants] = useState(0);
+  const [selectedClass, setSelectedClass] = useState("Economy");
+  const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
+  const [passengersText, setPassengersText] = useState("");
 
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
@@ -46,10 +52,10 @@ export const FlightSearchBar = ({ onSearch }) => {
       to: toCode,
       date: departureDate ? departureDate.toISOString().split("T")[0] : null,
       returnDate: returnDate ? returnDate.toISOString().split("T")[0] : null,
-      travelClass,
-      adults: 1,
-      children: 0,
-      infants: 0,
+      adults,
+      children,
+      infants,
+      travelClass: selectedClass,
     };
 
     onSearch?.({
@@ -271,16 +277,151 @@ export const FlightSearchBar = ({ onSearch }) => {
           </div>
 
           {/* Passengers & Class */}
-          <div className="flex-1 px-2 py-1.5 bg-white/20">
+          <div className="relative flex-1 px-2 py-1.5 bg-white/20 border-b-4 border-transparent transition-all focus-within:border-yellow-300">
             <label className="block text-xs text-white mb-1">
               Passengers & Class
             </label>
             <input
               type="text"
               value={passengersText}
+              placeholder="1 Traveller / Economy"
               readOnly
-              className="w-full bg-transparent text-sm text-white outline-none"
+              onClick={() => setShowPassengerDropdown(!showPassengerDropdown)}
+              className="w-full bg-transparent text-sm text-white outline-none cursor-pointer"
             />
+
+            {showPassengerDropdown && (
+              <div className="absolute z-50 mt-2 right-0 bg-white text-gray-800 rounded-lg shadow-lg w-120 p-4 space-y-4">
+                {/* Close Button */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setShowPassengerDropdown(false)}
+                    className="text-gray-500 hover:text-red-500 text-lg"
+                    title="Close"
+                  >
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+
+                {/* Passenger counts */}
+                {["Adults", "Children", "Infants"].map((label, idx) => {
+                  const count = [adults, children, infants][idx];
+                  const setCount = [setAdults, setChildren, setInfants][idx];
+                  const limits = {
+                    Adults: [1, 10],
+                    Children: [0, 9],
+                    Infants: [0, 5],
+                  };
+                  const ageGroup = {
+                    Adults: "Age 12+",
+                    Children: "Age 2–11",
+                    Infants: "Below 2 yrs",
+                  };
+
+                  const [min, max] = limits[label];
+                  const totalPassengers = adults + children + infants;
+
+                  return (
+                    <div key={label} className="mb-8 w-full flex items-center">
+                      <div className="w-24 flex items-center justify-between">
+                        <div>
+                          <div className="text-sm font-semibold text-gray-700">
+                            {label}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {ageGroup[label]}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap border rounded-md border-gray-300 divide-x divide-gray-300">
+                        {Array.from(
+                          { length: max - min + 1 },
+                          (_, i) => i + min
+                        ).map((num) => {
+                          const newTotal =
+                            label === "Adults"
+                              ? num + children + infants
+                              : label === "Children"
+                              ? adults + num + infants
+                              : adults + children + num;
+
+                          const isDisabled = newTotal > 10;
+
+                          return (
+                            <button
+                              key={num}
+                              className={`w-8 h-8 text-sm font-medium transition-all 
+                              ${
+                                count === num
+                                  ? "bg-pink-600 text-white border-pink-600 shadow"
+                                  : "bg-white text-gray-800 hover:bg-pink-100 border-gray-300"
+                              }
+                              ${
+                                isDisabled
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                              }
+                              first:rounded-l-md last:rounded-r-md`}
+                              onClick={() => {
+                                if (!isDisabled) setCount(num);
+                              }}
+                              disabled={isDisabled}
+                              title={
+                                isDisabled
+                                  ? "Max 10 passengers allowed per booking"
+                                  : ""
+                              }
+                            >
+                              {num}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Travel class */}
+                <div>
+                  <div className="text-sm font-semibold mb-1">Travel Class</div>
+                  <div className="flex flex-wrap gap-2">
+                    {["Economy", "Premium Economy", "Business", "First"].map(
+                      (cls) => (
+                        <button
+                          key={cls}
+                          className={`px-3 py-1 text-sm rounded border border-gray-300 ${
+                            selectedClass === cls
+                              ? "bg-pink-700 text-white"
+                              : "bg-white hover:bg-pink-200"
+                          }`}
+                          onClick={() => setSelectedClass(cls)}
+                        >
+                          {cls}
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Done Button */}
+                <div className="text-right">
+                  <button
+                    className="bg-gradient-to-br from-pink-700 to-pink-800 text-white px-4 py-1.5 rounded-full shadow hover:bg-pink-900 cursor-pointer text-sm"
+                    onClick={() => {
+                      const totalTravellers = adults + children + infants;
+                      const summary = `${totalTravellers} Traveller${
+                        totalTravellers > 1 ? "s" : ""
+                      } / ${selectedClass}`;
+                      setPassengersText(summary);
+                      setShowPassengerDropdown(false);
+                    }}
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Search */}
