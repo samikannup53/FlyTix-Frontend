@@ -3,6 +3,7 @@ import FlightTailLogo from "../../../../../assets/images/flight_tail.png";
 export const RoundTripFlightCard = ({
   validatingAirline,
   outbound,
+  flightId,
   returnTrip,
   fare,
   refundable,
@@ -12,6 +13,7 @@ export const RoundTripFlightCard = ({
   isDirect,
   onViewDetails,
   onAddToCompare,
+  compareFlights,
 }) => {
   const renderFlightRow = (label, segmentData) => {
     const segment = segmentData.segments[0];
@@ -77,6 +79,8 @@ export const RoundTripFlightCard = ({
       {text}
     </span>
   );
+
+  const isAlreadyAdded = compareFlights?.some((f) => f.flightId === flightId);
 
   return (
     <div className="relative bg-white/80 px-6 py-5 rounded-xl shadow-md hover:shadow-lg border border-gray-200 transition duration-300 flex flex-col gap-6">
@@ -154,9 +158,19 @@ export const RoundTripFlightCard = ({
         <div className="flex gap-4">
           <button
             onClick={onAddToCompare}
-            className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer"
+            disabled={isAlreadyAdded}
+            className={`flex items-center gap-2 text-sm font-medium transition  ${
+              isAlreadyAdded
+                ? "text-pink-700 cursor-not-allowed"
+                : "text-pink-700 hover:text-pink-800 cursor-pointer"
+            }`}
           >
-            <i className="fa fa-plus-circle"></i> Add to Compare
+            <i
+              className={`fa ${
+                isAlreadyAdded ? "fa-check-circle" : "fa-plus-circle"
+              }`}
+            ></i>
+            {isAlreadyAdded ? "Added" : "Add to Compare"}
           </button>
           <span className="text-pink-700">|</span>
           <button

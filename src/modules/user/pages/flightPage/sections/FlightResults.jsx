@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FlightResultCard } from "./FlightResultCard";
 import { RoundTripFlightCard } from "./RoundTripFlightCard";
 import { FlightDetailsModal } from "./FlightDetailsModal";
 import { CompareFlightsModal } from "./CompareFlightsModal";
 import { CompareBox } from "./CompareBox";
-import FlightTailLogo from "../../../../../assets/images/flight_tail.png";
 
 export const FlightResults = ({ flights, loading, tripType }) => {
   const [selectedFlight, setSelectedFlight] = useState(null);
@@ -12,6 +11,7 @@ export const FlightResults = ({ flights, loading, tripType }) => {
 
   const [compareFlights, setCompareFlights] = useState([]);
   const [showCompareModal, setShowCompareModal] = useState(false);
+  const [compareError, setCompareError] = useState("");
 
   const handleViewDetails = (flight) => {
     setSelectedFlight(flight);
@@ -24,12 +24,24 @@ export const FlightResults = ({ flights, loading, tripType }) => {
   };
 
   const handleAddToCompare = (flight) => {
+    setCompareError(""); // Clear previous error
+
     setCompareFlights((prev) => {
       if (prev.find((f) => f.flightId === flight.flightId)) return prev; // Already added
-      if (prev.length >= 3) return prev; // Limit to 3
+      if (prev.length >= 3) {
+        setCompareError("You can only compare up to 3 flights at a time.");
+        return prev;
+      }
       return [...prev, flight];
     });
   };
+
+  useEffect(() => {
+    if (compareError) {
+      const timer = setTimeout(() => setCompareError(""), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [compareError]);
 
   const handleRemoveFromCompare = (flightId) => {
     setCompareFlights((prev) => prev.filter((f) => f.flightId !== flightId));
@@ -109,6 +121,7 @@ export const FlightResults = ({ flights, loading, tripType }) => {
 
           const commonProps = {
             ...flight,
+            flightId: flight.flightId,
             refundable: isRefundable ? flight.refundable : null,
             isCheapest,
             isFastest,
@@ -124,6 +137,7 @@ export const FlightResults = ({ flights, loading, tripType }) => {
               {...commonProps}
               onViewDetails={() => handleViewDetails(flight)}
               onAddToCompare={() => handleAddToCompare(flight)}
+              compareFlights={compareFlights}
             />
           ) : (
             <FlightResultCard
@@ -131,6 +145,7 @@ export const FlightResults = ({ flights, loading, tripType }) => {
               {...commonProps}
               onViewDetails={() => handleViewDetails(flight)}
               onAddToCompare={() => handleAddToCompare(flight)}
+              compareFlights={compareFlights}
             />
           );
         })
@@ -150,6 +165,8 @@ export const FlightResults = ({ flights, loading, tripType }) => {
         compareFlights={compareFlights}
         setShowCompareModal={setShowCompareModal}
         handleRemoveFromCompare={handleRemoveFromCompare}
+        compareError={compareError}
+        setCompareError={setCompareError}
       />
     </>
   );
