@@ -47,7 +47,8 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
                 className="w-6 h-6 object-contain"
               />
               <p className="text-sm text-gray-700 font-medium">
-                IndiGo <span className="text-gray-400 font-normal">|</span>{" "}
+                <span>{segment.airlineName}</span>{" "}
+                <span className="text-gray-400 font-normal">|</span>{" "}
                 <span className="text-gray-500 font-normal">
                   Flight {segment.flightNumber}
                 </span>

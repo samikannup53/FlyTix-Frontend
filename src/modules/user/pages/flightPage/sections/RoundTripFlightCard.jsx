@@ -19,12 +19,16 @@ export const RoundTripFlightCard = ({
     const segment = segmentData.segments[0];
     return (
       <div className="w-full flex flex-col gap-3">
-        <p className="text-sm font-semibold text-gray-800">
+        <p className="text-base font-semibold text-gray-800">
           {label}:{" "}
-          <span className="text-gray-700 font-normal ">
-            {segment.flightNumber}
+          <span className="text-gray-800 font-medium">
+            {segment.airlineName || segment.airlineCode}
+          </span>{" "}
+          <span className="text-gray-500 font-normal">
+            | Flight {segment.flightNumber}
           </span>
         </p>
+
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* Airline Logo + Name */}
           <div className="">

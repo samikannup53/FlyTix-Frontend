@@ -74,22 +74,29 @@ export const FlightSearchBar = ({ onSearch }) => {
 
     if (Object.keys(validationErrors).length > 0) return;
 
+    const classMap = {
+      Economy: "ECONOMY",
+      "Premium Economy": "PREMIUM_ECONOMY",
+      Business: "BUSINESS",
+      First: "FIRST",
+    };
+
     const searchParams = {
       from: fromCode,
       to: toCode,
-      date: departureDate ? departureDate.toISOString().split("T")[0] : null,
-      returnDate: returnDate ? returnDate.toISOString().split("T")[0] : null,
+      date: departureDate ? departureDate.toLocaleDateString("en-CA") : null,
+      returnDate: returnDate ? returnDate.toLocaleDateString("en-CA") : null,
       adults,
       children,
       infants,
-      travelClass: selectedClass,
+      travelClass: classMap[selectedClass],
       tripType,
     };
 
     onSearch?.({
-      results: mockFlightResults.data,
+      // results: mockFlightResults.data,
+      ...searchParams,
       tripType,
-      // params: searchParams,
     });
     console.log(searchParams);
   };

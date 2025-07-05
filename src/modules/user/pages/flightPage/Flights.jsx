@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LandingFooter, UserHeader } from "../../components";
 import { FiltersSideBar } from "./sections/FilterSideBar";
 import { FlightResults } from "./sections/FlightResults";
@@ -24,15 +24,29 @@ export const Flights = () => {
   // Static list of Indian domestic airline codes
   const indianAirlines = ["AI", "IX", "6E", "QP", "SG", "9I", "UK", "EK"];
 
+  useEffect(() => {
+    const cachedData = localStorage.getItem("cachedFlightResults");
+    const cachedTripType = localStorage.getItem("cachedTripType");
+
+    if (cachedData) {
+      const parsed = JSON.parse(cachedData);
+      setFlights(parsed);
+      setOriginalFlights(parsed);
+      if (cachedTripType) {
+        setTripType(cachedTripType);
+      }
+    }
+  }, []);
+
   // Called when user clicks the search button in FlightSearchBar
   const handleSearch = async (searchInput) => {
     // If using mock data
-    if (searchInput?.results) {
-      setFlights(searchInput.results);
-      setOriginalFlights(searchInput.results); // Store raw data for filtering
-      setTripType(searchInput.tripType); // ✅ capture tripType
-      return;
-    }
+    // if (searchInput?.results) {
+    //   setFlights(searchInput.results);
+    //   setOriginalFlights(searchInput.results); // Store raw data for filtering
+    //   setTripType(searchInput.tripType); // Capture Trip Type
+    //   return;
+    // }
 
     try {
       setLoading(true);
@@ -44,18 +58,24 @@ export const Flights = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(searchInput),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
+        console.error("API failed:", data.details || data.msg);
         throw new Error(data.msg || "Failed to fetch flights");
       }
 
       setFlights(data.data);
       setOriginalFlights(data.data);
       setTripType(searchInput.tripType);
+
+      // ✅ Save to localStorage for persistence
+      localStorage.setItem("cachedFlightResults", JSON.stringify(data.data));
+      localStorage.setItem("cachedTripType", searchInput.tripType);
     } catch (err) {
       console.error("Flight fetch error:", err.message);
     } finally {
@@ -109,11 +129,16 @@ export const Flights = () => {
       return stopsMatch && airlineMatch && priceMatch && timeMatch;
     })
     .sort((a, b) => {
-      // Utility: Convert ISO duration like "PT2H30M" to total minutes
-      const parseDuration = (isoDuration) => {
-        const match = isoDuration.match(/PT(\d+H)?(\d+M)?/);
-        const hours = match[1] ? parseInt(match[1]) : 0;
-        const minutes = match[2] ? parseInt(match[2]) : 0;
+      // Utility: Convert Duration to Total Minutes
+      const parseDuration = (durationStr) => {
+        if (!durationStr) return 0;
+
+        const hourMatch = durationStr.match(/(\d+)\s*H/i);
+        const minuteMatch = durationStr.match(/(\d+)\s*M/i);
+
+        const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+        const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
+
         return hours * 60 + minutes;
       };
 

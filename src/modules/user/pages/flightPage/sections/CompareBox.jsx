@@ -14,7 +14,7 @@ export const CompareBox = ({
   return (
     <>
       {compareFlights.length > 0 && (
-        <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2">
+        <div className="fixed bottom-10 2xl:bottom-24 right-10 2xl:right-24 z-40 flex flex-col items-end gap-2">
           {/* Error message shown above the compare container */}
           {compareError && (
             <div className="mb-[1rem] animate-fade-in bg-yellow-100 border border-orange-300 text-orange-800 text-sm px-4 py-2 rounded-xl shadow-md max-w-xs">
@@ -27,7 +27,7 @@ export const CompareBox = ({
           {minimized ? (
             <div
               onClick={toggleMinimize}
-              className="relative z-10 w-14 h-14 bg-gradient-to-br from-pink-700 to-pink-800 text-white rounded-full shadow-lg flex flex-col items-center justify-center cursor-pointer"
+              className="relative z-10 w-14 h-14 bg-gradient-to-br from-pink-700 to-orange-700 text-white rounded-full shadow-lg flex flex-col items-center justify-center cursor-pointer"
               title="Open Compare Box"
             >
               <i className="fa fa-sliders-h text-xl mb-1" />
@@ -38,7 +38,7 @@ export const CompareBox = ({
           ) : (
             <div className="w-80 rounded-xl shadow-2xl border border-gray-200 overflow-hidden bg-white z-40">
               {/* Header */}
-              <div className="flex justify-between items-center bg-gradient-to-r from-pink-700 to-pink-800 text-white px-4 py-3">
+              <div className="flex justify-between items-center bg-gradient-to-br from-pink-700 to-pink-800 text-white px-4 py-3">
                 <h4 className="font-semibold text-sm">Selected Flights</h4>
                 <button
                   onClick={toggleMinimize}
@@ -53,8 +53,7 @@ export const CompareBox = ({
               <div className="bg-white max-h-64 overflow-y-auto px-4 py-3 space-y-3">
                 {compareFlights.map((flight) => {
                   const segment = flight.outbound.segments[0];
-                  const airlineName =
-                    segment?.marketingCarrier?.name || flight.validatingAirline;
+                  const airlineName = flight.validatingAirline;
                   const flightNumber = segment?.flightNumber || "NA";
                   const fromTime = segment?.departure?.time?.slice(0, 5);
                   const toTime = segment?.arrival?.time?.slice(0, 5);
@@ -73,7 +72,7 @@ export const CompareBox = ({
                         />
                         <div className="flex gap-4 text-[14px]">
                           <span className="font-medium">
-                            {airlineName} {flightNumber}
+                            {airlineName} | {flightNumber}
                           </span>
                           <span className="text-gray-500">
                             {fromTime} → {toTime}

@@ -109,8 +109,13 @@ export const FlightResultCard = ({
             className="w-12 object-contain"
           />
           <div>
-            <h3 className="font-semibold text-gray-800">{validatingAirline}</h3>
-            <p className="text-xs text-gray-500">{segment.flightNumber}</p>
+            <p className="text-sm font-medium text-gray-800">
+              {segment.airlineName || validatingAirline}{" "}
+              <span className="text-gray-500 font-normal">|</span>{" "}
+              <span className="text-xs text-gray-500">
+                Flight {segment.flightNumber}
+              </span>
+            </p>
           </div>
         </div>
 

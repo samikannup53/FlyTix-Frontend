@@ -1,3 +1,5 @@
+import FlightTailLogo from "../../../../../assets/images/flight_tail.png";
+
 export const CompareFlightsModal = ({ flights, onClose }) => {
   if (!flights || flights.length === 0) return null;
 
@@ -28,13 +30,60 @@ export const CompareFlightsModal = ({ flights, onClose }) => {
             {flights.map((flight) => (
               <div
                 key={flight.flightId}
-                className="min-w-[220px] md:min-w-[240px] lg:min-w-[250px] border rounded-t-lg text-sm font-medium text-gray-800 p-4 bg-white"
+                className="flex items-center gap-2 min-w-[220px] md:min-w-[240px] lg:min-w-[250px] border border-gray-300 rounded-t-lg text-sm font-medium text-gray-800 p-4 bg-white"
               >
-                <p>{flight.validatingAirline}</p>
-                <p>
-                  {flight.outbound.segments[0]?.departure.city} →{" "}
-                  {flight.outbound.segments[0]?.arrival.city}
-                </p>
+                {/* Flight Info */}
+                <div className="flex flex-col w-full">
+                  {/* Airline and Flight Number */}
+                  <p className="flex gap-2  items-center">
+                    <img
+                      src={FlightTailLogo}
+                      className="w-6"
+                      alt="flight-logo"
+                    />
+                    {flight.outbound.segments[0]?.airlineName || flight.validatingAirline} | Flight:{" "}
+                    {flight.outbound.segments[0]?.flightNumber}
+                  </p>
+
+                  {/* Route Row: 3 columns in one line */}
+                  <div className="flex justify-between items-center text-xs text-gray-600 font-normal mt-1">
+                    {/* From City & Time */}
+                    <div className="flex-1 flex flex-col items-start">
+                      <span>
+                        {flight.outbound.segments[0]?.departure.cityCode}
+                      </span>
+                      <span>
+                        {flight.outbound.segments[0]?.departure.time?.slice(
+                          0,
+                          5
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Duration and Stops */}
+                    <div className="flex-1 flex flex-col items-center text-center">
+                      <span>{flight.outbound.duration}</span>
+                      <div className=" w-full border-b border-b-gray-300"></div>
+                      <span>
+                        {flight.outbound.stops === 0
+                          ? "Non-stop"
+                          : `${flight.outbound.stops} stop${
+                              flight.outbound.stops > 1 ? "s" : ""
+                            }`}
+                      </span>
+                    </div>
+
+                    {/* To City & Time */}
+                    <div className="flex-1 flex flex-col items-end">
+                      <span>
+                        {flight.outbound.segments[0]?.arrival.cityCode}
+                      </span>
+                      <span>
+                        {flight.outbound.segments[0]?.arrival.time?.slice(0, 5)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -44,7 +93,7 @@ export const CompareFlightsModal = ({ flights, onClose }) => {
         <div className="flex-1 overflow-y-auto pb-8">
           <div className="flex">
             {/* Sidebar Labels */}
-            <div className="min-w-[180px] md:min-w-[200px] 2xl:min-w-[224px] flex flex-col gap-8 py-4 px-8 text-sm text-gray-700 flex-shrink-0">
+            <div className="min-w-[180px] md:min-w-[200px] 2xl:min-w-[224px] flex flex-col gap-8 mt-1 py-4 px-8 text-sm text-gray-700 flex-shrink-0">
               <div>
                 <i className="fa fa-plane mr-2 text-pink-700" />
                 Fleet
@@ -88,21 +137,114 @@ export const CompareFlightsModal = ({ flights, onClose }) => {
               {flights.map((flight) => (
                 <div
                   key={flight.flightId}
-                  className="min-w-[220px] md:min-w-[240px] lg:min-w-[250px] flex flex-col gap-8 p-4 text-sm text-gray-700 border-x border-b rounded-b-lg bg-white"
+                  className="min-w-[220px] md:min-w-[240px] lg:min-w-[250px] flex flex-col gap-7 p-4 text-sm text-gray-700 border-x border-x-gray-300 border-b border-b-gray-300 rounded-b-lg bg-white"
                 >
-                  <div>{flight.outbound.segments[0]?.aircraft || "N/A"}</div>
-                  <div>{flight.class || "N/A"}</div>
-                  <div>Not Available</div>
-                  <div>Not Available</div>
-                  <div>Included</div>
-                  <div>{flight.baggage?.cabin || "7kg"}</div>
-                  <div>{flight.baggage?.checkin || "15kg"}</div>
-                  <div>
-                    {flight.refundable === "Refundable"
-                      ? "Free before 24 hrs"
-                      : "Non-refundable"}
+                  <div className="flex items-center justify-center   gap-2 text-sm text-gray-700">
+                    {flight.outbound.segments[0]?.aircraft ? (
+                      <span>{flight.outbound.segments[0].aircraft}</span>
+                    ) : (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-100 text-yellow-600 rounded-full text-xs">
+                          <i className="fa fa-circle-info" />
+                        </span>
+                        <span>Not Available</span>
+                      </>
+                    )}
                   </div>
-                  <div className="font-semibold text-gray-800">
+                  <div className="flex items-center justify-center  gap-2 text-sm text-gray-700">
+                    {flight.outbound.segments[0]?.aircraft ? (
+                      <span>{flight.seating}</span>
+                    ) : (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-100 text-yellow-600 rounded-full text-xs">
+                          <i className="fa fa-circle-info" />
+                        </span>
+                        <span>Not Available</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center  gap-2 text-sm text-gray-700">
+                    {flight.outbound.segments[0]?.aircraft ? (
+                      <span>{flight.power}</span>
+                    ) : (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-100 text-yellow-600 rounded-full text-xs">
+                          <i className="fa fa-circle-info" />
+                        </span>
+                        <span>Not Available</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center  gap-2 text-sm text-gray-700">
+                    {flight.outbound.segments[0]?.aircraft ? (
+                      <span>{flight.infotainment}</span>
+                    ) : (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-100 text-yellow-600 rounded-full text-xs">
+                          <i className="fa fa-circle-info" />
+                        </span>
+                        <span>Not Available</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center  gap-2 text-sm text-gray-700">
+                    {flight.outbound.segments[0]?.aircraft ? (
+                      <span>{flight.meals}</span>
+                    ) : (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-100 text-yellow-600 rounded-full text-xs">
+                          <i className="fa fa-circle-info" />
+                        </span>
+                        <span>Not Available</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-700">
+                    {flight.baggage?.cabin ? (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-pink-100 text-pink-700 rounded-full text-xs">
+                          <i className="fa fa-suitcase-rolling" />
+                        </span>
+                        <span>{flight.baggage.cabin}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-xs">
+                          <i className="fa fa-circle-info" />
+                        </span>
+                        <span className="text-gray-500">7 Kg</span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-700">
+                    {flight.baggage?.checkIn ? (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-pink-100 text-pink-700 rounded-full text-xs">
+                          <i className="fa fa-suitcase-rolling" />
+                        </span>
+                        <span>{flight.baggage.checkIn}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-xs">
+                          <i className="fa fa-circle-info" />
+                        </span>
+                        <span className="text-gray-500">15 Kg</span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-700">
+                    <span className="inline-flex items-center justify-center w-6 h-6 bg-orange-100 text-orange-600 rounded-full text-xs">
+                      <i className="fa fa-circle-info" />
+                    </span>
+                    <span>Charges applicable</span>
+                  </div>
+                  <div className="flex items-center  justify-center gap-2 text-sm font-semibold text-gray-800">
+                    <span className="inline-flex items-center justify-center w-6 h-6 bg-green-100 text-green-600 rounded-full text-xs">
+                      <i className="fa fa-indian-rupee-sign" />
+                    </span>
                     ₹{flight.fare.totalFare}
                   </div>
                 </div>
@@ -118,9 +260,16 @@ export const CompareFlightsModal = ({ flights, onClose }) => {
             {flights.map((flight) => (
               <button
                 key={flight.flightId}
-                className="min-w-[220px] md:min-w-[240px] bg-pink-700 hover:bg-pink-800 text-white py-2 px-4 rounded-full text-sm font-medium transition"
+                className="min-w-[220px] md:min-w-[240px] py-2 px-4 rounded-full font-medium text-white transition relative overflow-hidden group bg-gradient-to-br from-pink-700 to-orange-700 shadow-md hover:from-pink-800 hover:to-orange-700"
               >
-                Book Now – ₹{flight.fare.totalFare}
+                <div className="flex items-center justify-center gap-2">
+                  <i className="fa fa-plane-departure text-sm text-white drop-shadow-sm" />
+                  <span>Book Now</span>
+                  <span className="flex items-center gap-1 font-semibold text-base">
+                    <i className="fa fa-indian-rupee-sign text-xs" />
+                    {flight.fare.totalFare}
+                  </span>
+                </div>
               </button>
             ))}
           </div>
