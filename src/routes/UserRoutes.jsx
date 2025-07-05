@@ -11,7 +11,7 @@ const UserRoutes = () => {
         <Route path="/register" element={<Register/>}> </Route>
         <Route path="/forgot-password" element={<ForgotPassword/>}> </Route>
         <Route path='/flights' element={<Flights/>}></Route>
-        <Route path="/booking/details" element={<Booking/>}></Route>
+        <Route path="/booking/initiate" element={<Booking/>}></Route>
         <Route path="/booking/payment" element={<Payment/>}></Route>
         <Route path="/booking/confirm" element={<BookingConfirm/>}></Route>
         <Route path="/dashboard" element={<Dashboard/>}></Route>
