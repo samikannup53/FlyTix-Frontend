@@ -348,7 +348,7 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex justify-center items-center z-50 px-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex justify-center items-center z-50 px-4 h-screen">
       <div className="bg-white rounded-xl shadow-2xl max-w-5xl 2xl:max-w-7xl w-full max-h-[85vh] flex flex-col relative">
         {/* Close Button */}
         <button

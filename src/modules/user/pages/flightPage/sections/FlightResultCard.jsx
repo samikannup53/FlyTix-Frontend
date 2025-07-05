@@ -10,6 +10,7 @@ export const FlightResultCard = ({
   isFastest,
   isDirect,
   onViewDetails,
+  onAddToCompare,
 }) => {
   const segment = outbound.segments[0]; // First leg of the flight
 
@@ -149,7 +150,10 @@ export const FlightResultCard = ({
 
       {/* Bottom Actions */}
       <div className="flex justify-end items-center gap-2">
-        <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer">
+        <button
+          onClick={onAddToCompare}
+          className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer"
+        >
           <i className="fa fa-plus-circle"></i> Add to Compare
         </button>
         <span className="text-pink-700">|</span>

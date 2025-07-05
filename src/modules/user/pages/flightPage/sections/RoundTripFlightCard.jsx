@@ -11,6 +11,7 @@ export const RoundTripFlightCard = ({
   isFastest,
   isDirect,
   onViewDetails,
+  onAddToCompare,
 }) => {
   const renderFlightRow = (label, segmentData) => {
     const segment = segmentData.segments[0];
@@ -151,7 +152,10 @@ export const RoundTripFlightCard = ({
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-gray-200 pt-4">
         {/* Left: Actions */}
         <div className="flex gap-4">
-          <button className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer">
+          <button
+            onClick={onAddToCompare}
+            className="flex items-center gap-2 text-pink-700 text-sm font-medium hover:text-pink-800 transition cursor-pointer"
+          >
             <i className="fa fa-plus-circle"></i> Add to Compare
           </button>
           <span className="text-pink-700">|</span>
