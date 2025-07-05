@@ -3,6 +3,7 @@ import { FlightResultCard } from "./FlightResultCard";
 import { RoundTripFlightCard } from "./RoundTripFlightCard";
 import { FlightDetailsModal } from "./FlightDetailsModal";
 import { CompareFlightsModal } from "./CompareFlightsModal";
+import { CompareBox } from "./CompareBox";
 import FlightTailLogo from "../../../../../assets/images/flight_tail.png";
 
 export const FlightResults = ({ flights, loading, tripType }) => {
@@ -145,69 +146,11 @@ export const FlightResults = ({ flights, loading, tripType }) => {
           onClose={() => setShowCompareModal(false)}
         />
       )}
-      {compareFlights.length > 0 && (
-        <div className="fixed bottom-4 right-4 w-80 rounded-xl shadow-2xl border border-gray-200 z-40 overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-pink-700 to-pink-800 text-white px-4 py-3">
-            <h4 className="font-semibold">Selected Flights</h4>
-          </div>
-
-          {/* Body */}
-          <div className="bg-white max-h-64 overflow-y-auto px-4 py-3 space-y-3">
-            {compareFlights.map((flight) => {
-              const segment = flight.outbound.segments[0];
-              const airlineName =
-                segment?.marketingCarrier?.name || flight.validatingAirline;
-              const flightNumber = segment?.flightNumber || "NA";
-              const fromTime = segment?.departure?.time?.slice(0, 5);
-              const toTime = segment?.arrival?.time?.slice(0, 5);
-
-              return (
-                <div
-                  key={flight.flightId}
-                  className="flex items-center justify-between text-xs text-gray-700"
-                >
-                  {/* Left: Logo + Airline */}
-                  <div className="flex items-center gap-2 w-4/5">
-                    <img
-                      src={FlightTailLogo}
-                      alt="logo"
-                      className="w-6 h-6 object-contain"
-                    />
-                    <div className="flex gap-4 text-[14px]">
-                      <span className="font-medium">
-                        {airlineName} {flightNumber}
-                      </span>
-                      <span className="text-gray-500 ">
-                        {fromTime} → {toTime}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Right: Remove Button */}
-                  <button
-                    onClick={() => handleRemoveFromCompare(flight.flightId)}
-                    className="text-pink-700 hover:text-pink-800 cursor-pointer font-bold text-sm"
-                    title="Remove flight"
-                  >
-                    ✕
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Footer */}
-          <div className="bg-gradient-to-r from-pink-700 to-pink-800 px-4 py-2.5 flex justify-center">
-            <button
-              onClick={() => setShowCompareModal(true)}
-              className=" cursor-pointer text-white hover:bg-pink-800 transition-all duration-200 font-semibold text-sm px-3 py-1 rounded-full shadow-sm border border-pink-200"
-            >
-              Compare Flights
-            </button>
-          </div>
-        </div>
-      )}
+      <CompareBox
+        compareFlights={compareFlights}
+        setShowCompareModal={setShowCompareModal}
+        handleRemoveFromCompare={handleRemoveFromCompare}
+      />
     </>
   );
 };
