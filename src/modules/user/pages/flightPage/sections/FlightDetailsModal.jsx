@@ -263,13 +263,89 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
     </div>
   );
 
-  const renderCancellationPolicy = () => (
-    <div className="text-sm text-gray-600 italic">
-      <i className="fa-solid fa-circle-info mr-1 text-orange-600"></i>
-      Cancellation policy information will be available soon or at the time of
-      booking.
-    </div>
-  );
+  const renderRefundAndCancellation = () => {
+    const { baseFare, totalFare } = fare;
+
+    // Calculations
+    const before24Fee = Math.round(totalFare * 0.25);
+    const within24Fee = Math.round(baseFare * 0.5);
+
+    return (
+      <div className="w-full max-w-6xl mx-auto py-14 px-8">
+        <div className="relative flex justify-between items-center text-sm text-gray-700">
+          {/* Horizontal Line */}
+          <div className="absolute top-1/2 left-[10%] right-[10%] h-0.5 bg-orange-200 z-0"></div>
+
+          {/* Step 1: Before 24 hrs */}
+          <div className="relative z-10 flex flex-col items-center w-1/5 mt-2">
+            <div className="mt-16 text-center"></div>
+            <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center shadow-md text-sm z-10">
+              ₹
+            </div>
+            <div className="mt-4 text-center">
+              <p className="font-semibold">Before 24 hrs</p>
+              <p> ₹{before24Fee} Fee</p>
+              <p className="text-xs text-gray-500">Up to 75% refund</p>
+            </div>
+          </div>
+
+          {/* Step 2: Within 24 hrs */}
+          <div className="relative z-10 flex flex-col items-center w-1/5 mb-2">
+            <div className="mb-4 text-center">
+              <p className="font-semibold">Within 24 hrs</p>
+              <p>₹{within24Fee} Fee</p>
+              <p className="text-xs text-gray-500">Up to 50% refund</p>
+            </div>
+            <div className="w-10 h-10 bg-yellow-500 text-white rounded-full flex items-center justify-center shadow-md text-sm z-10">
+              ₹
+            </div>
+            <div className="mt-16 text-center"></div>
+          </div>
+
+          {/* Step 3: Departure Day */}
+          <div className="relative z-10 flex flex-col items-center w-1/5 mt-2">
+            <div className="mt-16 text-center"></div>
+            <div className="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md text-sm z-10">
+              ✖
+            </div>
+            <div className="mt-4 text-center">
+              <p className="font-semibold">Departure Day</p>
+              <p>No refund</p>
+              <p className="text-xs text-gray-500">Reschedule if eligible</p>
+            </div>
+          </div>
+
+          {/* Step 4: No-show */}
+          <div className="relative z-10 flex flex-col items-center w-1/5 mb-2">
+            <div className="mb-4 text-center">
+              <p className="font-semibold">No-show</p>
+              <p>No refund</p>
+              <p className="text-xs text-gray-500">
+                Flight missed not eligible
+              </p>
+            </div>
+            <div className="w-10 h-10 bg-gray-700 text-white rounded-full flex items-center justify-center shadow-md text-sm z-10">
+              🚫
+            </div>
+            <div className="mt-16 text-center"></div>
+          </div>
+
+          {/* Step 5: Rescheduling */}
+          <div className="relative z-10 flex flex-col items-center w-1/5 mt-2">
+            <div className="mt-16 text-center"></div>
+            <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-md text-sm z-10">
+              🔁
+            </div>
+            <div className="mt-4 text-center">
+              <p className="font-semibold">Rescheduling</p>
+              <p>Partial refund</p>
+              <p className="text-xs text-gray-500">Fare difference may apply</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex justify-center items-center z-50 px-4">
@@ -277,7 +353,7 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-4 text-gray-500 hover:text-gray-800 text-2xl"
+          className="absolute top-5 right-8 text-gray-500 hover:text-pink-700 text-3xl cursor-pointer"
         >
           &times;
         </button>
@@ -296,7 +372,7 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
             >
               {tab === "flight" && "Flight Details"}
               {tab === "fare" && "Fare Details"}
-              {tab === "cancellation" && "Cancellation"}
+              {tab === "cancellation" && "Refund & Cancellation"}
             </button>
           ))}
         </div>
@@ -311,16 +387,13 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
             </>
           )}
           {activeTab === "fare" && renderFareDetails()}
-          {activeTab === "cancellation" && renderCancellationPolicy()}
+          {activeTab === "cancellation" && renderRefundAndCancellation()}
         </div>
 
         {/* ---------- Part 3: Footer ---------- */}
-        <div className="border-t px-6 py-4 flex justify-between items-center bg-white rounded-b-xl">
+        <div className="border-t border-t-pink-700 px-6 py-4 flex justify-end items-center gap-8 bg-white rounded-b-xl">
           <p className="text-lg font-semibold text-pink-700">
-            Total Fare: ₹{fare.totalFare}
-            <span className="text-sm text-gray-500 ml-1">
-              ({fare.currency})
-            </span>
+            ₹{fare.totalFare}
           </p>
           <button className="px-6 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer">
             Book Now
