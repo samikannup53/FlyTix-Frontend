@@ -33,7 +33,15 @@ export const FlightResults = ({ flights, loading, tripType }) => {
     return diff >= 0 && diff <= days;
   };
 
-  // -------- Derived Metrics --------
+  const filteredByTripType = flights.filter((flight) => {
+    // Skip round-trip cards if returnTrip is null
+    if (tripType === "roundtrip" && !flight.returnTrip) return false;
+
+    // Skip one-way cards if returnTrip exists
+    if (tripType === "oneway" && flight.returnTrip) return false;
+
+    return true;
+  });
 
   // Lowest total fare among all flights
   const lowestFare = flights.length
@@ -52,12 +60,14 @@ export const FlightResults = ({ flights, loading, tripType }) => {
       {/* Header Row */}
       <div className="flex items-center justify-between">
         <div className="text-lg font-semibold text-gray-800">
-          {flights.length > 0
-            ? `${flights[0].outbound.segments[0].departure.city} → ${flights[0].outbound.segments[0].arrival.city}`
+          {filteredByTripType.length > 0
+            ? `${filteredByTripType[0].outbound.segments[0].departure.city} → ${filteredByTripType[0].outbound.segments[0].arrival.city}`
             : "Search Results"}
         </div>
         <div className="text-sm text-gray-600">
-          {loading ? "Loading..." : `${flights.length} Flights Found`}
+          {loading
+            ? "Loading..."
+            : `${filteredByTripType.length} Flights Found`}
         </div>
       </div>
 
@@ -67,7 +77,7 @@ export const FlightResults = ({ flights, loading, tripType }) => {
       ) : flights.length === 0 ? (
         <p className="text-center text-red-500">No flights found</p>
       ) : (
-        flights.map((flight, index) => {
+        filteredByTripType.map((flight, index) => {
           const flightFare = parseFloat(flight.fare.totalFare);
           const flightDuration = parseDuration(flight.outbound.duration);
           const stops = flight.outbound.stops;
