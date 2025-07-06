@@ -21,7 +21,7 @@ export const BookingTravellerDetails = forwardRef(({ flight }, ref) => {
       lastName: "",
       age: "",
       gender: "",
-      seatPreference: "",
+      seatPreference: "No Preference",
       category,
     }));
 
@@ -133,6 +133,7 @@ export const BookingTravellerDetails = forwardRef(({ flight }, ref) => {
           lastName: traveller.lastName,
           age: traveller.age.toString(),
           gender: traveller.gender.toLowerCase(),
+          seatPreference: "No Preference",
         };
         setFormData(updated);
         setSelectedSaved([...selectedSaved, { ...traveller, category }]);
@@ -155,7 +156,7 @@ export const BookingTravellerDetails = forwardRef(({ flight }, ref) => {
       lastName: "",
       age: "",
       gender: "",
-      seatPreference: "",
+      seatPreference: "No Preference",
     };
     setFormData(updated);
   };
@@ -375,11 +376,10 @@ export const BookingTravellerDetails = forwardRef(({ flight }, ref) => {
                           handleChange(index, "seatPreference", e.target.value)
                         }
                       >
-                        <option value="">No Preference</option>
-                        <option value="window">Window</option>
-                        <option value="aisle">Aisle</option>
-                        <option value="middle">Middle</option>
-                        <option value="extra_legroom">Extra Legroom</option>
+                        <option value="No Preference">No Preference</option>
+                        <option value="Window">Window</option>
+                        <option value="Aisle">Aisle</option>
+                        <option value="Middle">Middle</option>
                       </select>
                     </div>
                   </div>

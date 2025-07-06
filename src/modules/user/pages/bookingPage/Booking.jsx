@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -13,6 +13,8 @@ import { BookingPaymentInfo } from "./sections/BookingPaymentInfo";
 import { BookingTravellerDetails } from "./sections/BookingTravellerDetails";
 
 export const Booking = () => {
+  const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
   const [flight, setFlight] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,15 +71,37 @@ export const Booking = () => {
     const isContactValid = contactRef.current?.validateAndSubmit?.();
     const isBillingValid = billingRef.current?.validateAndSubmit?.();
 
-    if (isTravellerValid && isContactValid && isBillingValid) {
-      const data = {
-        travellers: travellerRef.current.getData(),
-        contact: contactRef.current.getData(),
-        billing: billingRef.current.getData(),
-      };
-      console.log("Booking Details Payload:", data);
-    } else {
-      toast.error("Please fill all required Fields to Init Booking");
+    if (!isTravellerValid || !isContactValid || !isBillingValid) {
+      toast.error("Please fill all required fields to continue booking.");
+      return;
+    }
+
+    const payload = {
+      flightId: bookingMeta.flightId,
+      travellers: travellerRef.current.getData(),
+      contactDetails: contactRef.current.getData(),
+      billingAddress: billingRef.current.getData(),
+    };
+    try {
+      const res = await fetch("http://localhost:8000/api/booking/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.msg || "Failed to initiate booking.");
+        return;
+      }
+
+      toast.success("Booking initiated successfully!");
+      navigate(`/booking/payment?bookingId=${data.newBooking.bookingId}`);
+    } catch (err) {
+      console.error("Booking Init Error:", err.message);
+      toast.error("Server error. Please try again.");
     }
   };
 

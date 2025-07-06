@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 export const BookingBillingAddress = forwardRef((props, ref) => {
   const [formData, setFormData] = useState({
     pincode: "",
-    addressLine1: "",
+    street: "",
     city: "",
     state: "",
     country: "",
@@ -61,8 +61,8 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
   // Expose to parent
   useImperativeHandle(ref, () => ({
     validateAndSubmit: () => {
-      const { pincode, addressLine1, city, state, country } = formData;
-      if (!pincode || !addressLine1 || !city || !state || !country) {
+      const { pincode, street, city, state, country } = formData;
+      if (!pincode || !street || !city || !state || !country) {
         toast.warning("Missing Required Fields in Billing Address");
         return false;
       }
@@ -74,7 +74,7 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
   const handleClear = () => {
     setFormData({
       pincode: "",
-      addressLine1: "",
+      street: "",
       city: "",
       state: "",
       country: "",
@@ -139,8 +139,8 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
             <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
               <input
                 type="text"
-                name="addressLine1"
-                value={formData.addressLine1}
+                name="street"
+                value={formData.street}
                 onChange={handleChange}
                 placeholder="e.g. 12B, MG Road"
                 className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
@@ -177,7 +177,6 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
               <input
                 type="text"
                 name="state"
-                readOnly
                 value={formData.state}
                 onChange={handleChange}
                 placeholder="Enter State"
@@ -195,7 +194,6 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
               <input
                 type="text"
                 name="country"
-                readOnly
                 value={formData.country}
                 onChange={handleChange}
                 placeholder="Enter Country"

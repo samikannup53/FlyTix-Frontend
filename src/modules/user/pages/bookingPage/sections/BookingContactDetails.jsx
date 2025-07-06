@@ -1,11 +1,15 @@
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { useAuth } from "../../../../../shared/contexts/AuthContext";
+import { toast } from "react-toastify";
 
 export const BookingContactDetails = forwardRef((props, ref) => {
   const { user } = useAuth();
+
   const [formData, setFormData] = useState({
-    countryCode: "+91",
-    mobile: "",
+    mobileNumber: {
+      code: "+91",
+      number: "",
+    },
     email: "",
   });
 
@@ -15,7 +19,10 @@ export const BookingContactDetails = forwardRef((props, ref) => {
       setFormData((prev) => ({
         ...prev,
         email: user.email || "",
-        mobile: user.mobile || "",
+        mobileNumber: {
+          ...prev.mobileNumber,
+          number: user.mobile || "", // adjust if it's user.number instead
+        },
       }));
     }
   }, [user]);
@@ -23,22 +30,39 @@ export const BookingContactDetails = forwardRef((props, ref) => {
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
     validateAndSubmit: () => {
-      if (!formData.mobile || formData.mobile.length < 6) {
-        toast.error("Please Enter Valid Mobile Number");
+      const { number } = formData.mobileNumber;
+      const { email } = formData;
+
+      if (!number || number.length < 6 || !/^\d+$/.test(number)) {
+        toast.error("Please enter a valid mobile number");
         return false;
       }
-      if (!formData.email.includes("@")) {
-        toast.warning("Missing Contact Details");
+
+      if (!email || !email.includes("@") || !email.includes(".")) {
+        toast.warning("Please enter a valid email address");
         return false;
       }
+
       return true;
     },
+
     getData: () => formData,
   }));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "code" || name === "number") {
+      setFormData((prev) => ({
+        ...prev,
+        mobileNumber: {
+          ...prev.mobileNumber,
+          [name]: value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   return (
@@ -49,7 +73,7 @@ export const BookingContactDetails = forwardRef((props, ref) => {
         <button
           type="button"
           onClick={() =>
-            setFormData({ countryCode: "+91", mobile: "", email: "" })
+            setFormData({ mobileNumber: { code: "+91", number: "" }, email: "" })
           }
           className="text-sm text-pink-700 hover:underline"
         >
@@ -73,8 +97,8 @@ export const BookingContactDetails = forwardRef((props, ref) => {
               </label>
               <div className="flex border border-gray-300 rounded-lg bg-pink-50 px-3 py-2 focus-within:border-pink-500 focus-within:bg-white">
                 <select
-                  name="countryCode"
-                  value={formData.countryCode}
+                  name="code"
+                  value={formData.mobileNumber.code}
                   onChange={handleChange}
                   className="flex-1 bg-transparent text-gray-700 focus:outline-none text-sm"
                 >
@@ -94,8 +118,8 @@ export const BookingContactDetails = forwardRef((props, ref) => {
               <div className="flex border border-gray-300 rounded-lg bg-pink-50 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
                 <input
                   type="text"
-                  name="mobile"
-                  value={formData.mobile}
+                  name="number"
+                  value={formData.mobileNumber.number}
                   onChange={handleChange}
                   maxLength={10}
                   placeholder="Enter Mobile Number"
