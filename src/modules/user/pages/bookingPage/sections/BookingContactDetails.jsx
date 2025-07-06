@@ -1,13 +1,62 @@
-export const BookingContactDetails = () => {
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
+import { useAuth } from "../../../../../shared/contexts/AuthContext";
+
+export const BookingContactDetails = forwardRef((props, ref) => {
+  const { user } = useAuth();
+  const [formData, setFormData] = useState({
+    countryCode: "+91",
+    mobile: "",
+    email: "",
+  });
+
+  // Pre-fill email/mobile if available from user
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        email: user.email || "",
+        mobile: user.mobile || "",
+      }));
+    }
+  }, [user]);
+
+  // Expose methods to parent
+  useImperativeHandle(ref, () => ({
+    validateAndSubmit: () => {
+      if (!formData.mobile || formData.mobile.length < 6) {
+        alert("Please enter a valid mobile number.");
+        return false;
+      }
+      if (!formData.email.includes("@")) {
+        alert("Please enter a valid email address.");
+        return false;
+      }
+      return true;
+    },
+    getData: () => formData,
+  }));
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-md">
       {/* Title Row */}
       <div className="flex items-center justify-between mb-1">
-        <h3 className="text-lg font-semibold text-orange-700">Contact Details</h3>
-        <button className="text-sm text-orange-600 hover:underline">Clear Details</button>
+        <h3 className="text-lg font-semibold text-pink-700">Contact Details</h3>
+        <button
+          type="button"
+          onClick={() =>
+            setFormData({ countryCode: "+91", mobile: "", email: "" })
+          }
+          className="text-sm text-pink-700 hover:underline"
+        >
+          Clear Details
+        </button>
       </div>
 
-      {/* Subtext */}
       <p className="text-sm text-gray-600 mb-4">
         Flight and Ticket details will be sent to the following:
       </p>
@@ -15,28 +64,40 @@ export const BookingContactDetails = () => {
       {/* Form */}
       <form className="text-sm">
         <div className="flex flex-col sm:flex-row gap-6">
-          {/* Left Side: Country Code + Mobile Number */}
+          {/* Country Code + Mobile Number */}
           <div className="w-full sm:w-1/2 flex gap-4">
             {/* Country Code */}
             <div className="w-1/3">
-              <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">Country Code</label>
-              <div className="flex border border-gray-300 rounded-lg bg-white/70 px-3 py-2 focus-within:border-orange-500 focus-within:bg-white">
-                <select className="flex-1 bg-transparent text-gray-700 focus:outline-none text-sm">
+              <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
+                Country Code
+              </label>
+              <div className="flex border border-gray-300 rounded-lg bg-white/70 px-3 py-2 focus-within:border-pink-500 focus-within:bg-white">
+                <select
+                  name="countryCode"
+                  value={formData.countryCode}
+                  onChange={handleChange}
+                  className="flex-1 bg-transparent text-gray-700 focus:outline-none text-sm"
+                >
                   <option value="+91">+91 (IN)</option>
                   <option value="+1">+1 (US)</option>
                   <option value="+44">+44 (UK)</option>
                   <option value="+61">+61 (AU)</option>
-                  {/* Add more if needed */}
                 </select>
               </div>
             </div>
 
             {/* Mobile Number */}
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">Mobile Number</label>
-              <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-orange-500 focus-within:bg-white">
+              <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
+                Mobile Number
+              </label>
+              <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
                 <input
                   type="text"
+                  name="mobile"
+                  value={formData.mobile}
+                  onChange={handleChange}
+                  maxLength={10}
                   placeholder="Enter Mobile Number"
                   className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                 />
@@ -44,12 +105,17 @@ export const BookingContactDetails = () => {
             </div>
           </div>
 
-          {/* Right Side: Email Address */}
+          {/* Email Address */}
           <div className="w-full sm:w-1/2">
-            <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">Email Address</label>
-            <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-orange-500 focus-within:bg-white">
+            <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
+              Email Address
+            </label>
+            <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Enter Email Address"
                 className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
               />
@@ -59,5 +125,4 @@ export const BookingContactDetails = () => {
       </form>
     </div>
   );
-};
-
+});

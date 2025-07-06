@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import { BookingFooter, BookingHeader } from "../../components";
@@ -16,6 +16,10 @@ export const Booking = () => {
   const [searchParams] = useSearchParams();
   const [flight, setFlight] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const travellerRef = useRef();
+  const contactRef = useRef();
+  const billingRef = useRef();
 
   const tripType = searchParams.get("tripType") || "oneway";
   const adults = parseInt(searchParams.get("adults") || "1", 10);
@@ -59,6 +63,23 @@ export const Booking = () => {
 
     fetchFlight();
   }, [flightId]);
+
+  const handleFinalSubmit = async () => {
+    const isTravellerValid = travellerRef.current?.validateAndSubmit?.();
+    const isContactValid = contactRef.current?.validateAndSubmit?.();
+    const isBillingValid = billingRef.current?.validateAndSubmit?.();
+
+    if (isTravellerValid && isContactValid && isBillingValid) {
+      const data = {
+        travellers: travellerRef.current.getData(),
+        contact: contactRef.current.getData(),
+        billing: billingRef.current.getData(),
+      };
+      console.log("Booking Details Payload:", data);
+    } else {
+      toast.error("Please fill all required Fields to Init Booking");
+    }
+  };
 
   if (loading) {
     return (
@@ -112,7 +133,7 @@ export const Booking = () => {
       <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-screen pt-6">
         <main className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-6">
           {/* Left Side Fare Summary Section */}
-          <aside className="lg:w-1/3 w-full h-fit sticky top-5 text-sm text-gray-800 space-y-6">
+          <aside className="lg:w-1/3 w-full h-fit sticky top-24.5 text-sm text-gray-800 space-y-6">
             <BookingFareSummary flight={flight} />
             <BookingPaymentInfo flight={flight} />
           </aside>
@@ -120,10 +141,13 @@ export const Booking = () => {
           <section className="lg:w-2/3 w-full space-y-6">
             <BookingFlightDetails flight={flight} bookingMeta={bookingMeta} />
             <BookingCancellation flight={flight} />
-            <BookingTravellerDetails bookingMeta={bookingMeta} />
-            <BookingContactDetails />
-            <BookingBillingAddress />
-            <BookingContinue flight={flight} />
+            <BookingTravellerDetails
+              ref={travellerRef}
+              bookingMeta={bookingMeta}
+            />
+            <BookingContactDetails ref={contactRef} />
+            <BookingBillingAddress ref={billingRef} />
+            <BookingContinue onSubmit={handleFinalSubmit} flight={flight} />
           </section>
         </main>
       </section>

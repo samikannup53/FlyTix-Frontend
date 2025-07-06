@@ -1,6 +1,3 @@
-// BookingPaymentInfo.jsx
-import React from 'react';
-
 // Importing images from assets
 import rupayImg from '../../../../../assets/images/rupay.png';
 import mastercardImg from '../../../../../assets/images/mastercard.png';
@@ -15,9 +12,9 @@ export const BookingPaymentInfo = () => {
       {/* Terms Message */}
       <p className="text-xs text-gray-600 leading-relaxed">
         By clicking on continue, I confirm that I have read, understood, and agree with the{' '}
-        <a href="#" className="text-orange-600 underline">Fare Rules</a>,{' '}
-        <a href="#" className="text-orange-600 underline">Privacy Policy</a>, and{' '}
-        <a href="#" className="text-orange-600 underline">Terms of Use</a>.
+        <a href="#" className="text-pink-700 underline">Fare Rules</a>,{' '}
+        <a href="#" className="text-pink-700 underline">Privacy Policy</a>, and{' '}
+        <a href="#" className="text-pink-700 underline">Terms of Use</a>.
       </p>
 
       {/* Secure Payment Text */}
