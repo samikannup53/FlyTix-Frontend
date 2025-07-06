@@ -38,7 +38,7 @@ export const Login = () => {
       }
 
       await refreshUser();
-      navigate("/profile");
+      navigate("/flights");
     } catch (error) {
       setError(error.message);
     }

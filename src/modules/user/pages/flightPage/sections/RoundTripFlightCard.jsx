@@ -14,6 +14,7 @@ export const RoundTripFlightCard = ({
   onViewDetails,
   onAddToCompare,
   compareFlights,
+  onBookNow,
 }) => {
   const renderFlightRow = (label, segmentData) => {
     const firstSegment = segmentData.segments[0];
@@ -190,7 +191,10 @@ export const RoundTripFlightCard = ({
         {/* Right: Fare + Button */}
         <div className="text-center flex items-center gap-6">
           <p className="text-xl font-bold text-pink-700">₹{fare.totalFare}</p>
-          <button className="px-4 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer">
+          <button
+            onClick={onBookNow}
+            className="px-4 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer"
+          >
             Book Now
           </button>
         </div>

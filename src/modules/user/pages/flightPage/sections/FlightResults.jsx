@@ -5,7 +5,7 @@ import { FlightDetailsModal } from "./FlightDetailsModal";
 import { CompareFlightsModal } from "./CompareFlightsModal";
 import { CompareBox } from "./CompareBox";
 
-export const FlightResults = ({ flights, loading, tripType }) => {
+export const FlightResults = ({ flights, loading, tripType, onBookNow }) => {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [showFlightDetailsModal, setShowFlightDetailsModal] = useState(false);
 
@@ -138,6 +138,7 @@ export const FlightResults = ({ flights, loading, tripType }) => {
               onViewDetails={() => handleViewDetails(flight)}
               onAddToCompare={() => handleAddToCompare(flight)}
               compareFlights={compareFlights}
+              onBookNow={() => onBookNow(flight.flightId)}
             />
           ) : (
             <FlightResultCard
@@ -146,6 +147,7 @@ export const FlightResults = ({ flights, loading, tripType }) => {
               onViewDetails={() => handleViewDetails(flight)}
               onAddToCompare={() => handleAddToCompare(flight)}
               compareFlights={compareFlights}
+              onBookNow={() => onBookNow(flight.flightId)}
             />
           );
         })
@@ -154,11 +156,13 @@ export const FlightResults = ({ flights, loading, tripType }) => {
         isOpen={showFlightDetailsModal}
         flight={selectedFlight}
         onClose={handleCloseModal}
+        onBookNow={() => selectedFlight && onBookNow(selectedFlight.flightId)}
       />
       {showCompareModal && (
         <CompareFlightsModal
           flights={compareFlights}
           onClose={() => setShowCompareModal(false)}
+          onBookNow={(flightId) => onBookNow(flightId)}
         />
       )}
       <CompareBox

@@ -4,11 +4,19 @@ import { FiltersSideBar } from "./sections/FilterSideBar";
 import { FlightResults } from "./sections/FlightResults";
 import { FlightSearchBar } from "./sections/FlightSearchBar";
 import { SortBySection } from "./sections/SortBySection";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../shared/contexts/AuthContext";
+import { toast } from "react-toastify";
 
 export const Flights = () => {
-  const [flights, setFlights] = useState([]); // Final filtered flights
-  const [originalFlights, setOriginalFlights] = useState([]); // Raw API response
-  const [loading, setLoading] = useState(false); // Loading state
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  const [flights, setFlights] = useState([]);
+  const [originalFlights, setOriginalFlights] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const [tripType, setTripType] = useState("oneway");
 
@@ -29,12 +37,17 @@ export const Flights = () => {
     const cachedTripType = localStorage.getItem("cachedTripType");
 
     if (cachedData) {
-      const parsed = JSON.parse(cachedData);
-      setFlights(parsed);
-      setOriginalFlights(parsed);
-      if (cachedTripType) {
-        setTripType(cachedTripType);
+      try {
+        const parsed = JSON.parse(cachedData);
+        setFlights(parsed);
+        setOriginalFlights(parsed);
+      } catch (e) {
+        console.error("Invalid cached data in localStorage:", e);
       }
+    }
+
+    if (cachedTripType) {
+      setTripType(cachedTripType);
     }
   }, []);
 
@@ -50,6 +63,8 @@ export const Flights = () => {
 
     try {
       setLoading(true);
+      setError(false);
+      setHasSearched(true);
       setFlights([]);
       setOriginalFlights([]);
 
@@ -65,21 +80,60 @@ export const Flights = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        console.error("API failed:", data.details || data.msg);
-        throw new Error(data.msg || "Failed to fetch flights");
+        toast.error(data.msg || "Failed to fetch flights");
+        setError(true);
+        return;
       }
 
       setFlights(data.data);
-      setOriginalFlights(data.data);
+      setOriginalFlights(data.data || []);
       setTripType(searchInput.tripType);
 
-      // ✅ Save to localStorage for persistence
+      // Save to localStorage for persistence
       localStorage.setItem("cachedFlightResults", JSON.stringify(data.data));
       localStorage.setItem("cachedTripType", searchInput.tripType);
+
+      toast.success("Flights Loaded Successfully");
     } catch (err) {
       console.error("Flight fetch error:", err.message);
+      toast.error("Something went wrong. Please try again.");
+      setError(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Book Now Function
+  const handleBookNow = async (flightId) => {
+    try {
+      const res = await fetch("http://localhost:8000/api/flights/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ flightId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.msg || "Failed to Validate Flight");
+        return;
+      }
+
+      // Save selected flight temporarily
+      localStorage.setItem("selectedFlight", JSON.stringify(data.flight));
+
+      if (!isLoggedIn) {
+        toast.warn("Please login to continue booking");
+        navigate("/login");
+        return;
+      }
+
+      toast.success("Flight validated successfully!");
+
+      navigate("/booking/initiate");
+    } catch (error) {
+      console.error("Flight fetch error:", error.message);
+      toast.error("Server error. Please try again.");
     }
   };
 
@@ -92,7 +146,7 @@ export const Flights = () => {
   };
 
   // Filter logic
-  const filteredFlights = originalFlights
+  const filteredFlights = (originalFlights || [])
     .filter((flight) => {
       // 1. Stops Filter
       const stopsLabel =
@@ -191,36 +245,84 @@ export const Flights = () => {
     <>
       <UserHeader />
       <FlightSearchBar onSearch={handleSearch} />
-      <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-screen py-10">
-        <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-6">
-          <FiltersSideBar
-            // Pass filter states and handlers
-            selectedStops={selectedStops}
-            setSelectedStops={setSelectedStops}
-            selectedAirlines={selectedAirlines}
-            setSelectedAirlines={setSelectedAirlines}
-            maxPrice={maxPrice}
-            setMaxPrice={setMaxPrice}
-            selectedTimes={selectedTimes}
-            setSelectedTimes={setSelectedTimes}
-            airlineOptions={indianAirlines}
-            onClearFilters={handleClearFilters}
-          />
-          <div className="lg:w-3/4 w-full no-scrollbar pr-2">
-            <div className="space-y-6">
-              <SortBySection
-                selectedSortOption={sortOption}
-                onSortChange={setSortOption}
-              />
-              <FlightResults
-                flights={filteredFlights}
-                loading={loading}
-                tripType={tripType}
-              />
+      {!hasSearched ? (
+        // ✨ Initial UI before search
+        <section className="py-24 text-center min-h-[60vh] 2xl:min-h-[70vh] bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
+          <div className="text-4xl text-amber-500 animate-bounce mb-4 flex justify-center">
+            <i className="fa-solid fa-magnifying-glass-location fa-2x" />
+          </div>
+          <p className="text-xl font-semibold text-gray-700">
+            Search and explore the best flights across India
+          </p>
+          <p className="text-gray-600 mt-2">
+            Use the search bar above to get started
+          </p>
+        </section>
+      ) : loading ? (
+        // ✨ Loading UI
+        <section className="py-24 text-center min-h-[50vh]">
+          <div className="text-4xl text-amber-500 animate-bounce mb-4 flex justify-center">
+            <i className="fa-solid fa-plane-departure fa-2x" />
+          </div>
+          <p className="text-xl font-semibold text-gray-700">
+            Hold on! We're fetching the best flights for you...
+          </p>
+        </section>
+      ) : error ? (
+        // ✨ Error UI
+        <section className="py-24 text-center min-h-[50vh]">
+          <div className="text-5xl text-red-500 mb-4 flex justify-center">
+            <i className="fa-solid fa-wifi-slash" />
+          </div>
+          <p className="text-xl font-semibold text-gray-800 mb-4">
+            Network Problem
+          </p>
+          <p className="text-gray-600">
+            We are unable to connect to our systems from your device.
+            <br />
+            Please try again after a while.
+          </p>
+          <button
+            className="mt-6 px-6 py-2 bg-orange-500 text-white rounded-lg shadow hover:bg-orange-600"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
+        </section>
+      ) : (
+        // ✨ Normal UI when flights are loaded
+        <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-screen py-10">
+          <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-6">
+            <FiltersSideBar
+              selectedStops={selectedStops}
+              setSelectedStops={setSelectedStops}
+              selectedAirlines={selectedAirlines}
+              setSelectedAirlines={setSelectedAirlines}
+              maxPrice={maxPrice}
+              setMaxPrice={setMaxPrice}
+              selectedTimes={selectedTimes}
+              setSelectedTimes={setSelectedTimes}
+              airlineOptions={indianAirlines}
+              onClearFilters={handleClearFilters}
+            />
+            <div className="lg:w-3/4 w-full no-scrollbar pr-2">
+              <div className="space-y-6">
+                <SortBySection
+                  selectedSortOption={sortOption}
+                  onSortChange={setSortOption}
+                />
+                <FlightResults
+                  flights={filteredFlights}
+                  loading={loading}
+                  tripType={tripType}
+                  onBookNow={handleBookNow}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
       <LandingFooter />
     </>
   );

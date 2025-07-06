@@ -1,9 +1,18 @@
+import { ToastContainer } from "react-toastify";
 import UserRoutes from "./routes/UserRoutes";
 
 function App() {
   return (
     <>
       <UserRoutes />
+      <ToastContainer
+        position="top-right"
+        autoClose={8000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
     </>
   );
 }

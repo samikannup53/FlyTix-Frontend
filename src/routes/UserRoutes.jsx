@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Landing, Login, Register, ForgotPassword, Flights, Booking, Payment, Dashboard, Profile, Travellers, Password } from "../modules/user/pages";
 import { BookingConfirm } from "../modules/user/pages/confirmPage/BookingConfirm";
+import PrivateRoute from "./PrivateRoutes";
 
 
 const UserRoutes = () => {
@@ -11,13 +12,14 @@ const UserRoutes = () => {
         <Route path="/register" element={<Register/>}> </Route>
         <Route path="/forgot-password" element={<ForgotPassword/>}> </Route>
         <Route path='/flights' element={<Flights/>}></Route>
-        <Route path="/booking/initiate" element={<Booking/>}></Route>
-        <Route path="/booking/payment" element={<Payment/>}></Route>
-        <Route path="/booking/confirm" element={<BookingConfirm/>}></Route>
-        <Route path="/dashboard" element={<Dashboard/>}></Route>
-        <Route path="/profile" element={<Profile/>}></Route>
-        <Route path="/travellers" element={<Travellers/>}></Route>
-        <Route path="/change-password" element={<Password/>}></Route>
+
+        <Route path="/booking/initiate" element={<PrivateRoute><Booking/></PrivateRoute>}/>
+        <Route path="/booking/payment" element={<PrivateRoute><Payment/></PrivateRoute>}/>
+        <Route path="/booking/confirm" element={<PrivateRoute><BookingConfirm/></PrivateRoute>}/>
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard/></PrivateRoute>}/>
+        <Route path="/profile" element={<PrivateRoute><Profile/></PrivateRoute>}/>
+        <Route path="/travellers" element={<PrivateRoute><Travellers/></PrivateRoute>}/>
+        <Route path="/change-password" element={<PrivateRoute><Password/></PrivateRoute>}/>
     </Routes>
   )
 }
