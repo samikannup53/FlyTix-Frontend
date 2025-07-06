@@ -1,4 +1,5 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import { toast } from "react-toastify";
 
 export const BookingBillingAddress = forwardRef((props, ref) => {
   const [formData, setFormData] = useState({
@@ -62,7 +63,7 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
     validateAndSubmit: () => {
       const { pincode, addressLine1, city, state, country } = formData;
       if (!pincode || !addressLine1 || !city || !state || !country) {
-        alert("Please fill all billing address fields.");
+        toast.warning("Missing Required Fields in Billing Address");
         return false;
       }
       return true;

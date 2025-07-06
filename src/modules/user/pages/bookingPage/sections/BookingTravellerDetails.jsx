@@ -164,7 +164,7 @@ export const BookingTravellerDetails = forwardRef(({ flight }, ref) => {
     validateAndSubmit: () => {
       const allValid = formData.every(validateTraveller);
       if (!allValid)
-        toast.error("Please fill all traveller details correctly.");
+        toast.warning("Missing Required Fields in Traveller Details");
       return allValid;
     },
     getData: () => formData,

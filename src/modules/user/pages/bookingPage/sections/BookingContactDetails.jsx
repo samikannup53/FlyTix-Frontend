@@ -24,11 +24,11 @@ export const BookingContactDetails = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     validateAndSubmit: () => {
       if (!formData.mobile || formData.mobile.length < 6) {
-        alert("Please enter a valid mobile number.");
+        toast.error("Please Enter Valid Mobile Number");
         return false;
       }
       if (!formData.email.includes("@")) {
-        alert("Please enter a valid email address.");
+        toast.warning("Missing Contact Details");
         return false;
       }
       return true;
