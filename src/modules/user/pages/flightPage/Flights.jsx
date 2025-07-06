@@ -41,6 +41,7 @@ export const Flights = () => {
         const parsed = JSON.parse(cachedData);
         setFlights(parsed);
         setOriginalFlights(parsed);
+        setHasSearched(true); // 👈 FIX: Show results instead of initial message
       } catch (e) {
         console.error("Invalid cached data in localStorage:", e);
       }
@@ -86,7 +87,7 @@ export const Flights = () => {
       }
 
       setFlights(data.data);
-      setOriginalFlights(data.data || []);
+      setOriginalFlights(data.data);
       setTripType(searchInput.tripType);
 
       // Save to localStorage for persistence
@@ -146,7 +147,7 @@ export const Flights = () => {
   };
 
   // Filter logic
-  const filteredFlights = (originalFlights || [])
+  const filteredFlights = originalFlights
     .filter((flight) => {
       // 1. Stops Filter
       const stopsLabel =
