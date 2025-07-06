@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LandingFooter, UserHeader } from "../../components";
+import { BookingFooter,  UserHeader } from "../../components";
 import { FiltersSideBar } from "./sections/FilterSideBar";
 import { FlightResults } from "./sections/FlightResults";
 import { FlightSearchBar } from "./sections/FlightSearchBar";
@@ -268,8 +268,8 @@ export const Flights = () => {
       <FlightSearchBar onSearch={handleSearch} initialValues={searchMeta} />
       {!hasSearched ? (
         // ✨ Initial UI before search
-        <section className="py-24 text-center min-h-[60vh] 2xl:min-h-[70vh] bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
-          <div className="text-4xl text-amber-500 animate-bounce mb-4 flex justify-center">
+        <section className="py-24 text-center min-h-[54vh]  2xl:min-h-[71vh] bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
+          <div className="text-4xl text-pink-800 animate-bounce flex justify-center items-center">
             <i className="fa-solid fa-magnifying-glass-location fa-2x" />
           </div>
           <p className="text-xl font-semibold text-gray-700">
@@ -344,7 +344,7 @@ export const Flights = () => {
         </section>
       )}
 
-      <LandingFooter />
+      <BookingFooter/>
     </>
   );
 };

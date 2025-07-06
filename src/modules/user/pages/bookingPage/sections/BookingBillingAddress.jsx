@@ -95,7 +95,7 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
       </div>
 
       {/* Info Alert */}
-      <div className="flex items-start gap-3 bg-orange-50 border border-pink-200 text-pink-800 text-sm rounded-md p-4 mt-4">
+      <div className="flex items-start gap-3 bg-pink-50 border border-pink-200 text-pink-800 text-sm rounded-md p-4 mt-4">
         <i className="fas fa-id-card mt-0.5 text-pink-700"></i>
         <p>
           As per <strong>government regulations</strong>, it is mandatory to
@@ -155,11 +155,10 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
             <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
               City
             </label>
-            <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
+            <div className="flex border border-gray-300 rounded-lg bg-pink-50 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
               <input
                 type="text"
                 name="city"
-                readOnly
                 value={formData.city}
                 onChange={handleChange}
                 placeholder="Enter City"
@@ -173,7 +172,7 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
             <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
               State
             </label>
-            <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
+            <div className="flex border border-gray-300 rounded-lg bg-pink-50 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
               <input
                 type="text"
                 name="state"
@@ -191,7 +190,7 @@ export const BookingBillingAddress = forwardRef((props, ref) => {
             <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
               Country
             </label>
-            <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
+            <div className="flex border border-gray-300 rounded-lg bg-pink-50 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
               <input
                 type="text"
                 name="country"

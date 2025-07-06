@@ -71,7 +71,7 @@ export const BookingContactDetails = forwardRef((props, ref) => {
               <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
                 Country Code
               </label>
-              <div className="flex border border-gray-300 rounded-lg bg-white/70 px-3 py-2 focus-within:border-pink-500 focus-within:bg-white">
+              <div className="flex border border-gray-300 rounded-lg bg-pink-50 px-3 py-2 focus-within:border-pink-500 focus-within:bg-white">
                 <select
                   name="countryCode"
                   value={formData.countryCode}
@@ -91,7 +91,7 @@ export const BookingContactDetails = forwardRef((props, ref) => {
               <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
                 Mobile Number
               </label>
-              <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
+              <div className="flex border border-gray-300 rounded-lg bg-pink-50 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
                 <input
                   type="text"
                   name="mobile"
@@ -110,7 +110,7 @@ export const BookingContactDetails = forwardRef((props, ref) => {
             <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
               Email Address
             </label>
-            <div className="flex border border-gray-300 rounded-lg bg-white/70 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
+            <div className="flex border border-gray-300 rounded-lg bg-pink-50 px-4 py-2 focus-within:border-pink-500 focus-within:bg-white">
               <input
                 type="email"
                 name="email"

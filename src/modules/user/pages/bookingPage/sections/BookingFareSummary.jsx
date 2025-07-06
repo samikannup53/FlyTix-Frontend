@@ -14,7 +14,7 @@ export const BookingFareSummary = ({ flight }) => {
   );
 
   return (
-    <div className="bg-white px-6 py-4 rounded-2xl shadow-lg text-sm text-gray-800 space-y-6">
+    <div className="bg-white px-6 py-4 rounded-2xl shadow-lg text-base text-gray-800 space-y-6">
       {/* Title + Traveller */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-pink-700">Fare Summary</h2>

@@ -131,7 +131,7 @@ export const Booking = () => {
     <>
       <BookingHeader />
       <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-screen pt-6">
-        <main className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-6">
+        <main className="max-w-7xl 2xl:max-w-[1500px] mx-auto px-6 flex flex-col lg:flex-row gap-6">
           {/* Left Side Fare Summary Section */}
           <aside className="lg:w-1/3 w-full h-fit sticky top-24.5 text-sm text-gray-800 space-y-6">
             <BookingFareSummary flight={flight} />
@@ -144,6 +144,7 @@ export const Booking = () => {
             <BookingTravellerDetails
               ref={travellerRef}
               bookingMeta={bookingMeta}
+              flight={flight}
             />
             <BookingContactDetails ref={contactRef} />
             <BookingBillingAddress ref={billingRef} />
