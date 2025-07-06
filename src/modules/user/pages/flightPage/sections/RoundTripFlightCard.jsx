@@ -16,16 +16,18 @@ export const RoundTripFlightCard = ({
   compareFlights,
 }) => {
   const renderFlightRow = (label, segmentData) => {
-    const segment = segmentData.segments[0];
+    const firstSegment = segmentData.segments[0];
+    const lastSegment = segmentData.segments.at(-1);
+
     return (
       <div className="w-full flex flex-col gap-3">
         <p className="text-base font-semibold text-gray-800">
           {label}:{" "}
           <span className="text-gray-800 font-medium">
-            {segment.airlineName || segment.airlineCode}
+            {firstSegment.airlineName || firstSegment.airlineCode}
           </span>{" "}
           <span className="text-gray-500 font-normal">
-            | Flight {segment.flightNumber}
+            | Flight {firstSegment.flightNumber}
           </span>
         </p>
 
@@ -42,10 +44,10 @@ export const RoundTripFlightCard = ({
           {/* Departure */}
           <div className="text-left w-1/5">
             <p className="text-lg font-semibold text-gray-700">
-              {segment.departure.time}
+              {firstSegment.departure.time}
             </p>
             <p className="text-sm text-gray-500">
-              {segment.departure.city} ({segment.departure.cityCode})
+              {firstSegment.departure.city} ({firstSegment.departure.cityCode})
             </p>
           </div>
 
@@ -63,10 +65,10 @@ export const RoundTripFlightCard = ({
           {/* Arrival */}
           <div className="text-right w-1/5">
             <p className="text-lg font-semibold text-gray-700">
-              {segment.arrival.time}
+              {lastSegment.arrival.time}
             </p>
             <p className="text-sm text-gray-500">
-              {segment.arrival.city} ({segment.arrival.cityCode})
+              {lastSegment.arrival.city} ({lastSegment.arrival.cityCode})
             </p>
           </div>
         </div>

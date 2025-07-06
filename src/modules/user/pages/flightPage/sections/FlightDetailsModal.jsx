@@ -18,6 +18,9 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
   const renderTimelineCard = (label, segmentData) => {
     const segment = segmentData.segments[0];
 
+    const firstSegment = segmentData.segments[0];
+    const lastSegment = segmentData.segments.at(-1);
+
     return (
       <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mb-6 w-full max-w-4xl mx-auto">
         {/* Header Info: Route + Meta */}
@@ -25,14 +28,14 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
           <div className="flex flex-col gap-2 mb-4">
             {/* Route */}
             <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
-              {segment.departure.city}
+              {firstSegment.departure.city}
               <i className="fas fa-arrow-right text-pink-700 text-xs" />
-              {segment.arrival.city}
+              {lastSegment.arrival.city}
             </h3>
 
             {/* Meta Info */}
             <p className="text-xs text-gray-500">
-              {segment.departure.date} &nbsp;|&nbsp;
+              {firstSegment.departure.date} &nbsp;|&nbsp;
               {segmentData.stops === 0
                 ? "Non-stop"
                 : `${segmentData.stops} stop(s)`}{" "}
@@ -47,10 +50,10 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
                 className="w-6 h-6 object-contain"
               />
               <p className="text-sm text-gray-700 font-medium">
-                <span>{segment.airlineName}</span>{" "}
+                <span>{firstSegment.airlineName}</span>{" "}
                 <span className="text-gray-400 font-normal">|</span>{" "}
                 <span className="text-gray-500 font-normal">
-                  Flight {segment.flightNumber}
+                  Flight {firstSegment.flightNumber}
                 </span>
               </p>
             </div>
@@ -80,13 +83,14 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
               {/* From */}
               <div className="flex-1 text-center sm:text-left">
                 <p className="text-[11px] text-gray-400 mb-1">
-                  {segment.departure.date}
+                  {firstSegment.departure.date}
                 </p>
                 <p className="text-xl font-bold text-gray-800 leading-none">
-                  {segment.departure.time}
+                  {firstSegment.departure.time}
                 </p>
                 <p className="text-sm font-medium text-gray-700">
-                  {segment.departure.city} – {segment.departure.cityCode}
+                  {firstSegment.departure.city} –{" "}
+                  {firstSegment.departure.cityCode}
                 </p>
               </div>
 
@@ -106,13 +110,13 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
               {/* To */}
               <div className="flex-1 text-center sm:text-right">
                 <p className="text-[11px] text-gray-400 mb-1">
-                  {segment.arrival.date}
+                  {lastSegment.arrival.date}
                 </p>
                 <p className="text-xl font-bold text-gray-800 leading-none">
-                  {segment.arrival.time}
+                  {lastSegment.arrival.time}
                 </p>
                 <p className="text-sm font-medium text-gray-700">
-                  {segment.arrival.city} – {segment.arrival.cityCode}
+                  {lastSegment.arrival.city} – {lastSegment.arrival.cityCode}
                 </p>
               </div>
             </div>
@@ -166,6 +170,120 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderFlightRoute = (segmentData, label) => {
+    const calculateLayoverDuration = (arrival, departure) => {
+      const arr = new Date(`${arrival.date}T${arrival.time}`);
+      const dep = new Date(`${departure.date}T${departure.time}`);
+      const diff = dep - arr;
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      return `${h}h ${m}m`;
+    };
+
+    const first = segmentData.segments[0];
+    const last = segmentData.segments.at(-1);
+
+    return (
+      <div className="w-full max-w-3xl mx-auto mb-10 text-sm text-gray-800">
+        {/* === Route Header Summary === */}
+        <div className="mb-6 border border-pink-100 bg-pink-100/50 rounded-xl px-4 py-2 shadow-md">
+          <h4 className="text-lg font-semibold text-gray-800 flex items-center gap-2 mb-1">
+            {first.departure.city}{" "}
+            <i className="fas fa-arrow-right text-pink-600 text-xs"></i>{" "}
+            {last.arrival.city}
+          </h4>
+          <p className="text-xs text-gray-500">
+            {label === "Onward" ? "One way" : "Return"}・Economy・1 Traveller・
+            {first.departure.date}
+          </p>
+        </div>
+
+        {/* === Vertical Route Timeline === */}
+        <div className="relative">
+          {/* Timeline Vertical Line */}
+          <div className="absolute top-6 bottom-6 w-[2px] left-72 bg-gray-300 -translate-x-1/2 z-0"></div>
+
+          {segmentData.segments.map((segment, index) => {
+            const nextSegment = segmentData.segments[index + 1];
+            const isLast = index === segmentData.segments.length - 1;
+
+            return (
+              <div key={index}>
+                {/* === Departure === */}
+                <div className="flex items-center mb-6">
+                  <div className="w-1/3 text-right pr-4 font-semibold">
+                    {segment.departure.time}
+                  </div>
+                  <div className="w-1/12 flex justify-center relative">
+                    <div className="w-4 h-4 bg-pink-600 rounded-full border-2 border-white shadow z-10" />
+                  </div>
+                  <div className="w-1/2 pl-2">
+                    <div className="font-medium">
+                      {segment.departure.city} ({segment.departure.cityCode})
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {segment.departure.airport}, Terminal{" "}
+                      {segment.departure.terminal || "-"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* === Flight Info === */}
+                <div className="flex mb-6">
+                  <div className="w-1/3" />
+                  <div className="w-1/12 flex justify-center items-center">
+                    <i className="fa-solid fa-plane text-gray-400 text-base rotate-90"></i>
+                  </div>
+                  <div className="w-1/2 text-xs text-gray-600 pl-2">
+                    {segment.duration} · {segment.airlineName} ·{" "}
+                    {segment.flightNumber}
+                  </div>
+                </div>
+
+                {/* === Arrival === */}
+                <div className="flex items-center mb-6">
+                  <div className="w-1/3 text-right pr-4 font-semibold">
+                    {segment.arrival.time}
+                  </div>
+                  <div className="w-1/12 flex justify-center relative">
+                    <div className="w-4 h-4 bg-pink-600 rounded-full border-2 border-white shadow z-10" />
+                  </div>
+                  <div className="w-1/2 pl-2">
+                    <div className="font-medium">
+                      {segment.arrival.city} ({segment.arrival.cityCode})
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {segment.arrival.airport}, Terminal{" "}
+                      {segment.arrival.terminal || "-"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* === Layover === */}
+                {!isLast && nextSegment && (
+                  <div className="flex items-center mb-6">
+                    <div className="w-1/3" />
+                    <div className="w-1/12 flex justify-center">
+                      <i className="fa-solid fa-clock text-yellow-600 text-sm z-40"></i>
+                    </div>
+                    <div className="w-1/2 text-xs text-yellow-700 font-medium pl-2">
+                      Short layover at {segment.arrival.city} (
+                      {segment.arrival.cityCode}) –{" "}
+                      {calculateLayoverDuration(
+                        segment.arrival,
+                        nextSegment.departure
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -361,7 +479,7 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
 
         {/* ---------- Part 1: Nav Header ---------- */}
         <div className="flex items-center gap-6 px-6 pt-6 border-b border-gray-200">
-          {["flight", "fare", "cancellation"].map((tab) => (
+          {["flight", "route", "fare", "cancellation"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -372,6 +490,7 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
               }`}
             >
               {tab === "flight" && "Flight Details"}
+              {tab === "route" && "Flight Route"}
               {tab === "fare" && "Fare Details"}
               {tab === "cancellation" && "Refund & Cancellation"}
             </button>
@@ -385,6 +504,12 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
               {renderTimelineCard("Onward", outbound)}
               {returnTrip && renderTimelineCard("Return", returnTrip)}
               {renderPassengerInfo()}
+            </>
+          )}
+          {activeTab === "route" && (
+            <>
+              {renderFlightRoute(outbound, "Onward")}
+              {returnTrip && renderFlightRoute(returnTrip, "Return")}
             </>
           )}
           {activeTab === "fare" && renderFareDetails()}

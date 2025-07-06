@@ -14,7 +14,8 @@ export const FlightResultCard = ({
   onAddToCompare,
   compareFlights,
 }) => {
-  const segment = outbound.segments[0]; // First leg of the flight
+  const firstSegment = outbound.segments[0];
+  const lastSegment = outbound.segments.at(-1);
 
   // Utility function to render a badge with icon and styles
   const Badge = ({ icon, text, bgColor, textColor, borderColor }) => (
@@ -110,10 +111,10 @@ export const FlightResultCard = ({
           />
           <div>
             <p className="text-sm font-medium text-gray-800">
-              {segment.airlineName || validatingAirline}{" "}
+              {firstSegment.airlineName || validatingAirline}{" "}
               <span className="text-gray-500 font-normal">|</span>{" "}
               <span className="text-xs text-gray-500">
-                Flight {segment.flightNumber}
+                Flight {firstSegment.flightNumber}
               </span>
             </p>
           </div>
@@ -122,10 +123,10 @@ export const FlightResultCard = ({
         {/* Departure */}
         <div className="text-left">
           <p className="text-lg font-semibold text-gray-700">
-            {segment.departure.time}
+            {firstSegment.departure.time}
           </p>
           <p className="text-sm text-gray-500">
-            {segment.departure.city} ({segment.departure.cityCode})
+            {firstSegment.departure.city} ({firstSegment.departure.cityCode})
           </p>
         </div>
 
@@ -141,10 +142,10 @@ export const FlightResultCard = ({
         {/* Arrival */}
         <div className="text-right">
           <p className="text-lg font-semibold text-gray-700">
-            {segment.arrival.time}
+            {lastSegment.arrival.time}
           </p>
           <p className="text-sm text-gray-500">
-            {segment.arrival.city} ({segment.arrival.cityCode})
+            {lastSegment.arrival.city} ({lastSegment.arrival.cityCode})
           </p>
         </div>
 
