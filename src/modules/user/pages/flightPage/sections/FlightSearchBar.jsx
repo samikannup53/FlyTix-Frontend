@@ -1,35 +1,42 @@
 import { useEffect, useState } from "react";
 import swapIcon from "../../../../../assets/images/swap.png";
-import { mockFlightResults } from "../../../../../data/mockFlightResults";
 import { fetchAirports } from "../../../services/airportService";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-export const FlightSearchBar = ({ onSearch }) => {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+export const FlightSearchBar = ({ onSearch, initialValues }) => {
+  const classReverseMap = {
+    ECONOMY: "Economy",
+    PREMIUM_ECONOMY: "Premium Economy",
+    BUSINESS: "Business",
+    FIRST: "First",
+  };
+
+  const [tripType, setTripType] = useState(initialValues.tripType || "oneway");
+  const [from, setFrom] = useState(initialValues.from || "");
+  const [to, setTo] = useState(initialValues.to || "");
+  const [departureDate, setDepartureDate] = useState(
+    initialValues.date ? new Date(initialValues.date) : null
+  );
+  const [returnDate, setReturnDate] = useState(
+    initialValues.returnDate ? new Date(initialValues.returnDate) : null
+  );
+  const [adults, setAdults] = useState(initialValues.adults || 1);
+  const [children, setChildren] = useState(initialValues.children || 0);
+  const [infants, setInfants] = useState(initialValues.infants || 0);
+
   const [fromCode, setFromCode] = useState("");
   const [toCode, setToCode] = useState("");
-
-  const [departureDate, setDepartureDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
-
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
-  const [infants, setInfants] = useState(0);
-  const [selectedClass, setSelectedClass] = useState("Economy");
-
+  const [selectedClass, setSelectedClass] = useState(
+    classReverseMap[initialValues.travelClass] || "Economy"
+  );
   const [passengersText, setPassengersText] = useState("");
-
   const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
-
   const [fromOptions, setFromOptions] = useState([]);
   const [toOptions, setToOptions] = useState([]);
   const [cachedTamilNaduAirports, setCachedTamilNaduAirports] = useState([]);
-
-  const [tripType, setTripType] = useState("oneway");
   const [errors, setErrors] = useState({});
 
   // Clear return date when switching to oneway
@@ -94,7 +101,6 @@ export const FlightSearchBar = ({ onSearch }) => {
     };
 
     onSearch?.({
-      // results: mockFlightResults.data,
       ...searchParams,
       tripType,
     });

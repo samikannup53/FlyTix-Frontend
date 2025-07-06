@@ -1,5 +1,3 @@
-import FlightTailLogo from "../../../../../assets/images/flight_tail.png";
-
 export const RoundTripFlightCard = ({
   validatingAirline,
   outbound,
@@ -36,7 +34,7 @@ export const RoundTripFlightCard = ({
           {/* Airline Logo + Name */}
           <div className="">
             <img
-              src={FlightTailLogo}
+              src={`https://images.ixigo.com/img/common-resources/airline-new/${validatingAirline}.png`}
               alt={validatingAirline}
               className="w-10 object-contain"
             />

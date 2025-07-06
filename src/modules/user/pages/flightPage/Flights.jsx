@@ -18,6 +18,8 @@ export const Flights = () => {
   const [error, setError] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  const [searchMeta, setSearchMeta] = useState({});
+
   const [tripType, setTripType] = useState("oneway");
 
   // Filters State
@@ -35,13 +37,14 @@ export const Flights = () => {
   useEffect(() => {
     const cachedData = localStorage.getItem("cachedFlightResults");
     const cachedTripType = localStorage.getItem("cachedTripType");
+    const cachedMeta = localStorage.getItem("cachedSearchMeta");
 
     if (cachedData) {
       try {
         const parsed = JSON.parse(cachedData);
         setFlights(parsed);
         setOriginalFlights(parsed);
-        setHasSearched(true); // 👈 FIX: Show results instead of initial message
+        setHasSearched(true);
       } catch (e) {
         console.error("Invalid cached data in localStorage:", e);
       }
@@ -50,17 +53,25 @@ export const Flights = () => {
     if (cachedTripType) {
       setTripType(cachedTripType);
     }
+
+    if (cachedMeta) {
+      try {
+        const meta = JSON.parse(cachedMeta);
+        setSearchMeta(meta);
+      } catch (e) {
+        console.error("Failed to parse cachedSearchMeta:", e);
+      }
+    }
   }, []);
 
   // Called when user clicks the search button in FlightSearchBar
   const handleSearch = async (searchInput) => {
-    // If using mock data
-    // if (searchInput?.results) {
-    //   setFlights(searchInput.results);
-    //   setOriginalFlights(searchInput.results); // Store raw data for filtering
-    //   setTripType(searchInput.tripType); // Capture Trip Type
-    //   return;
-    // }
+    setSearchMeta({
+      tripType: searchInput.tripType,
+      adults: searchInput.adults,
+      children: searchInput.children,
+      infants: searchInput.infants,
+    });
 
     try {
       setLoading(true);
@@ -93,6 +104,7 @@ export const Flights = () => {
       // Save to localStorage for persistence
       localStorage.setItem("cachedFlightResults", JSON.stringify(data.data));
       localStorage.setItem("cachedTripType", searchInput.tripType);
+      localStorage.setItem("cachedSearchMeta", JSON.stringify(searchInput));
 
       toast.success("Flights Loaded Successfully");
     } catch (err) {
@@ -131,7 +143,15 @@ export const Flights = () => {
 
       toast.success("Flight validated successfully!");
 
-      navigate(`/booking/initiate?flightId=${flightId}`);
+      const query = new URLSearchParams({
+        flightId,
+        tripType: searchMeta.tripType || "roundtrip",
+        adults: searchMeta.adults?.toString() || "2",
+        children: searchMeta.children?.toString() || "1",
+        infants: searchMeta.infants?.toString() || "1",
+      }).toString();
+
+      navigate(`/booking/initiate?${query}`);
     } catch (error) {
       console.error("Flight fetch error:", error.message);
       toast.error("Server error. Please try again.");
@@ -245,7 +265,7 @@ export const Flights = () => {
   return (
     <>
       <UserHeader />
-      <FlightSearchBar onSearch={handleSearch} />
+      <FlightSearchBar onSearch={handleSearch} initialValues={searchMeta} />
       {!hasSearched ? (
         // ✨ Initial UI before search
         <section className="py-24 text-center min-h-[60vh] 2xl:min-h-[70vh] bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">

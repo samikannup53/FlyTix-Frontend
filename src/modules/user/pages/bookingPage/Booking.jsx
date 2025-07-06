@@ -17,7 +17,13 @@ export const Booking = () => {
   const [flight, setFlight] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const tripType = searchParams.get("tripType") || "oneway";
+  const adults = parseInt(searchParams.get("adults") || "1", 10);
+  const children = parseInt(searchParams.get("children") || "0", 10);
+  const infants = parseInt(searchParams.get("infants") || "0", 10);
   const flightId = searchParams.get("flightId");
+
+  const bookingMeta = { flightId, tripType, adults, children, infants };
 
   useEffect(() => {
     if (!flightId) {
@@ -112,9 +118,9 @@ export const Booking = () => {
           </aside>
           {/* Right Side Main Content Section */}
           <section className="lg:w-2/3 w-full space-y-6">
-            <BookingFlightDetails flight={flight} />
+            <BookingFlightDetails flight={flight} bookingMeta={bookingMeta} />
             <BookingCancellation flight={flight} />
-            <BookingTravellerDetails />
+            <BookingTravellerDetails bookingMeta={bookingMeta} />
             <BookingContactDetails />
             <BookingBillingAddress />
             <BookingContinue flight={flight} />
