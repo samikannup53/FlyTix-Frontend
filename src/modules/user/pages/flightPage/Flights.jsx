@@ -131,7 +131,7 @@ export const Flights = () => {
 
       toast.success("Flight validated successfully!");
 
-      navigate("/booking/initiate");
+      navigate(`/booking/initiate?flightId=${flightId}`);
     } catch (error) {
       console.error("Flight fetch error:", error.message);
       toast.error("Server error. Please try again.");
