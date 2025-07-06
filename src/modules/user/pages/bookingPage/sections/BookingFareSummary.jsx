@@ -19,8 +19,15 @@ export const BookingFareSummary = ({ flight }) => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-pink-700">Fare Summary</h2>
         <span className="text-sm text-gray-500">
-          {flight.passengers?.adults || 1}{" "}
-          {flight.passengers?.adults > 1 ? "Travellers" : "Traveller"}
+          {(() => {
+            const {
+              adults = 0,
+              children = 0,
+              infants = 0,
+            } = flight.passengers || {};
+            const total = adults + children + infants;
+            return `${total} ${total === 1 ? "Traveller" : "Travellers"}`;
+          })()}
         </span>
       </div>
 
