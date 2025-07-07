@@ -98,7 +98,7 @@ export const Booking = () => {
       }
 
       toast.success("Booking initiated successfully!");
-      navigate(`/booking/payment?bookingId=${data.newBooking.bookingId}`);
+      navigate(`/booking/payment/${data.newBooking.bookingId}`);
     } catch (err) {
       console.error("Booking Init Error:", err.message);
       toast.error("Server error. Please try again.");
