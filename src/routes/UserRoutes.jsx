@@ -15,7 +15,7 @@ const UserRoutes = () => {
 
         <Route path="/booking/initiate" element={<PrivateRoute><Booking/></PrivateRoute>}/>
         <Route path="/booking/payment/:bookingId" element={<PrivateRoute><Payment/></PrivateRoute>}/>
-        <Route path="/booking/confirm" element={<PrivateRoute><BookingConfirm/></PrivateRoute>}/>
+        <Route path="/booking/confirm/:bookingId" element={<PrivateRoute><BookingConfirm/></PrivateRoute>}/>
         <Route path="/dashboard" element={<PrivateRoute><Dashboard/></PrivateRoute>}/>
         <Route path="/profile" element={<PrivateRoute><Profile/></PrivateRoute>}/>
         <Route path="/travellers" element={<PrivateRoute><Travellers/></PrivateRoute>}/>

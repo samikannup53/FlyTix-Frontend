@@ -38,7 +38,7 @@ export const FlightSummary = ({ booking }) => {
           <p className="text-base font-semibold text-gray-800">
             {info.departure.city || "N/A"}
             <span className="mx-2">
-              <i class="fa fa-arrow-right"></i>
+              <i className="fa fa-arrow-right"></i>
             </span>
             {info.arrival.city || "N/A"}
           </p>
