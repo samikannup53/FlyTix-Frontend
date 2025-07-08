@@ -1,4 +1,15 @@
-export const TicketDetails = () => {
+export const TicketDetails = ({ booking }) => {
+  if (!booking) return null;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownload = () => {
+    // Placeholder: You can implement PDF download later if needed
+    window.print(); // Temporary fallback
+  };
+
   return (
     <div className="flex flex-col md:flex-row justify-between items-start gap-4">
       {/* Left: Confirmation Icon & Message */}
@@ -17,22 +28,31 @@ export const TicketDetails = () => {
       {/* Right: Booking & PNR Info */}
       <div className="text-right space-y-2">
         <p className="text-sm text-gray-600">
-          Booking ID: <span className="text-orange-600 font-semibold">FNX24367189</span>
+          Booking ID:{" "}
+          <span className="text-pink-700 font-semibold">
+            {booking.bookingId}
+          </span>
         </p>
         <p className="text-sm text-gray-600">
-          PNR Number: <span className="text-orange-600 font-semibold">6ER897</span>
+          PNR Number:{" "}
+          <span className="text-pink-700 font-semibold">{booking.pnr}</span>
         </p>
-        <div className="text-sm text-orange-600 font-medium flex justify-end gap-2">
-          <a href="#" className="hover:underline flex items-center gap-1">
+        <div className="text-sm text-pink-700 font-medium flex justify-end gap-2">
+          <button
+            onClick={handleDownload}
+            className="hover:underline flex items-center gap-1"
+          >
             <i className="fas fa-download text-sm"></i> Download Ticket
-          </a>
+          </button>
           <span>|</span>
-          <a href="#" className="hover:underline flex items-center gap-1">
+          <button
+            onClick={handlePrint}
+            className="hover:underline flex items-center gap-1"
+          >
             <i className="fas fa-print text-sm"></i> Print Ticket
-          </a>
+          </button>
         </div>
       </div>
     </div>
   );
 };
-
