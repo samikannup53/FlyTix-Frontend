@@ -34,7 +34,7 @@ export const PassengerSummary = ({ booking }) => {
               <span>|</span>
               <span>{p.age}</span>
               <span>|</span>
-              <span>{p.gender}</span>
+              <span className="capitalize">{p.gender}</span>
             </div>
           ))}
         </div>
