@@ -14,13 +14,16 @@ export const TicketDetails = ({ booking }) => {
     <div className="flex flex-col md:flex-row justify-between items-start gap-4">
       {/* Left: Confirmation Icon & Message */}
       <div className="flex items-center gap-3">
-        <div className="text-green-500 text-5xl">
+        <div className="text-green-500 text-5xl animate-pulse">
           <i className="fas fa-check-circle"></i>
         </div>
         <div className="text-center md:text-left space-y-1">
-          <h2 className="text-2xl font-bold text-gray-800">Booking Confirmed!</h2>
+          <h2 className="text-2xl font-bold text-gray-800">
+            Booking Confirmed!
+          </h2>
           <p className="text-sm text-gray-500">
-            Your flight has been successfully booked. Check your email for the e-ticket.
+            Your flight has been successfully booked. Check your email for the
+            e-ticket.
           </p>
         </div>
       </div>
