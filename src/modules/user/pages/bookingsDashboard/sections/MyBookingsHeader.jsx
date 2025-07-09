@@ -22,18 +22,18 @@ export const MyBookingsHeader = ({
         </div>
 
         {/* Search Box */}
-        <div className="relative w-full sm:w-64">
+        <div className="relative w-full sm:w-55">
           <input
             type="text"
             placeholder="Search by Booking ID"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border bg-pink-100/50 border-pink-600 rounded-full px-4 py-1 pr-8 text-sm w-full focus:outline-none focus-within:bg-white "
+            className="border bg-white/50 border-pink-600 rounded-full px-4 py-1 pr-8 text-sm w-full focus:outline-none focus-within:bg-white "
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-pink-700 hover:text-pink-900"
+              className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-pink-700 hover:text-pink-900"
             >
               <i className="fas fa-times text-xs"></i>{" "}
               {/* Or "fa-xmark" for FA6+ */}

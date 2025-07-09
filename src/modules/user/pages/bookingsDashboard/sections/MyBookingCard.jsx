@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { CancelBookingModal } from "./CancelBookingModal";
 
-export const MyBookingCard = ({ booking }) => {
+export const MyBookingCard = ({ booking, setBookings }) => {
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
   if (!booking) return null;
 
   const journey = booking.journey?.[0];
@@ -8,7 +13,7 @@ export const MyBookingCard = ({ booking }) => {
   const returnTrip = journey?.returnTrip;
   const tripType = booking.tripType || "One Way";
 
-  const formatSegment = (segment, label) => {
+  const formatSegment = (segment) => {
     const first = segment?.segments?.[0];
     const last = segment?.segments?.[segment.segments.length - 1];
 
@@ -57,20 +62,54 @@ export const MyBookingCard = ({ booking }) => {
     year: "numeric",
   });
 
+  const handleCancel = async (reason = "User Request") => {
+    try {
+      const res = await fetch("http://localhost:8000/api/booking/cancel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ bookingId, reason }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.msg || "Failed to cancel booking");
+      }
+
+      // Update booking status in parent
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.bookingId === bookingId
+            ? {
+                ...b,
+                bookingStatus: "Cancelled",
+                cancellation: data.cancellationDetails,
+              }
+            : b
+        )
+      );
+
+      toast.success(data.msg || "Booking cancelled successfully");
+      setShowCancelModal(false);
+    } catch (err) {
+      toast.error(err.message || "Something went wrong");
+    }
+  };
+
   return (
     <div className="bg-white border border-pink-100 rounded-xl p-5 shadow-sm space-y-4">
-      {/* Top Info Container */}
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
-        {/* Left Section: Segments */}
         <div className="flex flex-col lg:flex-row gap-2 xl:gap-4 flex-1">
-          {formatSegment(outbound, "Onward")}
+          {formatSegment(outbound)}
           {tripType === "Roundtrip" && (
             <div className="hidden md:block w-px bg-gray-200"></div>
           )}
-          {tripType === "Roundtrip" && formatSegment(returnTrip, "Return")}
+          {tripType === "Roundtrip" && formatSegment(returnTrip)}
         </div>
 
-        {/* Right Section: Booking Info */}
         <div className="text-center md:text-right space-y-1 min-w-[160px]">
           <p className="text-sm text-gray-600">
             Booking ID:{" "}
@@ -81,64 +120,61 @@ export const MyBookingCard = ({ booking }) => {
           </p>
           <p className="text-sm text-gray-600">
             Status:{" "}
-            <span className="font-semibold text-green-600">{status}</span>
+            <span
+              className={`font-semibold ${
+                status === "Cancelled" ? "text-red-600" : "text-green-600"
+              }`}
+            >
+              {status}
+            </span>
           </p>
         </div>
       </div>
 
-      {/* CTA Buttons */}
-      <div className="flex flex-wrap gap-2  justify-between mt-4">
+      <div className="flex flex-wrap gap-2 justify-between mt-4">
         <div className="flex gap-2 flex-wrap justify-center md:justify-start">
-          <button
-            className="flex items-center gap-2 px-3 py-1 text-sm text-pink-700 border border-pink-600 rounded-full hover:bg-pink-100 transition duration-200"
-            title="Download Ticket"
-          >
-            <i className="fas fa-download text-xs"></i>
-            <span>Download</span>
+          <button className="px-3 py-1 text-sm border border-pink-600 text-pink-700 rounded-full hover:bg-pink-100">
+            <i className="fas fa-download text-xs mr-1"></i> Download
           </button>
-          <button
-            className="flex items-center gap-2 px-3 py-1 text-sm text-pink-700 border border-pink-600 rounded-full hover:bg-pink-100 transition duration-200"
-            title="Print Ticket"
-          >
-            <i className="fas fa-print text-xs"></i>
-            <span>Print</span>
+          <button className="px-3 py-1 text-sm border border-pink-600 text-pink-700 rounded-full hover:bg-pink-100">
+            <i className="fas fa-print text-xs mr-1"></i> Print
           </button>
-          <button
-            className="flex items-center gap-2 px-3 py-1 text-sm text-red-600 border border-red-500 rounded-full hover:bg-red-100 transition duration-200"
-            title="Cancel Booking"
-          >
-            <i className="fas fa-times-circle text-xs"></i>
-            <span>Cancel</span>
-          </button>
-          <button
-            className="flex items-center gap-2 px-3 py-1 text-sm text-amber-600 border border-amber-500 rounded-full hover:bg-amber-100 transition duration-200"
-            title="Reschedule Booking"
-          >
-            <i className="fas fa-sync-alt text-xs"></i>
-            <span>Reschedule</span>
-          </button>
+          {status !== "Cancelled" && (
+            <button
+              onClick={() => setShowCancelModal(true)}
+              className="px-3 py-1 text-sm border border-red-500 text-red-600 rounded-full hover:bg-red-100"
+            >
+              <i className="fas fa-times-circle text-xs mr-1"></i> Cancel
+            </button>
+          )}
+          {/* <button className="px-3 py-1 text-sm border border-amber-500 text-amber-600 rounded-full hover:bg-amber-100">
+            <i className="fas fa-sync-alt text-xs mr-1"></i> Reschedule
+          </button> */}
           <Link
-            to={`/booking/confirm?bookingId=${bookingId}`}
-            className="flex items-center gap-2 px-3 py-1 text-sm text-white bg-pink-700 rounded-full hover:bg-pink-800 transition duration-200"
-            title="View Booking Details"
+            to={`/booking/confirm/${bookingId}`}
+            className="px-3 py-1 text-sm bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 text-white rounded-full shadow hover:from-orange-800 hover:to-pink-900"
           >
-            <i className="fas fa-eye text-xs"></i>
-            <span>View</span>
+            <i className="fas fa-eye text-xs mr-1"></i> View
           </Link>
         </div>
 
         <div className="flex gap-2 items-center">
-          <p className="text-sm text-gray-600">
-            <span className="text-sm font-medium text-pink-700">
-              {tripType}
-            </span>
-            &nbsp; <span>|</span>
-          </p>
+          <p className="text-sm  font-medium text-pink-700">{tripType}</p>
+          <span className="text-sm text-gray-500">|</span>
           <p className="text-sm text-gray-500">
-            Booked on : <span className="font-medium">{bookingDate}</span>
+            Booked on: <span className="font-medium">{bookingDate}</span>
           </p>
         </div>
       </div>
+
+      {showCancelModal && (
+        <CancelBookingModal
+          bookingId={bookingId}
+          totalFare={booking.fareDetails?.totalFare}
+          onClose={() => setShowCancelModal(false)}
+          onConfirm={handleCancel}
+        />
+      )}
     </div>
   );
 };

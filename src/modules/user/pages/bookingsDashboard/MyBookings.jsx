@@ -66,7 +66,10 @@ export const MyBookings = () => {
           )}
 
           {!loading && !errorMsg && (
-            <MyBookingsSection bookings={filteredBookings} />
+            <MyBookingsSection
+              setBookings={setBookings}
+              bookings={filteredBookings}
+            />
           )}
         </main>
       </section>

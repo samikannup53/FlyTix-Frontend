@@ -1,6 +1,6 @@
 import { MyBookingCard } from "./MyBookingCard";
 
-export const MyBookingsSection = ({bookings = [], loading, error, searchQuery }) => {
+export const MyBookingsSection = ({bookings = [], loading, error, searchQuery, setBookings  }) => {
   // Filter bookings by Booking ID
   const filteredBookings = bookings.filter((b) =>
     b.bookingId.toLowerCase().includes((searchQuery || "").trim().toLowerCase())
@@ -38,7 +38,7 @@ export const MyBookingsSection = ({bookings = [], loading, error, searchQuery })
   return (
     <div className="space-y-5">
       {filteredBookings.map((booking) => (
-        <MyBookingCard key={booking._id} booking={booking} />
+        <MyBookingCard key={booking._id} booking={booking} setBookings={setBookings} />
       ))}
     </div>
   );
