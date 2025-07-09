@@ -13,6 +13,15 @@ export const MyBookingCard = ({ booking, setBookings }) => {
   const returnTrip = journey?.returnTrip;
   const tripType = booking.tripType || "One Way";
 
+  const bookingId = booking.bookingId || "N/A";
+  const pnr = booking.pnr || "N/A";
+  const status = booking.bookingStatus || "Unknown";
+  const bookingDate = new Date(booking.createdAt).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
   const formatSegment = (segment) => {
     const first = segment?.segments?.[0];
     const last = segment?.segments?.[segment.segments.length - 1];
@@ -53,15 +62,6 @@ export const MyBookingCard = ({ booking, setBookings }) => {
     );
   };
 
-  const bookingId = booking.bookingId || "N/A";
-  const pnr = booking.pnr || "N/A";
-  const status = booking.bookingStatus || "Unknown";
-  const bookingDate = new Date(booking.createdAt).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-
   const handleCancel = async (reason = "User Request") => {
     try {
       const res = await fetch("http://localhost:8000/api/booking/cancel", {
@@ -79,7 +79,6 @@ export const MyBookingCard = ({ booking, setBookings }) => {
         throw new Error(data.msg || "Failed to cancel booking");
       }
 
-      // Update booking status in parent
       setBookings((prev) =>
         prev.map((b) =>
           b.bookingId === bookingId
@@ -96,6 +95,62 @@ export const MyBookingCard = ({ booking, setBookings }) => {
       setShowCancelModal(false);
     } catch (err) {
       toast.error(err.message || "Something went wrong");
+    }
+  };
+
+  const handleOpenPDF = async (bookingId) => {
+    const width = 900;
+    const height = 700;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+    const features = `width=${width},height=${height},left=${left},top=${top},toolbar=0,scrollbars=1,resizable=1`;
+
+    const ticketUrl = `http://localhost:8000/api/booking/${bookingId}/ticket`;
+    const previewWindow = window.open("", "_blank", features);
+
+    // Step 1: Show loading UI with Tailwind
+    previewWindow.document.write(`
+    <html>
+      <head>
+        <title>Generating Ticket...</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+      </head>
+      <body class="flex items-center justify-center h-screen bg-white text-gray-700 flex-col">
+        <div class="w-10 h-10 border-4 border-pink-300 border-t-pink-600 rounded-full animate-spin mb-4"></div>
+        <p class="text-sm font-medium">Preparing your ticket PDF...</p>
+      </body>
+    </html>
+  `);
+    previewWindow.document.close();
+
+    // Step 2: Make a HEAD request to check for errors before redirecting
+    try {
+      const res = await fetch(ticketUrl, {
+        method: "HEAD", // Lightweight request to check if ticket can be generated
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        // If successful, redirect to ticket PDF
+        previewWindow.location.href = ticketUrl;
+      } else {
+        const errorText = `Unable to generate ticket (Status ${res.status})`;
+        previewWindow.document.body.innerHTML = `
+        <div class="flex items-center justify-center h-screen text-center flex-col px-6">
+          <div class="text-3xl text-red-600 mb-2">⚠️</div>
+          <p class="text-lg font-semibold text-red-700">Ticket Generation Failed</p>
+          <p class="text-sm text-gray-600 mt-1">${errorText}</p>
+        </div>
+      `;
+      }
+    } catch (error) {
+      previewWindow.document.body.innerHTML = `
+      <div class="flex items-center justify-center h-screen text-center flex-col px-6">
+        <div class="text-3xl text-red-600 mb-2">🚫</div>
+        <p class="text-lg font-semibold text-red-700">Something went wrong</p>
+        <p class="text-sm text-gray-600 mt-1">${error.message}</p>
+      </div>
+    `;
     }
   };
 
@@ -133,12 +188,20 @@ export const MyBookingCard = ({ booking, setBookings }) => {
 
       <div className="flex flex-wrap gap-2 justify-between mt-4">
         <div className="flex gap-2 flex-wrap justify-center md:justify-start">
-          <button className="px-3 py-1 text-sm border border-pink-600 text-pink-700 rounded-full hover:bg-pink-100">
+          <button
+            onClick={() => handleOpenPDF(bookingId)}
+            className="px-3 py-1 text-sm border border-pink-600 text-pink-700 rounded-full hover:bg-pink-100"
+          >
             <i className="fas fa-download text-xs mr-1"></i> Download
           </button>
-          <button className="px-3 py-1 text-sm border border-pink-600 text-pink-700 rounded-full hover:bg-pink-100">
+
+          <button
+            onClick={() => handleOpenPDF(bookingId)}
+            className="px-3 py-1 text-sm border border-pink-600 text-pink-700 rounded-full hover:bg-pink-100"
+          >
             <i className="fas fa-print text-xs mr-1"></i> Print
           </button>
+
           {status !== "Cancelled" && (
             <button
               onClick={() => setShowCancelModal(true)}
@@ -147,9 +210,7 @@ export const MyBookingCard = ({ booking, setBookings }) => {
               <i className="fas fa-times-circle text-xs mr-1"></i> Cancel
             </button>
           )}
-          {/* <button className="px-3 py-1 text-sm border border-amber-500 text-amber-600 rounded-full hover:bg-amber-100">
-            <i className="fas fa-sync-alt text-xs mr-1"></i> Reschedule
-          </button> */}
+
           <Link
             to={`/booking/confirm/${bookingId}`}
             className="px-3 py-1 text-sm bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 text-white rounded-full shadow hover:from-orange-800 hover:to-pink-900"
@@ -159,7 +220,7 @@ export const MyBookingCard = ({ booking, setBookings }) => {
         </div>
 
         <div className="flex gap-2 items-center">
-          <p className="text-sm  font-medium text-pink-700">{tripType}</p>
+          <p className="text-sm font-medium text-pink-700">{tripType}</p>
           <span className="text-sm text-gray-500">|</span>
           <p className="text-sm text-gray-500">
             Booked on: <span className="font-medium">{bookingDate}</span>

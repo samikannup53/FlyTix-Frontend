@@ -1,9 +1,6 @@
 export const TicketDetails = ({ booking }) => {
   if (!booking) return null;
 
-  const handlePrint = () => window.print();
-  const handleDownload = () => window.print(); // temporary fallback
-
   const getBanner = () => {
     if (booking.cancellation?.isCancelled) {
       return {
@@ -51,6 +48,58 @@ export const TicketDetails = ({ booking }) => {
       : "N/A";
   };
 
+  const handleOpenPDF = async (bookingId) => {
+    const width = 900;
+    const height = 700;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+    const features = `width=${width},height=${height},left=${left},top=${top},toolbar=0,scrollbars=1,resizable=1`;
+
+    const ticketUrl = `http://localhost:8000/api/booking/${bookingId}/ticket`;
+    const popup = window.open("", "_blank", features);
+
+    // Show Tailwind loading spinner
+    popup.document.write(`
+      <html>
+        <head>
+          <title>Generating Ticket...</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="flex items-center justify-center h-screen bg-white text-gray-700 flex-col">
+          <div class="w-10 h-10 border-4 border-pink-300 border-t-pink-600 rounded-full animate-spin mb-4"></div>
+          <p class="text-sm font-medium">Preparing your ticket PDF...</p>
+        </body>
+      </html>
+    `);
+    popup.document.close();
+
+    try {
+      const res = await fetch(ticketUrl, {
+        method: "HEAD",
+        credentials: "include",
+      });
+      if (res.ok) {
+        popup.location.href = ticketUrl;
+      } else {
+        popup.document.body.innerHTML = `
+          <div class="flex flex-col items-center justify-center h-screen text-center px-6">
+            <div class="text-3xl text-red-600 mb-2">⚠️</div>
+            <p class="text-lg font-semibold text-red-700">Ticket Generation Failed</p>
+            <p class="text-sm text-gray-600 mt-1">Status ${res.status} - Something went wrong.</p>
+          </div>
+        `;
+      }
+    } catch (err) {
+      popup.document.body.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-screen text-center px-6">
+          <div class="text-3xl text-red-600 mb-2">🚫</div>
+          <p class="text-lg font-semibold text-red-700">Connection Error</p>
+          <p class="text-sm text-gray-600 mt-1">${err.message}</p>
+        </div>
+      `;
+    }
+  };
+
   const banner = getBanner();
 
   return (
@@ -86,7 +135,7 @@ export const TicketDetails = ({ booking }) => {
         </p>
         <div className="text-sm text-pink-700 font-medium flex justify-end gap-2 flex-wrap">
           <button
-            onClick={handleDownload}
+            onClick={() => handleOpenPDF(booking.bookingId)}
             className="hover:underline flex items-center gap-1"
             title="Download Ticket"
           >
@@ -94,7 +143,7 @@ export const TicketDetails = ({ booking }) => {
           </button>
           <span>|</span>
           <button
-            onClick={handlePrint}
+            onClick={() => handleOpenPDF(booking.bookingId)}
             className="hover:underline flex items-center gap-1"
             title="Print Ticket"
           >
