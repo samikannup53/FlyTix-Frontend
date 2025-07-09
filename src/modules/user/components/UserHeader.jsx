@@ -1,40 +1,42 @@
 import { Link } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useAuth } from "../../../shared/contexts/AuthContext";
 
 export const UserHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { user, isLoggedIn, logout, loading, refreshUser } = useAuth();
-
-  // Separate refs for desktop and mobile/tablet dropdowns
-  const desktopDropdownRef = useRef();
-  const mobileDropdownRef = useRef();
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (
-        (desktopDropdownRef.current &&
-          desktopDropdownRef.current.contains(e.target)) ||
-        (mobileDropdownRef.current &&
-          mobileDropdownRef.current.contains(e.target))
-      ) {
-        return;
-      }
-      setDropdownOpen(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const { isLoggedIn, logout, loading, refreshUser } = useAuth();
 
   if (loading) return null;
 
+  const guestLinks = [
+    { to: "/", icon: "fa-house", label: "Home" },
+    { to: "/flights", icon: "fa-plane-up", label: "Flights" },
+    { href: "#how-it-works", icon: "fa-compass", label: "Explore" },
+    { to: "/#benefits", icon: "fa-gem", label: "Benefits" },
+    {
+      href: "#cheapest-fares",
+      icon: "fa-map-location-dot",
+      label: "Destinations",
+    },
+  ];
+
+  const userLinks = [
+    { to: "/", icon: "fa-house", label: "Home" },
+    { to: "/flights", icon: "fa-plane-up", label: "Flights" },
+    { to: "/dashboard", icon: "fa-clock-rotate-left", label: "Bookings" },
+    { to: "/travellers", icon: "fa-user-group", label: "Travellers" },
+    { to: "/profile", icon: "fa-user", label: "Profile" },
+    { to: "/change-password", icon: "fa-gear", label: "Settings" },
+  ];
+
+  const links = isLoggedIn ? userLinks : guestLinks;
+
   return (
     <header className="bg-gradient-to-tr from-orange-300 to-pink-300 sticky top-0 z-30 shadow-md">
-      <div className="max-w-[1600px] mx-auto px-6 py-3 flex justify-between items-center">
+      <div className="max-w-[1600px] mx-auto p-5 py-3 2xl:py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="flex items-center">
+        <Link to="/" className="xl:flex-1 flex items-center">
           <img
             src={logo}
             alt="FlyTix Logo"
@@ -42,145 +44,31 @@ export const UserHeader = () => {
           />
         </Link>
 
-        {/* Auth Buttons + Menu (Tablet & Mobile) */}
-        <div className="flex items-center gap-3 lg:hidden">
-          {!isLoggedIn && (
-            <>
+        {/* Desktop Nav */}
+        <nav className="xl::flex-2 hidden lg:flex items-center md:justify-center gap-8 text-[15px] font-semibold text-pink-900">
+          {links.map((item, idx) =>
+            item.to ? (
               <Link
-                to="/login"
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/30 backdrop-blur-md text-gray-800 hover:bg-white/50 transition-all border border-white/60 shadow text-sm"
+                key={idx}
+                to={item.to}
+                className="flex items-center gap-2 hover:text-gray-900 transition"
               >
-                <i className="fa-solid fa-right-to-bracket"></i> Login
+                <i className={`fa-solid ${item.icon}`}></i> {item.label}
               </Link>
-              <Link
-                to="/register"
-                className="hidden sm:flex items-center gap-2 bg-gradient-to-tr from-orange-700 via-pink-700 to-pink-800 text-white px-4 py-1.5 rounded-full shadow hover:brightness-110 transition-all text-sm"
+            ) : (
+              <a
+                key={idx}
+                href={item.href}
+                className="flex items-center gap-2 hover:text-gray-900 transition"
               >
-                <i className="fa-solid fa-user-plus"></i> Register
-              </Link>
-            </>
+                <i className={`fa-solid ${item.icon}`}></i> {item.label}
+              </a>
+            )
           )}
-
-          {isLoggedIn && (
-            <div className="relative" ref={mobileDropdownRef}>
-              <button
-                onClick={() => setDropdownOpen((prev) => !prev)}
-                className="w-10 h-10 rounded-full overflow-hidden border-2 border-orange-500 shadow"
-              >
-                <img
-                  src="https://randomuser.me/api/portraits/men/32.jpg"
-                  alt="User"
-                  className="w-full h-full object-cover"
-                />
-              </button>
-
-              {dropdownOpen && (
-                <div
-                  className={`absolute z-50 pt-2 text-sm border border-gray-200 shadow-xl
-                  bg-white text-gray-800
-                  rounded-none sm:rounded-2xl
-                  w-screen -right-[68px] top-12
-                  sm:w-64 sm:left-auto sm:right-0`}
-                >
-                  <Link
-                    to="/profile"
-                    className="block px-6 py-4 transition hover:bg-orange-50"
-                  >
-                    <div className="flex items-center gap-4">
-                      <i className="fa-solid fa-user text-orange-500 text-lg" />
-                      <div>
-                        <p className="font-semibold">Flyer</p>
-                        <p className="text-xs text-gray-500">My Profile</p>
-                      </div>
-                    </div>
-                  </Link>
-                  <Link
-                    to="/dashboard"
-                    className="block px-6 py-4 transition hover:bg-orange-50"
-                  >
-                    <div className="flex items-center gap-4">
-                      <i className="fa-solid fa-clock-rotate-left text-orange-500 text-lg" />
-                      <div>
-                        <p className="font-semibold">My Trips</p>
-                        <p className="text-xs text-gray-500">Manage Bookings</p>
-                      </div>
-                    </div>
-                  </Link>
-                  <Link
-                    to="/change-password"
-                    className="block px-6 py-4 transition hover:bg-orange-50"
-                  >
-                    <div className="flex items-center gap-4">
-                      <i className="fa-solid fa-gear text-orange-500 text-lg" />
-                      <div>
-                        <p className="font-semibold">Settings</p>
-                        <p className="text-xs text-gray-500">
-                          Profile Preferences
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      refreshUser();
-                      setDropdownOpen(false);
-                    }}
-                    className="flex items-center gap-4 px-6 py-4 mt-2 border-t border-gray-100 text-red-600 hover:bg-red-50 transition"
-                  >
-                    <i className="fa-solid fa-right-from-bracket text-lg" />
-                    <span className="font-semibold text-[15px]">Logout</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="text-pink-900 text-2xl w-8 h-8 flex items-center justify-center"
-            aria-label="Toggle Menu"
-          >
-            <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`}></i>
-          </button>
-        </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-6 text-[15px] font-semibold text-pink-900">
-          <Link
-            to="/"
-            className="flex items-center gap-2 hover:text-gray-900 transition"
-          >
-            <i className="fa-solid fa-house"></i> Home
-          </Link>
-          <Link
-            to="/flights"
-            className="flex items-center gap-2 hover:text-gray-900 transition"
-          >
-            <i className="fa-solid fa-plane-up"></i> Flights
-          </Link>
-          <a
-            href="#how-it-works"
-            className="flex items-center gap-2 hover:text-gray-900 transition"
-          >
-            <i className="fa-solid fa-compass"></i> Explore
-          </a>
-          <Link
-            to="/#benefits"
-            className="flex items-center gap-2 hover:text-gray-900 transition"
-          >
-            <i className="fa-solid fa-gem"></i> Benefits
-          </Link>
-          <a
-            href="#cheapest-fares"
-            className="flex items-center gap-2 hover:text-gray-900 transition"
-          >
-            <i className="fa-solid fa-map-location-dot"></i> Destinations
-          </a>
         </nav>
 
-        {/* Desktop Auth Buttons */}
-        <div className="hidden lg:flex items-center gap-3">
+        {/* Desktop CTA */}
+        <div className="xl:flex-1 hidden lg:flex items-center gap-3 justify-end">
           {!isLoggedIn ? (
             <>
               <Link
@@ -197,124 +85,109 @@ export const UserHeader = () => {
               </Link>
             </>
           ) : (
-            <div className="relative" ref={desktopDropdownRef}>
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-10 h-10 rounded-full overflow-hidden border-2 border-orange-500 shadow"
-              >
-                <img
-                  src="https://randomuser.me/api/portraits/men/32.jpg"
-                  alt="User"
-                  className="w-full h-full object-cover"
-                />
-              </button>
-
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-3 w-64 bg-white text-gray-800 rounded-2xl shadow-xl z-50 pt-2 text-sm border border-gray-200">
-                  <Link
-                    to="/profile"
-                    className="block px-6 py-4 transition hover:bg-orange-50 rounded-xl"
-                  >
-                    <div className="flex items-center gap-4">
-                      <i className="fa-solid fa-user text-orange-500 text-lg" />
-                      <div>
-                        <p className="font-semibold">FlyNower</p>
-                        <p className="text-xs text-gray-500">My Profile</p>
-                      </div>
-                    </div>
-                  </Link>
-                  <Link
-                    to="/dashboard"
-                    className="block px-6 py-4 transition hover:bg-orange-50 rounded-xl"
-                  >
-                    <div className="flex items-center gap-4">
-                      <i className="fa-solid fa-clock-rotate-left text-orange-500 text-lg" />
-                      <div>
-                        <p className="font-semibold">My Trips</p>
-                        <p className="text-xs text-gray-500">Manage Bookings</p>
-                      </div>
-                    </div>
-                  </Link>
-                  <Link
-                    to="/change-password"
-                    className="block px-6 py-4 transition hover:bg-orange-50 rounded-xl"
-                  >
-                    <div className="flex items-center gap-4">
-                      <i className="fa-solid fa-gear text-orange-500 text-lg" />
-                      <div>
-                        <p className="font-semibold">Settings</p>
-                        <p className="text-xs text-gray-500">
-                          Profile Preferences
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      refreshUser();
-                      setDropdownOpen(false);
-                    }}
-                    className="w-full flex items-center gap-4 px-6 py-4 mt-2 border-t border-gray-100 text-red-600 hover:bg-red-50 transition rounded-b-2xl"
-                  >
-                    <i className="fa-solid fa-right-from-bracket text-lg" />
-                    <span className="font-semibold text-[15px]">Logout</span>
-                  </button>
-                </div>
-              )}
-            </div>
+            <button
+              onClick={() => {
+                logout();
+                refreshUser();
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/30 backdrop-blur-md text-pink-700 font-semibold cursor-pointer hover:bg-white/50 transition-all border border-white/60 shadow"
+            >
+              <i className="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
           )}
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="lg:hidden text-pink-900 text-2xl w-8 h-8 flex items-center justify-center"
+          aria-label="Toggle Menu"
+        >
+          <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`}></i>
+        </button>
+      </div>
+
+      {/* Mobile Sliding Panel */}
+      <div
+        className={`fixed top-0 right-0 h-full w-[80%] max-w-xs z-40 transform transition-transform duration-300 ease-in-out ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        } bg-gradient-to-br from-orange-200 via-pink-200 to-pink-100 shadow-lg`}
+      >
+        <div className="flex flex-col gap-4 p-6 text-[15px] font-semibold text-pink-900 h-full">
+          {/* Close Button */}
+          <button
+            onClick={() => setMenuOpen(false)}
+            className="self-end text-lg text-gray-500 hover:text-gray-700"
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+
+          {/* Nav Links */}
+          <div className="flex flex-col gap-4 mt-2">
+            {links.map((item, idx) =>
+              item.to ? (
+                <Link
+                  key={idx}
+                  to={item.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2"
+                >
+                  <i className={`fa-solid ${item.icon}`}></i> {item.label}
+                </Link>
+              ) : (
+                <a
+                  key={idx}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2"
+                >
+                  <i className={`fa-solid ${item.icon}`}></i> {item.label}
+                </a>
+              )
+            )}
+          </div>
+
+          {/* CTA Section */}
+          <div className=" pt-6 border-t border-pink-200 flex flex-col gap-3">
+            {!isLoggedIn ? (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/30 backdrop-blur-md text-gray-800 hover:bg-white/50 transition-all border border-white/60"
+                >
+                  <i className="fa-solid fa-right-to-bracket"></i> Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 bg-gradient-to-tr from-orange-700 via-pink-700 to-pink-800 text-white px-5 py-2 rounded-full shadow hover:brightness-110 transition-all"
+                >
+                  <i className="fa-solid fa-user-plus"></i> Register
+                </Link>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  logout();
+                  refreshUser();
+                  setMenuOpen(false);
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/30 backdrop-blur-md text-red-600 hover:bg-white/50 transition-all border border-white/60 shadow"
+              >
+                <i className="fa-solid fa-right-from-bracket"></i> Logout
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Mobile & Tablet Dropdown Menu */}
+      {/* Mobile Backdrop */}
       {menuOpen && (
-        <div className="lg:hidden bg-orange-100/80 backdrop-blur-md px-4 py-4 text-[15px] space-y-4 font-semibold text-pink-900">
-          <Link to="/" className="flex items-center sm:justify-center gap-2">
-            <i className="fa-solid fa-house"></i> Home
-          </Link>
-          <Link
-            to="/flights"
-            className="flex items-center sm:justify-center gap-2"
-          >
-            <i className="fa-solid fa-plane-up"></i> Flights
-          </Link>
-          <a
-            href="#how-it-works"
-            className="flex items-center sm:justify-center gap-2"
-          >
-            <i className="fa-solid fa-compass"></i> Explore
-          </a>
-          <Link
-            to="/#benefits"
-            className="flex items-center sm:justify-center gap-2"
-          >
-            <i className="fa-solid fa-gem"></i> Benefits
-          </Link>
-          <a
-            href="#cheapest-fares"
-            className="flex items-center sm:justify-center gap-2"
-          >
-            <i className="fa-solid fa-map-location-dot"></i> Destinations
-          </a>
-
-          {!isLoggedIn && (
-            <div className="pt-3 border-t border-pink-300 flex flex-col gap-2 sm:hidden">
-              <Link
-                to="/login"
-                className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/30 backdrop-blur-md text-gray-800 hover:bg-white/50 transition-all border border-white/60"
-              >
-                <i className="fa-solid fa-right-to-bracket"></i> Login
-              </Link>
-              <Link
-                to="/register"
-                className="flex items-center justify-center gap-2 bg-gradient-to-tr from-orange-700 via-pink-700 to-pink-800 text-white px-5 py-2 rounded-full shadow hover:brightness-110 transition-all"
-              >
-                <i className="fa-solid fa-user-plus"></i> Register
-              </Link>
-            </div>
-          )}
-        </div>
+        <div
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setMenuOpen(false)}
+        />
       )}
     </header>
   );

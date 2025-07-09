@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { BookingHeader, BookingFooter } from "../../components";
+import { BookingFooter, UserHeader } from "../../components";
 import { ConfirmationSection } from "./sections/ConfirmationSection";
 import { ThankYouSection } from "./sections/ThankYouSection";
 
@@ -20,9 +20,12 @@ export const BookingConfirm = () => {
 
     const fetchBooking = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/booking/${bookingId}`, {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `http://localhost:8000/api/booking/${bookingId}`,
+          {
+            credentials: "include",
+          }
+        );
         const data = await res.json();
 
         if (!res.ok) {
@@ -48,10 +51,12 @@ export const BookingConfirm = () => {
   if (loading) {
     return (
       <>
-        <BookingHeader />
+        <UserHeader />
         <section className="bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50 min-h-[77vh] flex flex-col items-center justify-center space-y-4">
           <i className="fas fa-spinner fa-spin text-4xl text-pink-700" />
-          <p className="text-lg text-gray-600">Loading Your Booking Confirmation...</p>
+          <p className="text-lg text-gray-600">
+            Loading Your Booking Confirmation...
+          </p>
         </section>
         <BookingFooter />
       </>
@@ -61,11 +66,13 @@ export const BookingConfirm = () => {
   if (!booking || errorMsg) {
     return (
       <>
-        <BookingHeader />
+        <UserHeader />
         <section className="bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50 min-h-[77vh] flex items-center justify-center px-4">
           <div className="border border-pink-200 rounded-xl shadow-sm p-6 max-w-md w-full text-center space-y-4">
             <i className="fas fa-exclamation-triangle text-pink-800 text-6xl" />
-            <p className="text-xl font-semibold text-pink-700">Oops! Something Went Wrong</p>
+            <p className="text-xl font-semibold text-pink-700">
+              Oops! Something Went Wrong
+            </p>
             <p className="text-gray-600 text-sm">{errorMsg}</p>
             <button
               onClick={() => window.location.reload()}
@@ -82,7 +89,7 @@ export const BookingConfirm = () => {
 
   return (
     <>
-      <BookingHeader />
+      <UserHeader />
       <section className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 py-6 px-4">
         <ConfirmationSection booking={booking} />
         <ThankYouSection booking={booking} />
