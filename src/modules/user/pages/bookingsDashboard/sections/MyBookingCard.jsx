@@ -5,6 +5,7 @@ import { CancelBookingModal } from "./CancelBookingModal";
 
 export const MyBookingCard = ({ booking, setBookings }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   if (!booking) return null;
 
@@ -63,6 +64,7 @@ export const MyBookingCard = ({ booking, setBookings }) => {
   };
 
   const handleCancel = async (reason = "User Request") => {
+    setIsCancelling(true);
     try {
       const res = await fetch("http://localhost:8000/api/booking/cancel", {
         method: "POST",
@@ -95,6 +97,8 @@ export const MyBookingCard = ({ booking, setBookings }) => {
       setShowCancelModal(false);
     } catch (err) {
       toast.error(err.message || "Something went wrong");
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -108,7 +112,6 @@ export const MyBookingCard = ({ booking, setBookings }) => {
     const ticketUrl = `http://localhost:8000/api/booking/${bookingId}/ticket`;
     const previewWindow = window.open("", "_blank", features);
 
-    // Step 1: Show loading UI with Tailwind
     previewWindow.document.write(`
     <html>
       <head>
@@ -123,15 +126,13 @@ export const MyBookingCard = ({ booking, setBookings }) => {
   `);
     previewWindow.document.close();
 
-    // Step 2: Make a HEAD request to check for errors before redirecting
     try {
       const res = await fetch(ticketUrl, {
-        method: "HEAD", // Lightweight request to check if ticket can be generated
+        method: "HEAD",
         credentials: "include",
       });
 
       if (res.ok) {
-        // If successful, redirect to ticket PDF
         previewWindow.location.href = ticketUrl;
       } else {
         const errorText = `Unable to generate ticket (Status ${res.status})`;
@@ -155,7 +156,20 @@ export const MyBookingCard = ({ booking, setBookings }) => {
   };
 
   return (
-    <div className="bg-white border border-pink-100 rounded-xl p-5 shadow-sm space-y-4">
+    <div className="bg-white border border-pink-100 rounded-xl p-5 shadow-sm space-y-4 relative">
+      {/* Spinner Overlay */}
+      {isCancelling && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[9999] flex items-center justify-center h-screen">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 border-4 border-pink-200 border-t-pink-700 rounded-full animate-spin"></div>
+            <p className="text-white text-base font-medium">
+              Booking Cancellation Under Process
+            </p>
+            <p className="text-white text-base font-medium">Please Wait ...</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
         <div className="flex flex-col lg:flex-row gap-2 xl:gap-4 flex-1">
           {formatSegment(outbound)}

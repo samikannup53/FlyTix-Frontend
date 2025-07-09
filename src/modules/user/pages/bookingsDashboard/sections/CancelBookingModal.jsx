@@ -77,8 +77,11 @@ export const CancelBookingModal = ({
             <i className="fas fa-times-circle mr-1"></i> No, Keep Booking
           </button>
           <button
+            onClick={() => {
+              onConfirm("User Requested");
+              onClose(); // <-- Close modal immediately after confirming
+            }}
             className="cursor-pointer px-4 py-1.5 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 text-white rounded-full shadow hover:from-orange-800 hover:to-pink-900 transition duration-200"
-            onClick={() => onConfirm("User Requested")}
           >
             <i className="fas fa-check-circle mr-1"></i> Yes, Cancel
           </button>
