@@ -79,7 +79,7 @@ export const Profile = () => {
   return (
     <>
       <UserHeader />
-      <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-screen py-10 px-4 flex flex-col items-center">
+      <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-[85vh] py-10 px-4 flex flex-col items-center">
         <main className="w-full max-w-5xl mx-auto px-2 sm:px-4">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-orange-200 pb-4 mb-10">
