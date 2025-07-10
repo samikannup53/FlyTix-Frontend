@@ -35,30 +35,30 @@ export const Flights = () => {
   // Static list of Indian domestic airline codes
   const indianAirlines = ["AI", "IX", "6E", "QP", "SG", "9I", "UK", "EK"];
 
-  // useEffect(() => {
-  //   const cachedData = localStorage.getItem("cachedFlightResults");
-  //   const cachedMeta = localStorage.getItem("cachedSearchMeta");
+  useEffect(() => {
+    const cachedData = localStorage.getItem("cachedFlightResults");
+    const cachedMeta = localStorage.getItem("cachedSearchMeta");
 
-  //   if (cachedData) {
-  //     try {
-  //       const parsed = JSON.parse(cachedData);
-  //       setFlights(parsed);
-  //       setOriginalFlights(parsed);
-  //       setHasSearched(true);
-  //     } catch (e) {
-  //       console.error("Invalid cached data in localStorage:", e);
-  //     }
-  //   }
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        setFlights(parsed);
+        setOriginalFlights(parsed);
+        setHasSearched(true);
+      } catch (e) {
+        console.error("Invalid cached data in localStorage:", e);
+      }
+    }
 
-  //   if (cachedMeta) {
-  //     try {
-  //       const meta = JSON.parse(cachedMeta);
-  //       setSearchMeta(meta);
-  //     } catch (e) {
-  //       console.error("Failed to parse cachedSearchMeta:", e);
-  //     }
-  //   }
-  // }, []);
+    if (cachedMeta) {
+      try {
+        const meta = JSON.parse(cachedMeta);
+        setSearchMeta(meta);
+      } catch (e) {
+        console.error("Failed to parse cachedSearchMeta:", e);
+      }
+    }
+  }, []);
 
   // Called when user clicks the search button in FlightSearchBar
   const handleSearch = async (searchInput) => {
@@ -107,7 +107,7 @@ export const Flights = () => {
       toast.error("Something went wrong. Please try again.");
       setError(true);
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -259,12 +259,12 @@ export const Flights = () => {
       <UserHeader />
       <FlightSearchBar onSearch={handleSearch} initialValues={searchMeta} />
       {!hasSearched ? (
-        <section className="py-24  min-h-[70vh] flex flex-col items-center justify-start gap-4 bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
+        <section className="text-center px-6 py-24   min-h-[70vh] flex flex-col items-center justify-start gap-4 bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
           <div className="inline-block animate-bounce">
             <img src={brandIcon} className=" w-24  " />
           </div>
 
-          <h2 className="text-2xl font-bold bg-gradient-to-br from-pink-600 via-orange-700 to-pink-700 text-transparent bg-clip-text">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 via-orange-600 to-pink-700 text-transparent bg-clip-text">
             Search and explore the best flights across India
           </h2>
 
@@ -273,7 +273,7 @@ export const Flights = () => {
           </p>
         </section>
       ) : loading ? (
-        <section className="py-24  min-h-[70vh] flex flex-col items-center justify-start gap-6">
+        <section className="text-center px-6 py-24  min-h-[70vh] flex flex-col items-center justify-start gap-6">
           <div className="relative inline-block">
             <div className="border-6 rounded-full h-40 w-40 border-t-pink-800 border-pink-200 inline-flex animate-spin"></div>
             <img
@@ -283,7 +283,7 @@ export const Flights = () => {
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-2xl font-bold bg-gradient-to-br from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
               Hold On... Finding the Best Flights for You...
             </h2>
             <p className="text-base text-gray-600 max-w-xl px-6">
@@ -292,7 +292,7 @@ export const Flights = () => {
           </div>
         </section>
       ) : error ? ( // ✨ Error UI
-        <section className="py-24 text-center min-h-[70vh] flex flex-col items-center justify-start gap-2">
+        <section className="py-24 px-6 text-center min-h-[70vh] flex flex-col items-center justify-start gap-2">
           {/* Gradient Alert Icon */}
           <div className="text-6xl mb-2 bg-gradient-to-tr from-pink-700 via-pink-600 to-orange-600 text-transparent bg-clip-text">
             <span className="text-8xl">
@@ -301,7 +301,7 @@ export const Flights = () => {
           </div>
 
           {/* Gradient Title */}
-          <h2 className="text-2xl font-bold bg-gradient-to-br from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
             Error In Fetching Flights
           </h2>
 

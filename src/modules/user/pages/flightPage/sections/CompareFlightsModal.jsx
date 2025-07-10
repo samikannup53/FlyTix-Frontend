@@ -261,11 +261,12 @@ export const CompareFlightsModal = ({ flights, onClose, onBookNow }) => {
             {flights.map((flight) => (
               <button
                 key={flight.flightId}
+                onClick={() => onBookNow(flight.flightId)}
                 className="min-w-[220px] md:min-w-[240px] py-2 px-4 rounded-full font-medium text-white transition relative overflow-hidden group bg-gradient-to-br from-pink-700 to-orange-700 shadow-md hover:from-pink-800 hover:to-orange-700"
               >
                 <div className="flex items-center justify-center gap-2">
                   <i className="fa fa-plane-departure text-sm text-white drop-shadow-sm" />
-                  <button onClick={onBookNow}>Book Now</button>
+                  <span>Book Now</span>
                   <span className="flex items-center gap-1 font-semibold text-base">
                     <i className="fa fa-indian-rupee-sign text-xs" />
                     {flight.fare.totalFare}

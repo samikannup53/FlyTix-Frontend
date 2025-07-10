@@ -47,8 +47,21 @@ export const FlightSearchBarShared = ({ mode = "flights", onSearch }) => {
   } = useFlightSearchLogic({ mode, onSearch });
 
   return (
-    <div className="sticky top-0 z-40 bg-gradient-to-r from-orange-900 to-pink-900 text-white shadow-xl">
-      <div className="max-w-[1600px] mx-auto p-5">
+    <div
+      className={`${
+        mode === "landing"
+          ? "" // Landing layout
+          : "lg:sticky top-0 lg:z-50 bg-gradient-to-r from-orange-900 to-pink-900 text-white shadow-xl" // Flights layout
+      }`}
+    >
+      {/* Wrapper Container */}
+      <div
+        className={`${
+          mode === "landing"
+            ? "hidden lg:block min-w-[1000px] xl:min-w-6xl max-w-7xl px-6 py-10 z-20 rounded-2xl bg-gradient-to-r from-orange-900 to-pink-900 text-white shadow-xl absolute left-1/2 -translate-x-1/2"
+            : "max-w-[1600px] mx-auto px-8 py-6"
+        }`}
+      >
         {/* Trip Type Toggle */}
         <div className="flex gap-3 mb-3">
           {["oneway", "roundtrip"].map((type, idx) => (
