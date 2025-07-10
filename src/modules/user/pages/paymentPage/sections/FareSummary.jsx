@@ -109,7 +109,7 @@ export const FareSummary = ({ booking }) => {
   return (
     <>
       {isProcessing && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center h-screen">
           <div className="bg-white p-6 rounded-xl shadow-xl text-center space-y-3 w-[90%] max-w-sm">
             <i className="fas fa-spinner fa-spin text-3xl text-pink-700"></i>
             <p className="text-base font-medium text-gray-800">

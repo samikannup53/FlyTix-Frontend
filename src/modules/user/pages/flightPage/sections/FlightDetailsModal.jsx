@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FlightTailLogo from "../../../../../assets/images/flight_tail.png";
 
-export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
+export const FlightDetailsModal = ({ isOpen, flight, onClose, onBookNow }) => {
   if (!isOpen || !flight) return null;
 
   const {
@@ -521,7 +521,10 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose }) => {
           <p className="text-lg font-semibold text-pink-700">
             ₹{fare.totalFare}
           </p>
-          <button className="px-6 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer">
+          <button
+            onClick={onBookNow}
+            className="px-6 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer"
+          >
             Book Now
           </button>
         </div>

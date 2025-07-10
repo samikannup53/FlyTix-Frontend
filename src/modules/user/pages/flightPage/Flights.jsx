@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BookingFooter,  UserHeader } from "../../components";
+import { BookingFooter, UserHeader } from "../../components";
 import { FiltersSideBar } from "./sections/FilterSideBar";
 import { FlightResults } from "./sections/FlightResults";
 import { FlightSearchBar } from "./sections/FlightSearchBar";
@@ -7,6 +7,7 @@ import { SortBySection } from "./sections/SortBySection";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../shared/contexts/AuthContext";
 import { toast } from "react-toastify";
+import brandIcon from "../../../../assets/images/brandIcon.png";
 
 export const Flights = () => {
   const navigate = useNavigate();
@@ -34,35 +35,30 @@ export const Flights = () => {
   // Static list of Indian domestic airline codes
   const indianAirlines = ["AI", "IX", "6E", "QP", "SG", "9I", "UK", "EK"];
 
-  useEffect(() => {
-    const cachedData = localStorage.getItem("cachedFlightResults");
-    const cachedTripType = localStorage.getItem("cachedTripType");
-    const cachedMeta = localStorage.getItem("cachedSearchMeta");
+  // useEffect(() => {
+  //   const cachedData = localStorage.getItem("cachedFlightResults");
+  //   const cachedMeta = localStorage.getItem("cachedSearchMeta");
 
-    if (cachedData) {
-      try {
-        const parsed = JSON.parse(cachedData);
-        setFlights(parsed);
-        setOriginalFlights(parsed);
-        setHasSearched(true);
-      } catch (e) {
-        console.error("Invalid cached data in localStorage:", e);
-      }
-    }
+  //   if (cachedData) {
+  //     try {
+  //       const parsed = JSON.parse(cachedData);
+  //       setFlights(parsed);
+  //       setOriginalFlights(parsed);
+  //       setHasSearched(true);
+  //     } catch (e) {
+  //       console.error("Invalid cached data in localStorage:", e);
+  //     }
+  //   }
 
-    if (cachedTripType) {
-      setTripType(cachedTripType);
-    }
-
-    if (cachedMeta) {
-      try {
-        const meta = JSON.parse(cachedMeta);
-        setSearchMeta(meta);
-      } catch (e) {
-        console.error("Failed to parse cachedSearchMeta:", e);
-      }
-    }
-  }, []);
+  //   if (cachedMeta) {
+  //     try {
+  //       const meta = JSON.parse(cachedMeta);
+  //       setSearchMeta(meta);
+  //     } catch (e) {
+  //       console.error("Failed to parse cachedSearchMeta:", e);
+  //     }
+  //   }
+  // }, []);
 
   // Called when user clicks the search button in FlightSearchBar
   const handleSearch = async (searchInput) => {
@@ -103,7 +99,6 @@ export const Flights = () => {
 
       // Save to localStorage for persistence
       localStorage.setItem("cachedFlightResults", JSON.stringify(data.data));
-      localStorage.setItem("cachedTripType", searchInput.tripType);
       localStorage.setItem("cachedSearchMeta", JSON.stringify(searchInput));
 
       toast.success("Flights Loaded Successfully");
@@ -112,7 +107,7 @@ export const Flights = () => {
       toast.error("Something went wrong. Please try again.");
       setError(true);
     } finally {
-      setLoading(false);
+      setLoading(true);
     }
   };
 
@@ -131,9 +126,6 @@ export const Flights = () => {
         toast.error(data.msg || "Failed to Validate Flight");
         return;
       }
-
-      // Save selected flight temporarily
-      localStorage.setItem("selectedFlight", JSON.stringify(data.flight));
 
       if (!isLoggedIn) {
         toast.warn("Please login to continue booking");
@@ -267,44 +259,60 @@ export const Flights = () => {
       <UserHeader />
       <FlightSearchBar onSearch={handleSearch} initialValues={searchMeta} />
       {!hasSearched ? (
-        // ✨ Initial UI before search
-        <section className="py-24 text-center min-h-[54vh]  2xl:min-h-[71vh] bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
-          <div className="text-4xl text-pink-800 animate-bounce flex justify-center items-center">
-            <i className="fa-solid fa-magnifying-glass-location fa-2x" />
+        <section className="py-24  min-h-[70vh] flex flex-col items-center justify-start gap-4 bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
+          <div className="inline-block animate-bounce">
+            <img src={brandIcon} className=" w-24  " />
           </div>
-          <p className="text-xl font-semibold text-gray-700">
+
+          <h2 className="text-2xl font-bold bg-gradient-to-br from-pink-600 via-orange-700 to-pink-700 text-transparent bg-clip-text">
             Search and explore the best flights across India
-          </p>
-          <p className="text-gray-600 mt-2">
+          </h2>
+
+          <p className="text-gray-600 -mt-2">
             Use the search bar above to get started
           </p>
         </section>
       ) : loading ? (
-        // ✨ Loading UI
-        <section className="py-24 text-center min-h-[50vh]">
-          <div className="text-4xl text-amber-500 animate-bounce mb-4 flex justify-center">
-            <i className="fa-solid fa-plane-departure fa-2x" />
+        <section className="py-24  min-h-[70vh] flex flex-col items-center justify-start gap-6">
+          <div className="relative inline-block">
+            <div className="border-6 rounded-full h-40 w-40 border-t-pink-800 border-pink-200 inline-flex animate-spin"></div>
+            <img
+              src={brandIcon}
+              className="absolute w-24 top-7 left-7 animate-pulse"
+            />
           </div>
-          <p className="text-xl font-semibold text-gray-700">
-            Hold on! We're fetching the best flights for you...
-          </p>
+
+          <div className="space-y-3">
+            <h2 className="text-2xl font-bold bg-gradient-to-br from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
+              Hold On... Finding the Best Flights for You...
+            </h2>
+            <p className="text-base text-gray-600 max-w-xl px-6">
+              Please wait while we search top Routes and Deals.
+            </p>
+          </div>
         </section>
-      ) : error ? (
-        // ✨ Error UI
-        <section className="py-24 text-center min-h-[50vh]">
-          <div className="text-5xl text-red-500 mb-4 flex justify-center">
-            <i className="fa-solid fa-wifi-slash" />
+      ) : error ? ( // ✨ Error UI
+        <section className="py-24 text-center min-h-[70vh] flex flex-col items-center justify-start gap-2">
+          {/* Gradient Alert Icon */}
+          <div className="text-6xl mb-2 bg-gradient-to-tr from-pink-700 via-pink-600 to-orange-600 text-transparent bg-clip-text">
+            <span className="text-8xl">
+              <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            </span>
           </div>
-          <p className="text-xl font-semibold text-gray-800 mb-4">
-            Network Problem
+
+          {/* Gradient Title */}
+          <h2 className="text-2xl font-bold bg-gradient-to-br from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
+            Error In Fetching Flights
+          </h2>
+
+          {/* Subtext */}
+          <p className="text-base text-gray-600  px-6">
+            We couldn’t connect to our servers, Please Try Again.
           </p>
-          <p className="text-gray-600">
-            We are unable to connect to our systems from your device.
-            <br />
-            Please try again after a while.
-          </p>
+
+          {/* Retry Button */}
           <button
-            className="mt-6 px-6 py-2 bg-orange-500 text-white rounded-lg shadow hover:bg-orange-600"
+            className="cursor-pointer mt-2 px-6 py-2 bg-gradient-to-br from-orange-600 via-pink-700 to-pink-800 text-white font-medium rounded-full shadow hover:opacity-90 transition"
             onClick={() => window.location.reload()}
           >
             Retry
@@ -343,8 +351,7 @@ export const Flights = () => {
           </div>
         </section>
       )}
-
-      <BookingFooter/>
+      <BookingFooter />
     </>
   );
 };

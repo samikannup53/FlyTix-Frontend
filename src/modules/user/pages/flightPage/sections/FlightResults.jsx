@@ -91,7 +91,9 @@ export const FlightResults = ({ flights, loading, tripType, onBookNow }) => {
       <div className="flex items-center justify-between">
         <div className="text-lg font-semibold text-gray-800">
           {filteredByTripType.length > 0
-            ? `${filteredByTripType[0].outbound.segments[0].departure.city} → ${filteredByTripType[0].outbound.segments[0].arrival.city}`
+            ? `${filteredByTripType[0].outbound.segments[0].departure.city} → ${
+                filteredByTripType[0].outbound.segments.at(-1).arrival.city
+              }`
             : "Search Results"}
         </div>
         <div className="text-sm text-gray-600">

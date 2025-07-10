@@ -13,6 +13,7 @@ export const FlightResultCard = ({
   onViewDetails,
   onAddToCompare,
   compareFlights,
+  onBookNow,
 }) => {
   const firstSegment = outbound.segments[0];
   const lastSegment = outbound.segments.at(-1);
@@ -152,7 +153,10 @@ export const FlightResultCard = ({
         {/* Fare + Book Button */}
         <div className="text-center">
           <p className="text-xl font-bold text-pink-700">₹{fare.totalFare}</p>
-          <button className="mt-2 px-4 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer">
+          <button
+            onClick={onBookNow}
+            className="mt-2 px-4 py-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 hover:from-orange-700 hover:to-pink-700 text-white rounded-full text-sm font-medium transition cursor-pointer"
+          >
             Book Now
           </button>
         </div>

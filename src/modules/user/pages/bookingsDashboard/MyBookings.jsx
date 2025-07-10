@@ -43,7 +43,7 @@ export const MyBookings = () => {
     <>
       <UserHeader />
       <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-[85vh] py-10 px-4">
-        <main className="max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
+        <main className="max-w-5xl px-4  mx-auto space-y-6">
           <MyBookingsHeader
             total={bookings.length}
             cancelled={

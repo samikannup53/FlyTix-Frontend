@@ -1,6 +1,6 @@
 import FlightTailLogo from "../../../../../assets/images/flight_tail.png";
 
-export const CompareFlightsModal = ({ flights, onClose }) => {
+export const CompareFlightsModal = ({ flights, onClose, onBookNow }) => {
   if (!flights || flights.length === 0) return null;
 
   return (
@@ -41,8 +41,9 @@ export const CompareFlightsModal = ({ flights, onClose }) => {
                       className="w-6"
                       alt="flight-logo"
                     />
-                    {flight.outbound.segments[0]?.airlineName || flight.validatingAirline} | Flight:{" "}
-                    {flight.outbound.segments[0]?.flightNumber}
+                    {flight.outbound.segments[0]?.airlineName ||
+                      flight.validatingAirline}{" "}
+                    | Flight: {flight.outbound.segments[0]?.flightNumber}
                   </p>
 
                   {/* Route Row: 3 columns in one line */}
@@ -264,7 +265,7 @@ export const CompareFlightsModal = ({ flights, onClose }) => {
               >
                 <div className="flex items-center justify-center gap-2">
                   <i className="fa fa-plane-departure text-sm text-white drop-shadow-sm" />
-                  <span>Book Now</span>
+                  <button onClick={onBookNow}>Book Now</button>
                   <span className="flex items-center gap-1 font-semibold text-base">
                     <i className="fa fa-indian-rupee-sign text-xs" />
                     {flight.fare.totalFare}
