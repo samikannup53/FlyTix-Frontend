@@ -31,7 +31,7 @@ export const ForgotPassword = () => {
     setSuccess("");
     try {
       const res = await fetch(
-        "http://localhost:8000/api/auth/forgot-password/initiate",
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/forgot-password/initiate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -64,7 +64,7 @@ export const ForgotPassword = () => {
     }
     try {
       const res = await fetch(
-        "http://localhost:8000/api/auth/forgot-password/reset",
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/forgot-password/reset`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -96,7 +96,7 @@ export const ForgotPassword = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:8000/api/auth/forgot-password/resend-otp",
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/forgot-password/resend-otp`,
         {
           method: "POST",
           credentials: "include",

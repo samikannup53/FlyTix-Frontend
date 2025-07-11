@@ -1,5 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react"; // Import useCallback
 import { fetchAirports } from "../../modules/user/services/airportService";
+import { useNavigate } from "react-router-dom";
 
 export const useFlightSearchLogic = ({ mode, onSearch }) => {
   const classReverseMap = {
@@ -16,6 +17,8 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
     First: "FIRST",
   };
 
+  const navigate = useNavigate();
+  
   const [tripType, setTripType] = useState("oneway");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -47,119 +50,75 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
 
   // Fetch cached Tamil Nadu Airports once
   useEffect(() => {
-    fetchAirports("Tamil-Nadu")
-      .then(setCachedTamilNaduAirports)
-      .catch((error) =>
-        console.error("Failed to fetch cached Tamil Nadu airports:", error)
-      );
+    fetchAirports("Tamil-Nadu").then(setCachedTamilNaduAirports);
   }, []);
 
   // Load cached searchMeta if exists (Landing Page use case)
   useEffect(() => {
     const metaStr = localStorage.getItem("searchMeta");
-    if (!metaStr) {
-      // console.log("No searchMeta found in localStorage.");
-      return;
-    }
+    if (metaStr && cachedTamilNaduAirports.length > 0) {
+      // Ensure cached airports are loaded
+      try {
+        const meta = JSON.parse(metaStr);
 
-    // Ensure cachedTamilNaduAirports is loaded before processing searchMeta
-    // This is important because we rely on it for initial lookups.
-    if (cachedTamilNaduAirports.length === 0) {
-      // console.log("cachedTamilNaduAirports not yet loaded, deferring searchMeta processing.");
-      return;
-    }
+        setTripType(meta.tripType || "oneway");
+        setAdults(meta.adults || 1);
+        setChildren(meta.children || 0);
+        setInfants(meta.infants || 0);
+        setSelectedClass(classReverseMap[meta.travelClass] || "Economy");
+        setDepartureDate(meta.date ? new Date(meta.date) : null);
+        setReturnDate(meta.returnDate ? new Date(meta.returnDate) : null);
 
-    try {
-      const meta = JSON.parse(metaStr);
-      // console.log("Parsed searchMeta:", meta);
-
-      // Set basic trip details
-      setTripType(meta.tripType || "oneway");
-      setAdults(meta.adults || 1);
-      setChildren(meta.children || 0);
-      setInfants(meta.infants || 0);
-      setSelectedClass(classReverseMap[meta.travelClass] || "Economy");
-      setDepartureDate(meta.date ? new Date(meta.date) : null);
-      setReturnDate(meta.returnDate ? new Date(meta.returnDate) : null);
-
-      // --- Handle From City/Airport details ---
-      if (meta.from) {
-        let foundFromAirport = cachedTamilNaduAirports.find(
+        // Resolve From City/Airport details
+        const foundFromAirport = cachedTamilNaduAirports.find(
           (a) => a.iataCode === meta.from
         );
-
         if (foundFromAirport) {
-          // console.log("From Airport found in cache:", foundFromAirport);
           setFrom(formatAirportDisplay(foundFromAirport));
           setFromCode(meta.from);
-        } else {
-          // If not found in cache, try fetching just this airport by its code
-          // console.log(`From Airport not in cache. Fetching for code: ${meta.from}`);
+        } else if (meta.from) {
+          // If not found in cache, try fetching just this airport
           fetchAirports(meta.from)
             .then((data) => {
               if (data && data.length > 0) {
                 const airport = data.find((a) => a.iataCode === meta.from);
                 if (airport) {
-                  // console.log("From Airport fetched successfully:", airport);
                   setFrom(formatAirportDisplay(airport));
                   setFromCode(meta.from);
-                } else {
-                  console.warn(`Fetched data for '${meta.from}' but no matching IATA code found.`);
                 }
-              } else {
-                console.warn(`No data returned for From Airport code: ${meta.from}`);
               }
             })
-            .catch((e) => console.error("Failed to fetch From airport:", e));
+            .catch((e) => console.error("Failed to fetch from airport:", e));
         }
-      } else {
-        // console.log("meta.from is empty or null.");
-        setFrom(""); // Ensure from is cleared if meta.from is missing
-        setFromCode("");
-      }
 
-      // --- Handle To City/Airport details ---
-      if (meta.to) {
-        let foundToAirport = cachedTamilNaduAirports.find(
+        // Resolve To City/Airport details
+        const foundToAirport = cachedTamilNaduAirports.find(
           (a) => a.iataCode === meta.to
         );
-
         if (foundToAirport) {
-          // console.log("To Airport found in cache:", foundToAirport);
           setTo(formatAirportDisplay(foundToAirport));
           setToCode(meta.to);
-        } else {
-          // If not found in cache, try fetching just this airport by its code
-          // console.log(`To Airport not in cache. Fetching for code: ${meta.to}`);
+        } else if (meta.to) {
+          // If not found in cache, try fetching just this airport
           fetchAirports(meta.to)
             .then((data) => {
               if (data && data.length > 0) {
                 const airport = data.find((a) => a.iataCode === meta.to);
                 if (airport) {
-                  // console.log("To Airport fetched successfully:", airport);
                   setTo(formatAirportDisplay(airport));
                   setToCode(meta.to);
-                } else {
-                  console.warn(`Fetched data for '${meta.to}' but no matching IATA code found.`);
                 }
-              } else {
-                console.warn(`No data returned for To Airport code: ${meta.to}`);
               }
             })
-            .catch((e) => console.error("Failed to fetch To airport:", e));
+            .catch((e) => console.error("Failed to fetch to airport:", e));
         }
-      } else {
-        // console.log("meta.to is empty or null.");
-        setTo(""); // Ensure to is cleared if meta.to is missing
-        setToCode("");
-      }
 
-      localStorage.removeItem("searchMeta"); // Clear after processing
-      onSearch?.(meta); // Trigger onSearch with the original meta
-    } catch (e) {
-      console.error("Invalid searchMeta:", e);
+        localStorage.removeItem("searchMeta");
+      } catch (e) {
+        console.error("Invalid searchMeta:", e);
+      }
     }
-  }, [cachedTamilNaduAirports, onSearch, formatAirportDisplay]); // Ensure all relevant dependencies are here
+  }, [cachedTamilNaduAirports, onSearch, formatAirportDisplay]);
 
   useEffect(() => {
     if (tripType === "oneway") setReturnDate(null);
@@ -173,7 +132,6 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
     return input.trim().toLowerCase();
   };
 
-  // Add more robust filtering for user typing, including IATA code and airport name
   const filteredFromOptions = from.trim()
     ? fromOptions.filter(
         (opt) =>
@@ -192,33 +150,27 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
       )
     : toOptions;
 
-  // Optimized fetching logic for 'from' input
   useEffect(() => {
-    // Only fetch if 'from' is being actively typed and is not already a formatted string
-    if (from.trim() && !from.includes(" (") && from.length >= 2) { // Add length check to prevent too many requests
+    if (from.trim() && !from.includes(" (")) {
+      // Only fetch if it's not already a formatted string
       const timer = setTimeout(
         () => fetchAirports(from).then(setFromOptions),
         300
       );
       return () => clearTimeout(timer);
-    } else if (!from.trim()) {
-      // If 'from' is empty, show cached Tamil Nadu airports as suggestions
-      setFromOptions(cachedTamilNaduAirports);
+    } else {
+      setFromOptions(cachedTamilNaduAirports); // Reset if user clears or it's formatted
     }
-    // If it's a formatted string, no new fetch is needed, options should be managed by handleFocus
   }, [from, cachedTamilNaduAirports]);
 
-  // Optimized fetching logic for 'to' input
   useEffect(() => {
-    // Only fetch if 'to' is being actively typed and is not already a formatted string
-    if (to.trim() && !to.includes(" (") && to.length >= 2) { // Add length check
+    if (to.trim() && !to.includes(" (")) {
+      // Only fetch if it's not already a formatted string
       const timer = setTimeout(() => fetchAirports(to).then(setToOptions), 300);
       return () => clearTimeout(timer);
-    } else if (!to.trim()) {
-      // If 'to' is empty, show cached Tamil Nadu airports as suggestions
-      setToOptions(cachedTamilNaduAirports);
+    } else {
+      setToOptions(cachedTamilNaduAirports); // Reset if user clears or it's formatted
     }
-    // If it's a formatted string, no new fetch is needed, options should be managed by handleFocus
   }, [to, cachedTamilNaduAirports]);
 
   const handleSelectFrom = (opt) => {
@@ -234,34 +186,56 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
   };
 
   const handleFromFocus = () => {
-    // If the field is empty or no code is set, show local cache
     if (!from.trim() || !fromCode) {
       setFromOptions(cachedTamilNaduAirports);
-    } else if (fromCode) {
-      // If a code is already set, display the selected airport and potentially close dropdown if exact match
-      const selected = cachedTamilNaduAirports.find((a) => a.iataCode === fromCode);
-      if (selected && from === formatAirportDisplay(selected)) {
-        setFromOptions([selected]); // Show only the selected one if it's an exact match
+    } else {
+      const selectedFromCache = cachedTamilNaduAirports.find(
+        (a) => a.iataCode === fromCode
+      );
+
+      if (
+        selectedFromCache &&
+        from === formatAirportDisplay(selectedFromCache)
+      ) {
+        setFromOptions([selectedFromCache]);
       } else {
-        // If there's text and a code, but the text is modified, refetch
-        fetchAirports(from).then(setFromOptions);
+        //  Sanitize query before sending to API
+        const query = extractCityName(from) || fromCode;
+        fetchAirports(query)
+          .then((fetched) => {
+            if (fetched?.length) {
+              setFromOptions(fetched);
+            } else {
+              setFromOptions([]);
+            }
+          })
+          .catch(() => setFromOptions([]));
       }
     }
     setShowFromDropdown(true);
   };
 
   const handleToFocus = () => {
-    // If the field is empty or no code is set, show local cache
     if (!to.trim() || !toCode) {
       setToOptions(cachedTamilNaduAirports);
-    } else if (toCode) {
-      // If a code is already set, display the selected airport and potentially close dropdown if exact match
-      const selected = cachedTamilNanuAirports.find((a) => a.iataCode === toCode);
-      if (selected && to === formatAirportDisplay(selected)) {
-        setToOptions([selected]); // Show only the selected one if it's an exact match
+    } else {
+      const selectedToCache = cachedTamilNaduAirports.find(
+        (a) => a.iataCode === toCode
+      );
+
+      if (selectedToCache && to === formatAirportDisplay(selectedToCache)) {
+        setToOptions([selectedToCache]);
       } else {
-        // If there's text and a code, but the text is modified, refetch
-        fetchAirports(to).then(setToOptions);
+        const query = extractCityName(to) || toCode;
+        fetchAirports(query)
+          .then((fetched) => {
+            if (fetched?.length) {
+              setToOptions(fetched);
+            } else {
+              setToOptions([]);
+            }
+          })
+          .catch(() => setToOptions([]));
       }
     }
     setShowToDropdown(true);
@@ -307,6 +281,7 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
       onSearch?.(meta);
     } else if (mode === "landing") {
       localStorage.setItem("searchMeta", JSON.stringify(meta));
+      onSearch?.(meta);
       window.location.href = "/flights";
     }
   };

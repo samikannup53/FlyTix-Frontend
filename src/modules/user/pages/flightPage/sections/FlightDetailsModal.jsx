@@ -45,7 +45,7 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose, onBookNow }) => {
             {/* Airline Info */}
             <div className="flex items-center gap-2 mt-1">
               <img
-                src={FlightTailLogo}
+                src={`https://images.ixigo.com/img/common-resources/airline-new/${segment.airlineCode}.png`}
                 alt="Airline"
                 className="w-6 h-6 object-contain"
               />
@@ -239,9 +239,14 @@ export const FlightDetailsModal = ({ isOpen, flight, onClose, onBookNow }) => {
                   <div className="w-1/12 flex justify-center items-center">
                     <i className="fa-solid fa-plane text-gray-400 text-base rotate-90"></i>
                   </div>
-                  <div className="w-1/2 text-xs text-gray-600 pl-2">
-                    {segment.duration} · {segment.airlineName} ·{" "}
-                    {segment.flightNumber}
+
+                  <div className="w-1/2 text-xs text-gray-600 pl-2 flex items-center">
+                    <img
+                      src={`https://images.ixigo.com/img/common-resources/airline-new/${segment.airlineCode}.png`}
+                      alt="Airline"
+                      className="w-6 object-contain"
+                    />
+                    {segment.airlineName} · {segment.flightNumber}
                   </div>
                 </div>
 

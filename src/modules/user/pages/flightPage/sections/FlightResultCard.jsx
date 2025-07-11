@@ -106,7 +106,7 @@ export const FlightResultCard = ({
         {/* Airline */}
         <div className="flex items-center gap-4">
           <img
-            src={FlightTailLogo}
+            src={`https://images.ixigo.com/img/common-resources/airline-new/${firstSegment.airlineCode}.png`}
             alt={validatingAirline}
             className="w-12 object-contain"
           />

@@ -37,7 +37,7 @@ export const CompareFlightsModal = ({ flights, onClose, onBookNow }) => {
                   {/* Airline and Flight Number */}
                   <p className="flex gap-2  items-center">
                     <img
-                      src={FlightTailLogo}
+                      src={`https://images.ixigo.com/img/common-resources/airline-new/${flight.outbound.segments[0]?.airlineCode}.png`}
                       className="w-6"
                       alt="flight-logo"
                     />

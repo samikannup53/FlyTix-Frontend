@@ -66,7 +66,7 @@ export const CompareBox = ({
                       {/* Left: Logo + Airline Info */}
                       <div className="flex items-center gap-2 w-4/5">
                         <img
-                          src={FlightTailLogo}
+                          src={`https://images.ixigo.com/img/common-resources/airline-new/${segment.airlineCode}.png`}
                           alt="logo"
                           className="w-6 h-6 object-contain"
                         />
