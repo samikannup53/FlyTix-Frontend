@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
         }
       );
       if (!res.ok) {
+        
         throw new Error("Not Authorized");
       }
       const data = await res.json();

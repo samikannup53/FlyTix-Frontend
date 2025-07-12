@@ -18,7 +18,7 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
   };
 
   const navigate = useNavigate();
-  
+
   const [tripType, setTripType] = useState("oneway");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -282,7 +282,7 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
     } else if (mode === "landing") {
       localStorage.setItem("searchMeta", JSON.stringify(meta));
       onSearch?.(meta);
-      window.location.href = "/flights";
+      navigate("/flights");
     }
   };
 
