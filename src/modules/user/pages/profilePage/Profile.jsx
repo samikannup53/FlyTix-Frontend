@@ -21,10 +21,13 @@ export const Profile = () => {
     const fetchUserProfile = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:8000/api/user/profile", {
-          method: "GET",
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/user/profile`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         const data = await res.json();
         if (!res.ok) throw new Error(data.msg || "Failed to fetch profile");
         setUserData(data);
