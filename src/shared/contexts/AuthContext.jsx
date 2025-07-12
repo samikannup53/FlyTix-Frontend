@@ -11,10 +11,13 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/auth/me", {
-        method: "GET",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/me`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
       if (!res.ok) {
         throw new Error("Not Authorized");
       }
@@ -39,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch("http://localhost:8000/api/auth/logout", {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
