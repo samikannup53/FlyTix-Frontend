@@ -1,296 +1,235 @@
-// src/hooks/useFlightSearchLogic.js
-import { useEffect, useState, useCallback } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+// -----------------------------------------------------------------------------
+//  Shared hook for both Landing‑page and Flights‑page search bars
+//  –  Prefills from `initialValues` (Flights page supplies this)
+//  –  Converts IATA ↔ nice display (eg "Chennai (MAA)")
+//  –  Emits the validated meta object via onSearch()   (Flights page only)
+// -----------------------------------------------------------------------------
+import { useState, useEffect, useCallback } from "react";
 import { fetchAirports } from "../../modules/user/services/airportService";
 import { useNavigate } from "react-router-dom";
 
+/* ▸ UI ⇆ API travel‑class mapping */
+const CLASS_UI_TO_API = {
+  Economy: "ECONOMY",
+  "Premium Economy": "PREMIUM_ECONOMY",
+  Business: "BUSINESS",
+  First: "FIRST",
+};
+const CLASS_API_TO_UI = Object.fromEntries(
+  Object.entries(CLASS_UI_TO_API).map(([k, v]) => [v, k])
+);
+
+/* 🗄️  tiny in‑memory cache so we never lose display text */
+const codeCache = new Map();
+
 export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
-  const navigate = useNavigate();
-
-  // UI ↔ API travel class mapping
-  const classMap = {
-    Economy: "ECONOMY",
-    "Premium Economy": "PREMIUM_ECONOMY",
-    Business: "BUSINESS",
-    First: "FIRST",
-  };
-  const classReverseMap = {
-    ECONOMY: "Economy",
-    PREMIUM_ECONOMY: "Premium Economy",
-    BUSINESS: "Business",
-    FIRST: "First",
-  };
-
-  // Flight search state
+  /*───────────────────────────
+   *  Core state
+   *───────────────────────────*/
   const [tripType, setTripType] = useState("oneway");
-  const [from, setFrom] = useState("");
+  const [from, setFrom] = useState(""); // display value
   const [to, setTo] = useState("");
+  const [fromCode, setFromCode] = useState(""); // IATA only
+  const [toCode, setToCode] = useState("");
+
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
+
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [selectedClass, setSelectedClass] = useState("Economy");
 
-  const [fromCode, setFromCode] = useState("");
-  const [toCode, setToCode] = useState("");
+  /* UI helpers */
+  const [errors, setErrors] = useState({});
+  const [passengersText, setPassengersText] = useState("");
+  const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
 
-  // Airport dropdown
+  /* Airport suggestions & cache */
+  const [cachedTN, setCachedTN] = useState([]); // Tamil‑Nadu cache
   const [fromOptions, setFromOptions] = useState([]);
   const [toOptions, setToOptions] = useState([]);
-  const [cachedTamilNaduAirports, setCachedTamilNaduAirports] = useState([]);
-
-  // Dropdown UI
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
-  const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
-  const [passengersText, setPassengersText] = useState("");
 
-  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
-  const formatAirportDisplay = useCallback(
-    (airport) => (airport ? `${airport.city} (${airport.iataCode})` : ""),
+  /*───────────────────────────
+   *  Helpers
+   *───────────────────────────*/
+  const formatDisplay = useCallback(
+    (a) => (a ? `${a.city} (${a.iataCode})` : ""),
     []
   );
 
-  const extractCityName = (input) => {
-    const match = input.match(/(.*)\s\(([^)]+)\)/);
-    return match ? match[1].trim().toLowerCase() : input.trim().toLowerCase();
-  };
+  /** Resolve an IATA **code** → nice display string,
+      using (1) memory cache → (2) TN preload → (3) one‑off API call. */
+  const resolveIATAToDisplay = async (code, setter, codeSetter) => {
+    if (!code) return;
 
-  // Prefill localStorage-based data after Tamil Nadu airports loaded
-  useEffect(() => {
-    fetchAirports("Tamil-Nadu").then(setCachedTamilNaduAirports);
-  }, []);
-
-  // useEffect(() => {
-  //   const metaStr = localStorage.getItem("searchMeta");
-  //   if (!metaStr || !cachedTamilNaduAirports.length) return;
-
-  //   try {
-  //     const meta = JSON.parse(metaStr);
-  //     setTripType(meta.tripType || "oneway");
-  //     setAdults(meta.adults || 1);
-  //     setChildren(meta.children || 0);
-  //     setInfants(meta.infants || 0);
-  //     setSelectedClass(classReverseMap[meta.travelClass] || "Economy");
-  //     setDepartureDate(meta.date ? new Date(meta.date) : null);
-  //     setReturnDate(meta.returnDate ? new Date(meta.returnDate) : null);
-
-  //     const handlePrefill = async (code, setFn, setCodeFn) => {
-  //       const fromCache = cachedTamilNaduAirports.find(
-  //         (a) => a.iataCode === code
-  //       );
-  //       if (fromCache) {
-  //         setFn(formatAirportDisplay(fromCache));
-  //         setCodeFn(code);
-  //       } else {
-  //         const fetched = await fetchAirports(code);
-  //         const match = fetched.find((a) => a.iataCode === code);
-  //         if (match) {
-  //           setFn(formatAirportDisplay(match));
-  //           setCodeFn(code);
-  //         }
-  //       }
-  //     };
-
-  //     if (meta.from) handlePrefill(meta.from, setFrom, setFromCode);
-  //     if (meta.to) handlePrefill(meta.to, setTo, setToCode);
-  //   } catch (e) {
-  //     console.error("Invalid searchMeta:", e);
-  //   }
-  // }, [cachedTamilNaduAirports]);
-
-  //  useEffect(() => {
-  //   if (initialValues) {
-  //     setFrom(initialValues.from || "");
-  //     setTo(initialValues.to || "");
-  //     setDepartureDate(
-  //       initialValues.departureDate
-  //         ? new Date(initialValues.departureDate)
-  //         : null
-  //     );
-  //     setReturnDate(
-  //       initialValues.returnDate ? new Date(initialValues.returnDate) : null
-  //     );
-  //     setTripType(initialValues.tripType || "oneway");
-  //     setAdults(initialValues.adults ?? 1);
-  //     setChildren(initialValues.children ?? 0);
-  //     setInfants(initialValues.infants ?? 0);
-  //     setSelectedClass(initialValues.selectedClass || "Economy");
-  //   }
-  // }, [initialValues]);
-
-  /* ------------------------------------------------------------------
-   *  Prefill from initialValues (passed by Flights page)
-   * -----------------------------------------------------------------*/
-  useEffect(() => {
-    if (!initialValues) return;
-
-    // 1. simple text / numbers
-    setTripType(initialValues.tripType || "oneway");
-    setFrom(initialValues.from || "");
-    setTo(initialValues.to || "");
-    setAdults(initialValues.adults ?? 1);
-    setChildren(initialValues.children ?? 0);
-    setInfants(initialValues.infants ?? 0);
-
-    // 2. class code → UI string
-    if (initialValues.travelClass) {
-      setSelectedClass(classReverseMap[initialValues.travelClass] || "Economy");
+    const cached = cachedTN.find((a) => a.iataCode === code);
+    if (cached) {
+      setter(formatDisplay(cached));
+      codeSetter(code);
+      return;
     }
 
-    // 3. dates (note: key in meta is "date", not "departureDate")
-    setDepartureDate(initialValues.date ? new Date(initialValues.date) : null);
-    setReturnDate(
-      initialValues.returnDate ? new Date(initialValues.returnDate) : null
-    );
+    try {
+      const res = await fetchAirports(code);
+      const match = res.find((a) => a.iataCode === code);
+      if (match) {
+        setter(formatDisplay(match));
+        codeSetter(code);
+      } else {
+        // fallback: just show code
+        setter(code);
+        codeSetter(code);
+      }
+    } catch {
+      // fallback in case of network/API error
+      setter(code);
+      codeSetter(code);
+    }
+  };
 
-    // 4. **VERY IMPORTANT:** set IATA codes so validation works
-    setFromCode(initialValues.from || "");
-    setToCode(initialValues.to || "");
-  }, [initialValues]);
+  const extractCityName = (s) =>
+    s
+      .match(/(.*)\s\(/)?.[1]
+      ?.trim()
+      .toLowerCase() ?? s.trim().toLowerCase();
 
+  /*───────────────────────────
+   *  1. Load static TN cache once
+   *───────────────────────────*/
+  useEffect(() => {
+    fetchAirports("Tamil-Nadu").then(setCachedTN);
+  }, []);
+
+  /*───────────────────────────
+   *  2. Prefill from Flights‑page `initialValues`
+   *───────────────────────────*/
+  useEffect(() => {
+    if (!initialValues) return;
+    (async () => {
+      setTripType(initialValues.tripType || "oneway");
+      setAdults(initialValues.adults ?? 1);
+      setChildren(initialValues.children ?? 0);
+      setInfants(initialValues.infants ?? 0);
+      setSelectedClass(CLASS_API_TO_UI[initialValues.travelClass] || "Economy");
+
+      setDepartureDate(
+        initialValues.date ? new Date(initialValues.date) : null
+      );
+      setReturnDate(
+        initialValues.returnDate ? new Date(initialValues.returnDate) : null
+      );
+
+      await resolveIATAToDisplay(initialValues.from, setFrom, setFromCode);
+      await resolveIATAToDisplay(initialValues.to, setTo, setToCode);
+    })();
+  }, [initialValues, cachedTN]);
+
+  /* auto‑clear return when switching to oneway */
   useEffect(() => {
     if (tripType === "oneway") setReturnDate(null);
   }, [tripType]);
 
-  // Dropdown filtering
-  const filteredFromOptions = from.trim()
-    ? fromOptions.filter(
-        (opt) =>
-          opt.city.toLowerCase().includes(extractCityName(from)) ||
-          opt.iataCode.toLowerCase().includes(from.toLowerCase()) ||
-          opt.name.toLowerCase().includes(from.toLowerCase())
-      )
-    : fromOptions;
-
-  const filteredToOptions = to.trim()
-    ? toOptions.filter(
-        (opt) =>
-          opt.city.toLowerCase().includes(extractCityName(to)) ||
-          opt.iataCode.toLowerCase().includes(to.toLowerCase()) ||
-          opt.name.toLowerCase().includes(to.toLowerCase())
-      )
-    : toOptions;
-
-  // Fetch suggestions
+  /* passengers summary */
   useEffect(() => {
-    if (from.trim() && !from.includes(" (")) {
-      const timer = setTimeout(
-        () => fetchAirports(from).then(setFromOptions),
-        300
-      );
-      return () => clearTimeout(timer);
-    }
-    setFromOptions(cachedTamilNaduAirports);
-  }, [from, cachedTamilNaduAirports]);
+    const t = adults + children + infants;
+    setPassengersText(`${t} Traveller${t > 1 ? "s" : ""} / ${selectedClass}`);
+  }, [adults, children, infants, selectedClass]);
 
-  useEffect(() => {
-    if (to.trim() && !to.includes(" (")) {
-      const timer = setTimeout(() => fetchAirports(to).then(setToOptions), 300);
-      return () => clearTimeout(timer);
+  /*───────────────────────────
+   *  3. Dynamic suggestions
+   *───────────────────────────*/
+  const updateSuggestions = (val, cached, setter) => {
+    if (val.trim() && !val.includes(" (")) {
+      const id = setTimeout(() => fetchAirports(val).then(setter), 300);
+      return () => clearTimeout(id);
     }
-    setToOptions(cachedTamilNaduAirports);
-  }, [to, cachedTamilNaduAirports]);
-
-  // Dropdown interaction handlers
-  const handleFromFocus = () => {
-    if (!from.trim() || !fromCode) {
-      setFromOptions(cachedTamilNaduAirports);
-    } else {
-      const selected = cachedTamilNaduAirports.find(
-        (a) => a.iataCode === fromCode
-      );
-      if (selected && from === formatAirportDisplay(selected)) {
-        setFromOptions([selected]);
-      } else {
-        fetchAirports(extractCityName(from))
-          .then(setFromOptions)
-          .catch(() => setFromOptions([]));
-      }
-    }
-    setShowFromDropdown(true);
+    setter(cached);
   };
+  useEffect(
+    () => updateSuggestions(from, cachedTN, setFromOptions),
+    [from, cachedTN]
+  );
+  useEffect(
+    () => updateSuggestions(to, cachedTN, setToOptions),
+    [to, cachedTN]
+  );
 
-  const handleToFocus = () => {
-    if (!to.trim() || !toCode) {
-      setToOptions(cachedTamilNaduAirports);
-    } else {
-      const selected = cachedTamilNaduAirports.find(
-        (a) => a.iataCode === toCode
-      );
-      if (selected && to === formatAirportDisplay(selected)) {
-        setToOptions([selected]);
-      } else {
-        fetchAirports(extractCityName(to))
-          .then(setToOptions)
-          .catch(() => setToOptions([]));
-      }
+  /*───────────────────────────
+   *  4. Handlers for dropdowns / swap
+   *───────────────────────────*/
+  const handleFocus = (val, code, setOpts, setShow) => {
+    if (!val.trim() || !code) setOpts(cachedTN);
+    else {
+      const cached = cachedTN.find((a) => a.iataCode === code);
+      if (cached && val === formatDisplay(cached)) setOpts([cached]);
+      else
+        fetchAirports(extractCityName(val))
+          .then(setOpts)
+          .catch(() => setOpts([]));
     }
-    setShowToDropdown(true);
-  };
-
-  const handleSelectFrom = (opt) => {
-    setFrom(formatAirportDisplay(opt));
-    setFromCode(opt.iataCode);
-    setShowFromDropdown(false);
-  };
-
-  const handleSelectTo = (opt) => {
-    setTo(formatAirportDisplay(opt));
-    setToCode(opt.iataCode);
-    setShowToDropdown(false);
+    setShow(true);
   };
 
   const handleSwap = () => {
-    [setFrom, setTo](to, from);
-    [setFromCode, setToCode](toCode, fromCode);
+    // re‑resolve so UI text never blanks out
+    resolveIATAToDisplay(toCode, setFrom, setFromCode);
+    resolveIATAToDisplay(fromCode, setTo, setToCode);
   };
 
-  // Main search handler
+  /*───────────────────────────
+   *  5. VALIDATE & EMIT SEARCH
+   *───────────────────────────*/
   const handleSearch = () => {
-    const validation = {};
-    if (!fromCode) validation.from = "Select Departure City";
-    if (!toCode) validation.to = "Select Arrival City";
+    const v = {};
+    if (!fromCode) v.from = "Select Departure City";
+    if (!toCode) v.to = "Select Arrival City";
     if (fromCode && toCode && fromCode === toCode)
-      validation.to = "Arrival and Departure should differ";
-    if (!departureDate) validation.departureDate = "Select Departure Date";
+      v.to = "Arrival and Departure should differ";
+    if (!departureDate) v.departureDate = "Select Departure Date";
     if (tripType === "roundtrip" && !returnDate)
-      validation.returnDate = "Select Return Date";
-    if (!(adults + children + infants))
-      validation.passengers = "Select Passengers";
+      v.returnDate = "Select Return Date";
+    if (!(adults + children + infants)) v.passengers = "Select Passengers";
 
-    setErrors(validation);
-    if (Object.keys(validation).length) return;
+    setErrors(v);
+    if (Object.keys(v).length) return;
 
     const meta = {
       from: fromCode,
       to: toCode,
-      date: departureDate?.toLocaleDateString("en-CA"),
-      returnDate: returnDate?.toLocaleDateString("en-CA"),
+      date: departureDate?.toLocaleDateString("en-CA") ?? null,
+      returnDate: returnDate?.toLocaleDateString("en-CA") ?? null,
       adults,
       children,
       infants,
-      travelClass: classMap[selectedClass],
+      travelClass: CLASS_UI_TO_API[selectedClass],
       tripType,
     };
 
+    // ✅ Fix input box display values
+    resolveIATAToDisplay(fromCode, setFrom, setFromCode);
+    resolveIATAToDisplay(toCode, setTo, setToCode);
+
     if (mode === "flights") {
-      onSearch?.(meta); // prevents reload
+      onSearch?.(meta); // Flights page consumes
     } else if (mode === "landing") {
       localStorage.setItem("searchMeta", JSON.stringify(meta));
+      localStorage.removeItem("cachedFlightResults");
+      localStorage.removeItem("cachedSearchMeta");
       navigate("/flights");
     }
   };
 
-  useEffect(() => {
-    const total = adults + children + infants;
-    setPassengersText(
-      `${total} Traveller${total > 1 ? "s" : ""} / ${selectedClass}`
-    );
-  }, [adults, children, infants, selectedClass]);
-
+  /*───────────────────────────
+   *  Return view‑model
+   *───────────────────────────*/
   return {
+    /* — exposed state — */
     tripType,
     setTripType,
     from,
@@ -309,26 +248,55 @@ export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
     setInfants,
     selectedClass,
     setSelectedClass,
+    passengersText,
+
+    /* airport codes (readonly outside) */
     fromCode,
     toCode,
+
+    /* dropdown helpers */
     showFromDropdown,
     setShowFromDropdown,
     showToDropdown,
     setShowToDropdown,
-    fromOptions,
-    toOptions,
-    filteredFromOptions,
-    filteredToOptions,
-    cachedTamilNaduAirports,
-    passengersText,
     showPassengerDropdown,
     setShowPassengerDropdown,
+    fromOptions,
+    toOptions,
+    filteredFromOptions: from.trim()
+      ? fromOptions.filter(
+          (o) =>
+            o.city.toLowerCase().includes(extractCityName(from)) ||
+            o.iataCode.toLowerCase().includes(from.toLowerCase()) ||
+            o.name.toLowerCase().includes(from.toLowerCase())
+        )
+      : fromOptions,
+    filteredToOptions: to.trim()
+      ? toOptions.filter(
+          (o) =>
+            o.city.toLowerCase().includes(extractCityName(to)) ||
+            o.iataCode.toLowerCase().includes(to.toLowerCase()) ||
+            o.name.toLowerCase().includes(to.toLowerCase())
+        )
+      : toOptions,
+
+    /* errors + handlers */
     errors,
-    handleSwap,
-    handleSelectFrom,
-    handleSelectTo,
-    handleFromFocus,
-    handleToFocus,
     handleSearch,
+    handleSwap,
+    handleSelectFrom: (opt) => {
+      setFrom(formatDisplay(opt));
+      setFromCode(opt.iataCode);
+      setShowFromDropdown(false);
+    },
+    handleSelectTo: (opt) => {
+      setTo(formatDisplay(opt));
+      setToCode(opt.iataCode);
+      setShowToDropdown(false);
+    },
+    handleFromFocus: () =>
+      handleFocus(from, fromCode, setFromOptions, setShowFromDropdown),
+    handleToFocus: () =>
+      handleFocus(to, toCode, setToOptions, setShowToDropdown),
   };
 };
