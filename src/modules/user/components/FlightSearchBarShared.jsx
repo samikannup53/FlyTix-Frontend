@@ -3,7 +3,7 @@ import swapIcon from "../../../assets/images/swap.png";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-export const FlightSearchBarShared = ({ mode = "flights", onSearch }) => {
+export const FlightSearchBarShared = ({ mode = "flights", onSearch, initialValues  }) => {
   const {
     tripType,
     setTripType,
@@ -44,7 +44,7 @@ export const FlightSearchBarShared = ({ mode = "flights", onSearch }) => {
     setAdults,
     setChildren,
     setInfants,
-  } = useFlightSearchLogic({ mode, onSearch });
+  } = useFlightSearchLogic({ mode, onSearch, initialValues });
 
   return (
     <div

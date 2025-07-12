@@ -1,93 +1,116 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import { BookingFooter, UserHeader } from "../../components";
 import { FiltersSideBar } from "./sections/FilterSideBar";
 import { FlightResults } from "./sections/FlightResults";
 import { FlightSearchBar } from "./sections/FlightSearchBar";
 import { SortBySection } from "./sections/SortBySection";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../shared/contexts/AuthContext";
-import { toast } from "react-toastify";
+
 import brandIcon from "../../../../assets/images/brandIcon.png";
 
 export const Flights = () => {
-  const navigate = useNavigate();
+  const navigate      = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  const [flights, setFlights] = useState([]);
-  const [originalFlights, setOriginalFlights] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  // ────────────────────────────────────────────────────────────────
+  // ►  Main page state
+  // ────────────────────────────────────────────────────────────────
+  const [flights,          setFlights]          = useState([]);
+  const [originalFlights,  setOriginalFlights]  = useState([]);
+  const [loading,          setLoading]          = useState(false);
+  const [error,            setError]            = useState(false);
+  const [hasSearched,      setHasSearched]      = useState(false);
+  const [searchMeta,       setSearchMeta]       = useState({});
+  const [tripType,         setTripType]         = useState("oneway");
 
-  const [searchMeta, setSearchMeta] = useState({});
-
-  const [tripType, setTripType] = useState("oneway");
-
-  // Filters State
-  const [selectedStops, setSelectedStops] = useState([]);
+  // Filters
+  const [selectedStops,    setSelectedStops]    = useState([]);
   const [selectedAirlines, setSelectedAirlines] = useState([]);
-  const [maxPrice, setMaxPrice] = useState(20000);
-  const [selectedTimes, setSelectedTimes] = useState([]);
+  const [maxPrice,         setMaxPrice]         = useState(20000);
+  const [selectedTimes,    setSelectedTimes]    = useState([]);
 
-  // Sort State
-  const [sortOption, setSortOption] = useState("smart");
+  // Sorting
+  const [sortOption,       setSortOption]       = useState("smart");
 
-  // Static list of Indian domestic airline codes
   const indianAirlines = ["AI", "IX", "6E", "QP", "SG", "9I", "UK", "EK"];
 
-  useEffect(() => {
-    const cachedData = localStorage.getItem("cachedFlightResults");
-    const cachedMeta = localStorage.getItem("cachedSearchMeta");
+  // Prevent double‑initialisation ────────────────────────────────
+  const initRef = useRef(false);
 
-    if (cachedData) {
+  /*───────────────────────────────────────────────────────────────
+   *  REQUIREMENT 2 & 3  
+   *  ─ Triggers auto‑search only once when coming from Landing.  
+   *  ─ On hard refresh we use cached results and DON’T auto‑search.  
+   *───────────────────────────────────────────────────────────────*/
+  useEffect(() => {
+    if (initRef.current) return;          // already handled
+    initRef.current = true;
+
+    const metaStr     = localStorage.getItem("searchMeta");          // set in Landing
+    const cachedData  = localStorage.getItem("cachedFlightResults"); // set after a success
+
+    // 2A ▸ Coming from Landing → run search once, then delete flag
+    if (metaStr && !cachedData) {
       try {
-        const parsed = JSON.parse(cachedData);
-        setFlights(parsed);
-        setOriginalFlights(parsed);
-        setHasSearched(true);
+        const meta = JSON.parse(metaStr);
+        setSearchMeta(meta);              // keeps data in search bar
+        handleSearch(meta);               // trigger once
       } catch (e) {
-        console.error("Invalid cached data in localStorage:", e);
+        console.error("Invalid searchMeta:", e);
+      } finally {
+        localStorage.removeItem("searchMeta"); // 3 ▸ prevents re‑trigger on refresh
       }
+      return;
     }
 
-    if (cachedMeta) {
+    // 2B ▸ Page refresh with cached flights → just restore
+    if (cachedData) {
       try {
-        const meta = JSON.parse(cachedMeta);
-        setSearchMeta(meta);
+        const flights = JSON.parse(cachedData);
+        setFlights(flights);
+        setOriginalFlights(flights);
+        setHasSearched(true);
       } catch (e) {
-        console.error("Failed to parse cachedSearchMeta:", e);
+        console.error("Invalid cachedFlightResults:", e);
+      }
+
+      // Restore form values for persistence
+      const cachedMeta = localStorage.getItem("cachedSearchMeta");
+      if (cachedMeta) {
+        try {
+          setSearchMeta(JSON.parse(cachedMeta));
+        } catch (e) {
+          console.error("Invalid cachedSearchMeta:", e);
+        }
       }
     }
   }, []);
 
-  // Called when user clicks the search button in FlightSearchBar
-  const handleSearch = async (searchInput) => {
-    setSearchMeta({
-      tripType: searchInput.tripType,
-      adults: searchInput.adults,
-      children: searchInput.children,
-      infants: searchInput.infants,
-    });
+  /*───────────────────────────────────────────────────────────────
+   *  handleSearch — Requirement 4 (Retry uses this) & normal flow
+   *───────────────────────────────────────────────────────────────*/
+  const handleSearch = async (meta) => {
+    setSearchMeta(meta);          // keep search bar populated
+
+    setLoading(true);
+    setError(false);
+    setHasSearched(true);
+    setFlights([]);
+    setOriginalFlights([]);
 
     try {
-      setLoading(true);
-      setError(false);
-      setHasSearched(true);
-      setFlights([]);
-      setOriginalFlights([]);
-
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/flights/search`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify(searchInput),
+          body: JSON.stringify(meta),
         }
       );
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -98,15 +121,15 @@ export const Flights = () => {
 
       setFlights(data.data);
       setOriginalFlights(data.data);
-      setTripType(searchInput.tripType);
+      setTripType(meta.tripType);
 
-      // Save to localStorage for persistence
+      // Save for persistence on refresh
       localStorage.setItem("cachedFlightResults", JSON.stringify(data.data));
-      localStorage.setItem("cachedSearchMeta", JSON.stringify(searchInput));
+      localStorage.setItem("cachedSearchMeta",  JSON.stringify(meta));
 
       toast.success("Flights Loaded Successfully");
     } catch (err) {
-      console.error("Flight fetch error:", err.message);
+      console.error("Flight fetch error:", err);
       toast.error("Something went wrong. Please try again.");
       setError(true);
     } finally {
@@ -114,18 +137,17 @@ export const Flights = () => {
     }
   };
 
-  // Book Now Function
+  /*───────────────────────────────────────────────────────────────
+   *  Book Now   (unchanged)
+   *───────────────────────────────────────────────────────────────*/
   const handleBookNow = async (flightId) => {
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/flights/validate`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ flightId }),
-        }
-      );
+      const res  = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/flights/validate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ flightId }),
+      });
       const data = await res.json();
 
       if (!res.ok) {
@@ -143,20 +165,22 @@ export const Flights = () => {
 
       const query = new URLSearchParams({
         flightId,
-        tripType: searchMeta.tripType || "roundtrip",
-        adults: searchMeta.adults?.toString() || "2",
-        children: searchMeta.children?.toString() || "1",
-        infants: searchMeta.infants?.toString() || "1",
+        tripType:  searchMeta.tripType   || "roundtrip",
+        adults:    `${searchMeta.adults    ?? 2}`,
+        children:  `${searchMeta.children  ?? 1}`,
+        infants:   `${searchMeta.infants   ?? 1}`,
       }).toString();
 
       navigate(`/booking/initiate?${query}`);
-    } catch (error) {
-      console.error("Flight fetch error:", error.message);
+    } catch (err) {
+      console.error("Validate error:", err);
       toast.error("Server error. Please try again.");
     }
   };
 
-  // Reset all filters to default values
+  /*───────────────────────────────────────────────────────────────
+   *  Clear Filters (unchanged)
+   *───────────────────────────────────────────────────────────────*/
   const handleClearFilters = () => {
     setSelectedStops([]);
     setSelectedAirlines([]);
@@ -164,200 +188,156 @@ export const Flights = () => {
     setSelectedTimes([]);
   };
 
-  // Filter logic
+  /*───────────────────────────────────────────────────────────────
+   *  Filtering + Sorting  (your original logic, trimmed for brevity)
+   *───────────────────────────────────────────────────────────────*/
+  const parseDuration = (d) => {
+    const h = +(d?.match(/(\\d+)\\s*H/)?.[1] ?? 0);
+    const m = +(d?.match(/(\\d+)\\s*M/)?.[1] ?? 0);
+    return h * 60 + m;
+  };
+
   const filteredFlights = originalFlights
-    .filter((flight) => {
-      // 1. Stops Filter
-      const stopsLabel =
-        flight.outbound.stops === 0
-          ? "Non-stop"
-          : flight.outbound.stops === 1
-          ? "1 Stop"
-          : "2+ Stops";
-      const stopsMatch =
-        selectedStops.length === 0 || selectedStops.includes(stopsLabel);
+    .filter((f) => {
+      const stopLabel = f.outbound.stops === 0 ? "Non-stop"
+                    : f.outbound.stops === 1 ? "1 Stop" : "2+ Stops";
+      const priceOk   = parseFloat(f.fare.totalFare) <= maxPrice;
+      const stopOk    = !selectedStops.length    || selectedStops.includes(stopLabel);
+      const airlineOk = !selectedAirlines.length || selectedAirlines.includes(f.validatingAirline);
 
-      // 2. Airline Filter
-      const airlineMatch =
-        selectedAirlines.length === 0 ||
-        selectedAirlines.includes(flight.validatingAirline);
+      const hour   = +(f.outbound.segments?.[0]?.departure?.time?.split(":")[0] ?? 0);
+      const timeOk = !selectedTimes.length || selectedTimes.some((t) =>
+        (t === "morning"   && hour >= 5  && hour < 12) ||
+        (t === "afternoon" && hour >= 12 && hour < 17) ||
+        (t === "evening"   && hour >= 17 && hour < 21) ||
+        (t === "night"     && (hour >= 21 || hour < 5))
+      );
 
-      // 3. Price Filter
-      const price = parseFloat(flight.fare.totalFare || "0");
-      const priceMatch = price <= maxPrice;
-
-      // 4. Time of Day Filter
-      const time = flight.outbound.segments?.[0]?.departure?.time || "00:00:00";
-      const hour = parseInt(time.split(":")[0]);
-      const timeMatch =
-        selectedTimes.length === 0 ||
-        selectedTimes.some((range) => {
-          if (range === "morning") return hour >= 5 && hour < 12;
-          if (range === "afternoon") return hour >= 12 && hour < 17;
-          if (range === "evening") return hour >= 17 && hour < 21;
-          if (range === "night") return hour >= 21 || hour < 5;
-          return false;
-        });
-
-      return stopsMatch && airlineMatch && priceMatch && timeMatch;
+      return stopOk && airlineOk && priceOk && timeOk;
     })
     .sort((a, b) => {
-      // Utility: Convert Duration to Total Minutes
-      const parseDuration = (durationStr) => {
-        if (!durationStr) return 0;
+      const durA = parseDuration(a.outbound.duration) +
+                   (a.returnTrip ? parseDuration(a.returnTrip.duration) : 0);
+      const durB = parseDuration(b.outbound.duration) +
+                   (b.returnTrip ? parseDuration(b.returnTrip.duration) : 0);
 
-        const hourMatch = durationStr.match(/(\d+)\s*H/i);
-        const minuteMatch = durationStr.match(/(\d+)\s*M/i);
-
-        const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
-        const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
-
-        return hours * 60 + minutes;
-      };
-
-      // Compute total duration in minutes for A
-      const aOutboundDuration = parseDuration(a.outbound.duration || "PT0M");
-      const aReturnDuration = a.returnTrip
-        ? parseDuration(a.returnTrip.duration || "PT0M")
-        : 0;
-      const aTotalDuration = aOutboundDuration + aReturnDuration;
-
-      // Compute total duration in minutes for B
-      const bOutboundDuration = parseDuration(b.outbound.duration || "PT0M");
-      const bReturnDuration = b.returnTrip
-        ? parseDuration(b.returnTrip.duration || "PT0M")
-        : 0;
-      const bTotalDuration = bOutboundDuration + bReturnDuration;
-
-      // Price Sort
-      if (sortOption === "price") {
-        return parseFloat(a.fare.totalFare) - parseFloat(b.fare.totalFare);
-
-        // Fastest Duration Sort
-      } else if (sortOption === "fastest") {
-        return aTotalDuration - bTotalDuration;
-
-        // Earliest Departure Time Sort (based on outbound segment 0)
-      } else if (sortOption === "earliest") {
-        const aTime = a.outbound.segments?.[0]?.departure?.time || "00:00";
-        const bTime = b.outbound.segments?.[0]?.departure?.time || "00:00";
-        return aTime.localeCompare(bTime);
-
-        // Smart Sort: Mix of price + duration + departure hour (weighted)
-      } else {
-        const aTime = a.outbound.segments?.[0]?.departure?.time || "00:00";
-        const bTime = b.outbound.segments?.[0]?.departure?.time || "00:00";
-
-        const aHour = parseInt(aTime.split(":")[0]) || 0;
-        const bHour = parseInt(bTime.split(":")[0]) || 0;
-
-        const aScore =
-          parseFloat(a.fare.totalFare) + aTotalDuration * 0.5 + aHour * 1.5;
-        const bScore =
-          parseFloat(b.fare.totalFare) + bTotalDuration * 0.5 + bHour * 1.5;
-
-        return aScore - bScore;
+      if (sortOption === "price")    return +a.fare.totalFare - +b.fare.totalFare;
+      if (sortOption === "fastest")  return durA - durB;
+      if (sortOption === "earliest") {
+        const tA = a.outbound.segments?.[0]?.departure?.time ?? "00:00";
+        const tB = b.outbound.segments?.[0]?.departure?.time ?? "00:00";
+        return tA.localeCompare(tB);
       }
+      // smart
+      const hA = +(a.outbound.segments?.[0]?.departure?.time?.split(":")[0] ?? 0);
+      const hB = +(b.outbound.segments?.[0]?.departure?.time?.split(":")[0] ?? 0);
+      return (+a.fare.totalFare + durA * 0.5 + hA * 1.5) -
+             (+b.fare.totalFare + durB * 0.5 + hB * 1.5);
     });
 
+  /*───────────────────────────────────────────────────────────────
+   *  RENDER
+   *───────────────────────────────────────────────────────────────*/
   return (
     <>
       <UserHeader />
       <FlightSearchBar onSearch={handleSearch} initialValues={searchMeta} />
+
+      {/* ——— STATES: Idle | Loading | Error | Results ——— */}
       {!hasSearched ? (
-        <section className="text-center px-6 py-24   min-h-[70vh] flex flex-col items-center justify-start gap-4 bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
-          <div className="inline-block animate-bounce">
-            <img src={brandIcon} className=" w-24  " />
-          </div>
-
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 via-orange-600 to-pink-700 text-transparent bg-clip-text">
-            Search and explore the best flights across India
-          </h2>
-
-          <p className="text-gray-600 -mt-2">
-            Use the search bar above to get started
-          </p>
-        </section>
+        <IdleScreen />
       ) : loading ? (
-        <section className="text-center px-6 py-24  min-h-[70vh] flex flex-col items-center justify-start gap-6">
-          <div className="relative inline-block">
-            <div className="border-6 rounded-full h-40 w-40 border-t-pink-800 border-pink-200 inline-flex animate-spin"></div>
-            <img
-              src={brandIcon}
-              className="absolute w-24 top-7 left-7 animate-pulse"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
-              Hold On... Finding the Best Flights for You...
-            </h2>
-            <p className="text-base text-gray-600 max-w-xl px-6">
-              Please wait while we search top Routes and Deals.
-            </p>
-          </div>
-        </section>
-      ) : error ? ( // ✨ Error UI
-        <section className="py-24 px-6 text-center min-h-[70vh] flex flex-col items-center justify-start gap-2">
-          {/* Gradient Alert Icon */}
-          <div className="text-6xl mb-2 bg-gradient-to-tr from-pink-700 via-pink-600 to-orange-600 text-transparent bg-clip-text">
-            <span className="text-8xl">
-              <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
-            </span>
-          </div>
-
-          {/* Gradient Title */}
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
-            Error In Fetching Flights
-          </h2>
-
-          {/* Subtext */}
-          <p className="text-base text-gray-600  px-6">
-            We couldn’t connect to our servers, Please Try Again.
-          </p>
-
-          {/* Retry Button */}
-          <button
-            className="cursor-pointer mt-2 px-6 py-2 bg-gradient-to-br from-orange-600 via-pink-700 to-pink-800 text-white font-medium rounded-full shadow hover:opacity-90 transition"
-            onClick={() => window.location.reload()}
-          >
-            Retry
-          </button>
-        </section>
+        <LoadingScreen />
+      ) : error ? (
+        <ErrorScreen onRetry={() => handleSearch(searchMeta)} />
       ) : (
-        // ✨ Normal UI when flights are loaded
-        <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-screen py-10">
-          <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-6">
-            <FiltersSideBar
-              selectedStops={selectedStops}
-              setSelectedStops={setSelectedStops}
-              selectedAirlines={selectedAirlines}
-              setSelectedAirlines={setSelectedAirlines}
-              maxPrice={maxPrice}
-              setMaxPrice={setMaxPrice}
-              selectedTimes={selectedTimes}
-              setSelectedTimes={setSelectedTimes}
-              airlineOptions={indianAirlines}
-              onClearFilters={handleClearFilters}
-            />
-            <div className="lg:w-3/4 w-full no-scrollbar pr-2">
-              <div className="space-y-6">
-                <SortBySection
-                  selectedSortOption={sortOption}
-                  onSortChange={setSortOption}
-                />
-                <FlightResults
-                  flights={filteredFlights}
-                  loading={loading}
-                  tripType={tripType}
-                  onBookNow={handleBookNow}
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        <ResultsScreen
+          flights={filteredFlights}
+          tripType={tripType}
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+          filterProps={{
+            selectedStops,
+            setSelectedStops,
+            selectedAirlines,
+            setSelectedAirlines,
+            maxPrice,
+            setMaxPrice,
+            selectedTimes,
+            setSelectedTimes,
+            indianAirlines,
+            onClearFilters: handleClearFilters,
+          }}
+          onBookNow={handleBookNow}
+        />
       )}
+
       <BookingFooter />
     </>
   );
 };
+
+/*───────── Helper sub‑components (pure UI, unchanged logic) ─────*/
+const IdleScreen   = () => (
+  <section className="text-center px-6 py-24 min-h-[70vh] flex flex-col items-center gap-4 bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50">
+    <img src={brandIcon} className="w-24 animate-bounce" />
+    <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 via-orange-600 to-pink-700 text-transparent bg-clip-text">
+      Search and explore the best flights across India
+    </h2>
+    <p className="text-gray-600 -mt-2">Use the search bar above to get started</p>
+  </section>
+);
+
+const LoadingScreen = () => (
+  <section className="text-center px-6 py-24 min-h-[70vh] flex flex-col items-center gap-6">
+    <div className="relative">
+      <div className="border-6 rounded-full h-40 w-40 border-t-pink-800 border-pink-200 animate-spin" />
+      <img src={brandIcon} className="absolute w-24 top-7 left-7 animate-pulse" />
+    </div>
+    <div className="space-y-3">
+      <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
+        Hold On... Finding the Best Flights for You...
+      </h2>
+      <p className="text-base text-gray-600 px-6">Please wait while we search top Routes and Deals.</p>
+    </div>
+  </section>
+);
+
+const ErrorScreen = ({ onRetry }) => (
+  <section className="py-24 px-6 text-center min-h-[70vh] flex flex-col items-center gap-2">
+    <div className="text-6xl mb-2 bg-gradient-to-tr from-pink-700 via-pink-600 to-orange-600 text-transparent bg-clip-text">
+      <i className="fa fa-exclamation-triangle text-8xl"></i>
+    </div>
+    <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-700 via-orange-600 to-pink-800 text-transparent bg-clip-text">
+      Error In Fetching Flights
+    </h2>
+    <p className="text-base text-gray-600 px-6">We couldn’t connect to our servers, Please Try Again.</p>
+    <button
+      className="mt-2 px-6 py-2 bg-gradient-to-br from-orange-600 via-pink-700 to-pink-800 text-white font-medium rounded-full shadow hover:opacity-90 transition"
+      onClick={onRetry}
+    >
+      Retry
+    </button>
+  </section>
+);
+
+const ResultsScreen = ({
+  flights,
+  tripType,
+  sortOption,
+  setSortOption,
+  filterProps,
+  onBookNow,
+}) => (
+  <section className="bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50 min-h-screen py-10">
+    <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-6">
+      <FiltersSideBar {...filterProps} />
+      <div className="lg:w-3/4 w-full pr-2">
+        <div className="space-y-6">
+          <SortBySection selectedSortOption={sortOption} onSortChange={setSortOption} />
+          <FlightResults flights={flights} loading={false} tripType={tripType} onBookNow={onBookNow} />
+        </div>
+      </div>
+    </div>
+  </section>
+);

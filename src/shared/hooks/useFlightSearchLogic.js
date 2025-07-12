@@ -1,8 +1,18 @@
-import { useEffect, useState, useCallback } from "react"; // Import useCallback
+// src/hooks/useFlightSearchLogic.js
+import { useEffect, useState, useCallback } from "react";
 import { fetchAirports } from "../../modules/user/services/airportService";
 import { useNavigate } from "react-router-dom";
 
-export const useFlightSearchLogic = ({ mode, onSearch }) => {
+export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
+  const navigate = useNavigate();
+
+  // UI ↔ API travel class mapping
+  const classMap = {
+    Economy: "ECONOMY",
+    "Premium Economy": "PREMIUM_ECONOMY",
+    Business: "BUSINESS",
+    First: "FIRST",
+  };
   const classReverseMap = {
     ECONOMY: "Economy",
     PREMIUM_ECONOMY: "Premium Economy",
@@ -10,15 +20,7 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
     FIRST: "First",
   };
 
-  const classMap = {
-    Economy: "ECONOMY",
-    "Premium Economy": "PREMIUM_ECONOMY",
-    Business: "BUSINESS",
-    First: "FIRST",
-  };
-
-  const navigate = useNavigate();
-
+  // Flight search state
   const [tripType, setTripType] = useState("oneway");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -31,10 +33,13 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
 
   const [fromCode, setFromCode] = useState("");
   const [toCode, setToCode] = useState("");
+
+  // Airport dropdown
   const [fromOptions, setFromOptions] = useState([]);
   const [toOptions, setToOptions] = useState([]);
   const [cachedTamilNaduAirports, setCachedTamilNaduAirports] = useState([]);
 
+  // Dropdown UI
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
   const [showPassengerDropdown, setShowPassengerDropdown] = useState(false);
@@ -42,96 +47,114 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
 
   const [errors, setErrors] = useState({});
 
-  // Memoize the airport formatting function
-  const formatAirportDisplay = useCallback((airport) => {
-    if (!airport) return "";
-    return `${airport.city} (${airport.iataCode})`;
-  }, []);
+  const formatAirportDisplay = useCallback(
+    (airport) => (airport ? `${airport.city} (${airport.iataCode})` : ""),
+    []
+  );
 
-  // Fetch cached Tamil Nadu Airports once
+  const extractCityName = (input) => {
+    const match = input.match(/(.*)\s\(([^)]+)\)/);
+    return match ? match[1].trim().toLowerCase() : input.trim().toLowerCase();
+  };
+
+  // Prefill localStorage-based data after Tamil Nadu airports loaded
   useEffect(() => {
     fetchAirports("Tamil-Nadu").then(setCachedTamilNaduAirports);
   }, []);
 
-  // Load cached searchMeta if exists (Landing Page use case)
+  // useEffect(() => {
+  //   const metaStr = localStorage.getItem("searchMeta");
+  //   if (!metaStr || !cachedTamilNaduAirports.length) return;
+
+  //   try {
+  //     const meta = JSON.parse(metaStr);
+  //     setTripType(meta.tripType || "oneway");
+  //     setAdults(meta.adults || 1);
+  //     setChildren(meta.children || 0);
+  //     setInfants(meta.infants || 0);
+  //     setSelectedClass(classReverseMap[meta.travelClass] || "Economy");
+  //     setDepartureDate(meta.date ? new Date(meta.date) : null);
+  //     setReturnDate(meta.returnDate ? new Date(meta.returnDate) : null);
+
+  //     const handlePrefill = async (code, setFn, setCodeFn) => {
+  //       const fromCache = cachedTamilNaduAirports.find(
+  //         (a) => a.iataCode === code
+  //       );
+  //       if (fromCache) {
+  //         setFn(formatAirportDisplay(fromCache));
+  //         setCodeFn(code);
+  //       } else {
+  //         const fetched = await fetchAirports(code);
+  //         const match = fetched.find((a) => a.iataCode === code);
+  //         if (match) {
+  //           setFn(formatAirportDisplay(match));
+  //           setCodeFn(code);
+  //         }
+  //       }
+  //     };
+
+  //     if (meta.from) handlePrefill(meta.from, setFrom, setFromCode);
+  //     if (meta.to) handlePrefill(meta.to, setTo, setToCode);
+  //   } catch (e) {
+  //     console.error("Invalid searchMeta:", e);
+  //   }
+  // }, [cachedTamilNaduAirports]);
+
+  //  useEffect(() => {
+  //   if (initialValues) {
+  //     setFrom(initialValues.from || "");
+  //     setTo(initialValues.to || "");
+  //     setDepartureDate(
+  //       initialValues.departureDate
+  //         ? new Date(initialValues.departureDate)
+  //         : null
+  //     );
+  //     setReturnDate(
+  //       initialValues.returnDate ? new Date(initialValues.returnDate) : null
+  //     );
+  //     setTripType(initialValues.tripType || "oneway");
+  //     setAdults(initialValues.adults ?? 1);
+  //     setChildren(initialValues.children ?? 0);
+  //     setInfants(initialValues.infants ?? 0);
+  //     setSelectedClass(initialValues.selectedClass || "Economy");
+  //   }
+  // }, [initialValues]);
+
+  /* ------------------------------------------------------------------
+   *  Prefill from initialValues (passed by Flights page)
+   * -----------------------------------------------------------------*/
   useEffect(() => {
-    const metaStr = localStorage.getItem("searchMeta");
-    if (metaStr && cachedTamilNaduAirports.length > 0) {
-      // Ensure cached airports are loaded
-      try {
-        const meta = JSON.parse(metaStr);
+    if (!initialValues) return;
 
-        setTripType(meta.tripType || "oneway");
-        setAdults(meta.adults || 1);
-        setChildren(meta.children || 0);
-        setInfants(meta.infants || 0);
-        setSelectedClass(classReverseMap[meta.travelClass] || "Economy");
-        setDepartureDate(meta.date ? new Date(meta.date) : null);
-        setReturnDate(meta.returnDate ? new Date(meta.returnDate) : null);
+    // 1. simple text / numbers
+    setTripType(initialValues.tripType || "oneway");
+    setFrom(initialValues.from || "");
+    setTo(initialValues.to || "");
+    setAdults(initialValues.adults ?? 1);
+    setChildren(initialValues.children ?? 0);
+    setInfants(initialValues.infants ?? 0);
 
-        // Resolve From City/Airport details
-        const foundFromAirport = cachedTamilNaduAirports.find(
-          (a) => a.iataCode === meta.from
-        );
-        if (foundFromAirport) {
-          setFrom(formatAirportDisplay(foundFromAirport));
-          setFromCode(meta.from);
-        } else if (meta.from) {
-          // If not found in cache, try fetching just this airport
-          fetchAirports(meta.from)
-            .then((data) => {
-              if (data && data.length > 0) {
-                const airport = data.find((a) => a.iataCode === meta.from);
-                if (airport) {
-                  setFrom(formatAirportDisplay(airport));
-                  setFromCode(meta.from);
-                }
-              }
-            })
-            .catch((e) => console.error("Failed to fetch from airport:", e));
-        }
-
-        // Resolve To City/Airport details
-        const foundToAirport = cachedTamilNaduAirports.find(
-          (a) => a.iataCode === meta.to
-        );
-        if (foundToAirport) {
-          setTo(formatAirportDisplay(foundToAirport));
-          setToCode(meta.to);
-        } else if (meta.to) {
-          // If not found in cache, try fetching just this airport
-          fetchAirports(meta.to)
-            .then((data) => {
-              if (data && data.length > 0) {
-                const airport = data.find((a) => a.iataCode === meta.to);
-                if (airport) {
-                  setTo(formatAirportDisplay(airport));
-                  setToCode(meta.to);
-                }
-              }
-            })
-            .catch((e) => console.error("Failed to fetch to airport:", e));
-        }
-
-        localStorage.removeItem("searchMeta");
-      } catch (e) {
-        console.error("Invalid searchMeta:", e);
-      }
+    // 2. class code → UI string
+    if (initialValues.travelClass) {
+      setSelectedClass(classReverseMap[initialValues.travelClass] || "Economy");
     }
-  }, [cachedTamilNaduAirports, onSearch, formatAirportDisplay]);
+
+    // 3. dates (note: key in meta is "date", not "departureDate")
+    setDepartureDate(initialValues.date ? new Date(initialValues.date) : null);
+    setReturnDate(
+      initialValues.returnDate ? new Date(initialValues.returnDate) : null
+    );
+
+    // 4. **VERY IMPORTANT:** set IATA codes so validation works
+    setFromCode(initialValues.from || "");
+    setToCode(initialValues.to || "");
+  }, [initialValues]);
 
   useEffect(() => {
     if (tripType === "oneway") setReturnDate(null);
   }, [tripType]);
 
-  const extractCityName = (input) => {
-    const match = input.match(/(.*)\s\(([^)]+)\)/);
-    if (match) {
-      return match[1].trim().toLowerCase();
-    }
-    return input.trim().toLowerCase();
-  };
-
+  // Dropdown filtering
   const filteredFromOptions = from.trim()
     ? fromOptions.filter(
         (opt) =>
@@ -150,28 +173,62 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
       )
     : toOptions;
 
+  // Fetch suggestions
   useEffect(() => {
     if (from.trim() && !from.includes(" (")) {
-      // Only fetch if it's not already a formatted string
       const timer = setTimeout(
         () => fetchAirports(from).then(setFromOptions),
         300
       );
       return () => clearTimeout(timer);
-    } else {
-      setFromOptions(cachedTamilNaduAirports); // Reset if user clears or it's formatted
     }
+    setFromOptions(cachedTamilNaduAirports);
   }, [from, cachedTamilNaduAirports]);
 
   useEffect(() => {
     if (to.trim() && !to.includes(" (")) {
-      // Only fetch if it's not already a formatted string
       const timer = setTimeout(() => fetchAirports(to).then(setToOptions), 300);
       return () => clearTimeout(timer);
-    } else {
-      setToOptions(cachedTamilNaduAirports); // Reset if user clears or it's formatted
     }
+    setToOptions(cachedTamilNaduAirports);
   }, [to, cachedTamilNaduAirports]);
+
+  // Dropdown interaction handlers
+  const handleFromFocus = () => {
+    if (!from.trim() || !fromCode) {
+      setFromOptions(cachedTamilNaduAirports);
+    } else {
+      const selected = cachedTamilNaduAirports.find(
+        (a) => a.iataCode === fromCode
+      );
+      if (selected && from === formatAirportDisplay(selected)) {
+        setFromOptions([selected]);
+      } else {
+        fetchAirports(extractCityName(from))
+          .then(setFromOptions)
+          .catch(() => setFromOptions([]));
+      }
+    }
+    setShowFromDropdown(true);
+  };
+
+  const handleToFocus = () => {
+    if (!to.trim() || !toCode) {
+      setToOptions(cachedTamilNaduAirports);
+    } else {
+      const selected = cachedTamilNaduAirports.find(
+        (a) => a.iataCode === toCode
+      );
+      if (selected && to === formatAirportDisplay(selected)) {
+        setToOptions([selected]);
+      } else {
+        fetchAirports(extractCityName(to))
+          .then(setToOptions)
+          .catch(() => setToOptions([]));
+      }
+    }
+    setShowToDropdown(true);
+  };
 
   const handleSelectFrom = (opt) => {
     setFrom(formatAirportDisplay(opt));
@@ -185,77 +242,18 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
     setShowToDropdown(false);
   };
 
-  const handleFromFocus = () => {
-    if (!from.trim() || !fromCode) {
-      setFromOptions(cachedTamilNaduAirports);
-    } else {
-      const selectedFromCache = cachedTamilNaduAirports.find(
-        (a) => a.iataCode === fromCode
-      );
-
-      if (
-        selectedFromCache &&
-        from === formatAirportDisplay(selectedFromCache)
-      ) {
-        setFromOptions([selectedFromCache]);
-      } else {
-        //  Sanitize query before sending to API
-        const query = extractCityName(from) || fromCode;
-        fetchAirports(query)
-          .then((fetched) => {
-            if (fetched?.length) {
-              setFromOptions(fetched);
-            } else {
-              setFromOptions([]);
-            }
-          })
-          .catch(() => setFromOptions([]));
-      }
-    }
-    setShowFromDropdown(true);
-  };
-
-  const handleToFocus = () => {
-    if (!to.trim() || !toCode) {
-      setToOptions(cachedTamilNaduAirports);
-    } else {
-      const selectedToCache = cachedTamilNaduAirports.find(
-        (a) => a.iataCode === toCode
-      );
-
-      if (selectedToCache && to === formatAirportDisplay(selectedToCache)) {
-        setToOptions([selectedToCache]);
-      } else {
-        const query = extractCityName(to) || toCode;
-        fetchAirports(query)
-          .then((fetched) => {
-            if (fetched?.length) {
-              setToOptions(fetched);
-            } else {
-              setToOptions([]);
-            }
-          })
-          .catch(() => setToOptions([]));
-      }
-    }
-    setShowToDropdown(true);
-  };
-
   const handleSwap = () => {
-    const tempCity = from;
-    const tempCode = fromCode;
-    setFrom(to);
-    setFromCode(toCode);
-    setTo(tempCity);
-    setToCode(tempCode);
+    [setFrom, setTo](to, from);
+    [setFromCode, setToCode](toCode, fromCode);
   };
 
+  // Main search handler
   const handleSearch = () => {
     const validation = {};
     if (!fromCode) validation.from = "Select Departure City";
     if (!toCode) validation.to = "Select Arrival City";
     if (fromCode && toCode && fromCode === toCode)
-      validation.to = "Arrival City should be different from Departure";
+      validation.to = "Arrival and Departure should differ";
     if (!departureDate) validation.departureDate = "Select Departure Date";
     if (tripType === "roundtrip" && !returnDate)
       validation.returnDate = "Select Return Date";
@@ -263,13 +261,13 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
       validation.passengers = "Select Passengers";
 
     setErrors(validation);
-    if (Object.keys(validation).length > 0) return;
+    if (Object.keys(validation).length) return;
 
     const meta = {
-      from: fromCode, // Store only the code in localStorage
-      to: toCode, // Store only the code in localStorage
-      date: departureDate ? departureDate.toLocaleDateString("en-CA") : null,
-      returnDate: returnDate ? returnDate.toLocaleDateString("en-CA") : null,
+      from: fromCode,
+      to: toCode,
+      date: departureDate?.toLocaleDateString("en-CA"),
+      returnDate: returnDate?.toLocaleDateString("en-CA"),
       adults,
       children,
       infants,
@@ -278,10 +276,9 @@ export const useFlightSearchLogic = ({ mode, onSearch }) => {
     };
 
     if (mode === "flights") {
-      onSearch?.(meta);
+      onSearch?.(meta); // prevents reload
     } else if (mode === "landing") {
       localStorage.setItem("searchMeta", JSON.stringify(meta));
-      onSearch?.(meta);
       navigate("/flights");
     }
   };
