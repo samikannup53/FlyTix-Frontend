@@ -45,7 +45,8 @@ export const Password = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        "http://localhost:8000/api/auth/change-password",
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/change-password`,
+
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

@@ -48,18 +48,21 @@ export const Profile = () => {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("http://localhost:8000/api/user/update", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          ...formData,
-          fullName: formData.fullName.trim(),
-          mobile: formData.mobile.trim(),
-          gender: formData.gender.trim(),
-          dob: formData.dob.trim(),
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/user/update`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            ...formData,
+            fullName: formData.fullName.trim(),
+            mobile: formData.mobile.trim(),
+            gender: formData.gender.trim(),
+            dob: formData.dob.trim(),
+          }),
+        }
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Update failed");
       setSuccess("Profile Updated Successfully");

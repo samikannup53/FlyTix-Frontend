@@ -20,9 +20,12 @@ export const Travellers = () => {
 
   const fetchTravellers = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/user/travellers", {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/user/travellers`,
+        {
+          credentials: "include",
+        }
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Failed to fetch travellers");
       setTravellers(Array.isArray(data.travellers) ? data.travellers : []);
@@ -65,12 +68,15 @@ export const Travellers = () => {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("http://localhost:8000/api/user/travellers", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/user/travellers`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Traveller creation failed");
       setSuccess("Traveller added successfully!");
@@ -92,7 +98,7 @@ export const Travellers = () => {
   const handleDelete = async (id) => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/user/travellers/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/user/travellers/${id}`,
         {
           method: "DELETE",
           credentials: "include",
