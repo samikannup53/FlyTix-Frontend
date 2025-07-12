@@ -40,12 +40,15 @@ export const Booking = () => {
 
     const fetchFlight = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/flights/validate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ flightId }),
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/flights/validate`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ flightId }),
+          }
+        );
 
         const data = await res.json();
 
@@ -83,12 +86,15 @@ export const Booking = () => {
       billingAddress: billingRef.current.getData(),
     };
     try {
-      const res = await fetch("http://localhost:8000/api/booking/initiate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/booking/initiate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await res.json();
 

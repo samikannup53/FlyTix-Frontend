@@ -32,9 +32,12 @@ export const BookingTravellerDetails = forwardRef(({ flight }, ref) => {
   useEffect(() => {
     const fetchTravellers = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/user/travellers", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/user/travellers`,
+          {
+            credentials: "include",
+          }
+        );
         const data = await res.json();
         setSavedTravellers(
           Array.isArray(data.travellers) ? data.travellers : []
