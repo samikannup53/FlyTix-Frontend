@@ -26,14 +26,17 @@ export const FareSummary = ({ booking }) => {
 
     try {
       // Step 1: Initiate payment
-      const res = await fetch("http://localhost:8000/api/payment/initiate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ bookingId: booking.bookingId }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/payment/initiate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ bookingId: booking.bookingId }),
+        }
+      );
 
       const data = await res.json();
       if (!res.ok) {
@@ -56,7 +59,7 @@ export const FareSummary = ({ booking }) => {
           setIsProcessing(true); // Show spinner after payment success
           try {
             const verifyRes = await fetch(
-              "http://localhost:8000/api/payment/verify",
+              `${import.meta.env.VITE_API_BASE_URL}/api/payment/verify`,
               {
                 method: "POST",
                 headers: {

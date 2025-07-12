@@ -21,7 +21,8 @@ export const BookingConfirm = () => {
     const fetchBooking = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8000/api/booking/${bookingId}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/booking/${bookingId}`,
+
           {
             credentials: "include",
           }

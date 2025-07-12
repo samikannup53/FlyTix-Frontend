@@ -66,14 +66,17 @@ export const MyBookingCard = ({ booking, setBookings }) => {
   const handleCancel = async (reason = "User Request") => {
     setIsCancelling(true);
     try {
-      const res = await fetch("http://localhost:8000/api/booking/cancel", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ bookingId, reason }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/booking/cancel`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ bookingId, reason }),
+        }
+      );
 
       const data = await res.json();
 
@@ -109,7 +112,7 @@ export const MyBookingCard = ({ booking, setBookings }) => {
     const top = window.screenY + (window.outerHeight - height) / 2;
     const features = `width=${width},height=${height},left=${left},top=${top},toolbar=0,scrollbars=1,resizable=1`;
 
-    const ticketUrl = `http://localhost:8000/api/booking/${bookingId}/ticket`;
+    const ticketUrl = `${import.meta.env.VITE_API_BASE_URL}/api/booking/${bookingId}/ticket`;
     const previewWindow = window.open("", "_blank", features);
 
     previewWindow.document.write(`

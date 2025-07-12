@@ -55,7 +55,7 @@ export const TicketDetails = ({ booking }) => {
     const top = window.screenY + (window.outerHeight - height) / 2;
     const features = `width=${width},height=${height},left=${left},top=${top},toolbar=0,scrollbars=1,resizable=1`;
 
-    const ticketUrl = `http://localhost:8000/api/booking/${bookingId}/ticket`;
+    const ticketUrl = `${import.meta.env.VITE_API_BASE_URL}/api/booking/${bookingId}/ticket`;
     const popup = window.open("", "_blank", features);
 
     // Show Tailwind loading spinner

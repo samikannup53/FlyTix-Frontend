@@ -76,14 +76,17 @@ export const Flights = () => {
       setFlights([]);
       setOriginalFlights([]);
 
-      const res = await fetch("http://localhost:8000/api/flights/search", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(searchInput),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/flights/search`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(searchInput),
+        }
+      );
 
       const data = await res.json();
 
@@ -114,12 +117,15 @@ export const Flights = () => {
   // Book Now Function
   const handleBookNow = async (flightId) => {
     try {
-      const res = await fetch("http://localhost:8000/api/flights/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ flightId }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/flights/validate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ flightId }),
+        }
+      );
       const data = await res.json();
 
       if (!res.ok) {
