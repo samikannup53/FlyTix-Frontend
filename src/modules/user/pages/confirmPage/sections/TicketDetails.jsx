@@ -55,21 +55,59 @@ export const TicketDetails = ({ booking }) => {
     const top = window.screenY + (window.outerHeight - height) / 2;
     const features = `width=${width},height=${height},left=${left},top=${top},toolbar=0,scrollbars=1,resizable=1`;
 
-    const ticketUrl = `${import.meta.env.VITE_API_BASE_URL}/api/booking/${bookingId}/ticket`;
+    const ticketUrl = `${
+      import.meta.env.VITE_API_BASE_URL
+    }/api/booking/${bookingId}/ticket`;
     const popup = window.open("", "_blank", features);
 
     // Show Tailwind loading spinner
     popup.document.write(`
-      <html>
-        <head>
-          <title>Generating Ticket...</title>
-          <script src="https://cdn.tailwindcss.com"></script>
-        </head>
-        <body class="flex items-center justify-center h-screen bg-white text-gray-700 flex-col">
-          <div class="w-10 h-10 border-4 border-pink-300 border-t-pink-600 rounded-full animate-spin mb-4"></div>
-          <p class="text-sm font-medium">Preparing your ticket PDF...</p>
-        </body>
-      </html>
+      <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Generating Ticket...</title>
+            <style>
+              html, body {
+                margin: 0;
+                height: 100%;
+                background-color: #ffffff;     
+                color: #374151;                    
+                font-family: sans-serif;
+                display: flex;
+                flex-direction: column;       
+                justify-content: center;          
+                align-items: center;           
+                text-align: center;
+              }
+
+              .spinner {
+                width: 40px;                     
+                height: 40px;                     
+                border: 4px solid #f9a8d4;       
+                border-top-color: #be185d;       
+                border-radius: 50%;               
+                animation: spin 1s linear infinite; 
+                margin-bottom: 1rem;             
+              }
+
+              @keyframes spin {
+                to {
+                  transform: rotate(360deg);
+                }
+              }
+
+              .loading-text {
+                font-size: 0.875rem;            
+                font-weight: 500;                
+              }
+            </style>
+          </head>
+          <body>
+            <div class="spinner"></div>
+            <p class="loading-text">Preparing your ticket PDF...</p>
+          </body>
+        </html>
+
     `);
     popup.document.close();
 

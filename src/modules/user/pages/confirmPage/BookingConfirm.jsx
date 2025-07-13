@@ -91,7 +91,7 @@ export const BookingConfirm = () => {
   return (
     <>
       <UserHeader />
-      <section className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 py-6 px-4">
+      <section className="min-h-[85vh] bg-gradient-to-br from-orange-50 to-yellow-100 py-6 px-4">
         <ConfirmationSection booking={booking} />
         <ThankYouSection booking={booking} />
       </section>

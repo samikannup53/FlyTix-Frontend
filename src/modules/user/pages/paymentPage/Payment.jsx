@@ -94,7 +94,7 @@ export const Payment = () => {
   return (
     <>
       <BookingHeader />
-      <section className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50 py-5 px-4">
+      <section className="min-h-[85vh] bg-gradient-to-br from-orange-50 via-pink-50 to-orange-50 py-5 px-4">
         <DosAndDontsAlert />
         <ConfirmPaySection booking={booking} />
         <PaymentMethods booking={booking} />
