@@ -11,7 +11,7 @@ export const TicketDetails = ({ booking }) => {
         dateLabel: "Cancelled On",
         dateValue: booking.updatedAt,
       };
-    } else if (booking.isRescheduled) {
+    } else if (booking.status) {
       const lastReschedule =
         booking.rescheduleHistory?.[booking.rescheduleHistory.length - 1];
       return {

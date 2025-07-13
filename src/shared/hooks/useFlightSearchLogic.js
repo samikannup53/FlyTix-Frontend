@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 // -----------------------------------------------------------------------------
 //  Shared hook for both Landing‑page and Flights‑page search bars
 // -----------------------------------------------------------------------------
@@ -6,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchAirports } from "../../modules/user/services/airportService";
 import { useNavigate } from "react-router-dom";
 
-/* ▸ UI ⇆ API travel‑class mapping */
+/* ▸ UI <> API travel‑class mapping */
 const CLASS_UI_TO_API = {
   Economy: "ECONOMY",
   "Premium Economy": "PREMIUM_ECONOMY",
@@ -17,8 +16,7 @@ const CLASS_API_TO_UI = Object.fromEntries(
   Object.entries(CLASS_UI_TO_API).map(([k, v]) => [v, k])
 );
 
-/* 🗄️ in‑memory cache so we never lose display text */
-const codeCache = new Map(); // <IATA, full airport object>
+const codeCache = new Map();
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
@@ -59,7 +57,7 @@ export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
   const resolveIATAToDisplay = async (code, setter, codeSetter) => {
     if (!code) return;
 
-    // 1️⃣ memory‑cache first
+    // 1️memory‑cache first
     if (codeCache.has(code)) {
       const hit = codeCache.get(code);
       setter(formatDisplay(hit));
@@ -67,7 +65,7 @@ export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
       return;
     }
 
-    // 2️⃣ local preload (Tamil‑Nadu list)
+    // local preload (Tamil‑Nadu list)
     const preload = cachedTN.find((a) => a.iataCode === code);
     if (preload) {
       codeCache.set(code, preload);
@@ -76,7 +74,7 @@ export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
       return;
     }
 
-    // 3️⃣ as a last resort hit the API
+    // as a last resort hit the API
     try {
       const res = await fetchAirports(code);
       const match = res.find((a) => a.iataCode === code);
@@ -130,7 +128,7 @@ export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
     })();
   }, [initialValues, cachedTN.length]);
 
-  /*──────── 3. derived UI helpers (unchanged) ────────*/
+  /*──────── 3. derived UI helpers ────────*/
   useEffect(() => {
     if (tripType === "oneway") setReturnDate(null);
   }, [tripType]);
@@ -140,7 +138,7 @@ export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
     setPassengersText(`${t} Traveller${t > 1 ? "s" : ""} / ${selectedClass}`);
   }, [adults, children, infants, selectedClass]);
 
-  /*──────── 4. live suggestions (unchanged) ────────*/
+  /*──────── 4. live suggestions ────────*/
   const refreshOpts = (val, cached, set) => {
     if (val.trim() && !val.includes(" (")) {
       const id = setTimeout(() => fetchAirports(val).then(set), 300);
@@ -173,7 +171,7 @@ export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
     resolveIATAToDisplay(fromCode, setTo, setToCode);
   };
 
-  /*──────── 6. validate & emit meta (unchanged) ────────*/
+  /*──────── 6. validate & emit meta  ────────*/
   const handleSearch = () => {
     const v = {};
     if (!fromCode) v.from = "Select Departure City";
@@ -269,13 +267,13 @@ export const useFlightSearchLogic = ({ mode, onSearch, initialValues }) => {
     handleSearch,
     handleSwap,
     handleSelectFrom: (opt) => {
-      codeCache.set(opt.iataCode, opt); // 🧠 remember full object
+      codeCache.set(opt.iataCode, opt); // remember full object
       setFrom(formatDisplay(opt));
       setFromCode(opt.iataCode);
       setShowFromDropdown(false);
     },
     handleSelectTo: (opt) => {
-      codeCache.set(opt.iataCode, opt); // 🧠 remember full object
+      codeCache.set(opt.iataCode, opt); // remember full object
       setTo(formatDisplay(opt));
       setToCode(opt.iataCode);
       setShowToDropdown(false);
