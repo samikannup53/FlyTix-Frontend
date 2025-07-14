@@ -3,7 +3,7 @@ import logo from "../../../assets/images/logo.png";
 import { useState } from "react";
 import { useAuth } from "../../../shared/contexts/AuthContext";
 
-export const UserHeader = () => {
+export const UserHeader = ({ onNavigate }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { isLoggedIn, logout, loading, refreshUser } = useAuth();
 
@@ -12,10 +12,10 @@ export const UserHeader = () => {
   const guestLinks = [
     { to: "/", icon: "fa-house", label: "Home" },
     { to: "/flights", icon: "fa-plane-up", label: "Flights" },
-    { href: "#how-it-works", icon: "fa-compass", label: "Explore" },
-    { to: "/#benefits", icon: "fa-gem", label: "Benefits" },
+    { section: "features", icon: "fa-compass", label: "Explore" },
+    { section: "benefits", icon: "fa-gem", label: "Benefits" },
     {
-      href: "#cheapest-fares",
+      section: "routes",
       icon: "fa-map-location-dot",
       label: "Destinations",
     },
@@ -51,18 +51,24 @@ export const UserHeader = () => {
               <Link
                 key={idx}
                 to={item.to}
+                onClick={() => {
+                  if (item.to === "/") {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
                 className="flex items-center gap-2 hover:text-gray-900 transition"
               >
                 <i className={`fa-solid ${item.icon}`}></i> {item.label}
               </Link>
             ) : (
-              <a
+              <button
                 key={idx}
-                href={item.href}
-                className="flex items-center gap-2 hover:text-gray-900 transition"
+                type="button"
+                onClick={() => onNavigate?.(item.section)}
+                className="flex items-center gap-2 hover:text-gray-900 transition bg-transparent border-none focus:outline-none"
               >
                 <i className={`fa-solid ${item.icon}`}></i> {item.label}
-              </a>
+              </button>
             )
           )}
         </nav>
@@ -129,20 +135,28 @@ export const UserHeader = () => {
                 <Link
                   key={idx}
                   to={item.to}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    if (item.to === "/") {
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
                   className="flex items-center gap-2"
                 >
                   <i className={`fa-solid ${item.icon}`}></i> {item.label}
                 </Link>
               ) : (
-                <a
+                <button
                   key={idx}
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2"
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onNavigate?.(item.section);
+                  }}
+                  className="flex items-center gap-2 bg-transparent border-none text-left"
                 >
                   <i className={`fa-solid ${item.icon}`}></i> {item.label}
-                </a>
+                </button>
               )
             )}
           </div>
