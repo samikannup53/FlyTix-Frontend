@@ -1,9 +1,11 @@
 import { ToastContainer } from "react-toastify";
 import UserRoutes from "./routes/UserRoutes";
+import { CookieBanner } from "./modules/user/components";
 
 function App() {
   return (
     <>
+      <CookieBanner />
       <UserRoutes />
       <ToastContainer
         position="top-right"
