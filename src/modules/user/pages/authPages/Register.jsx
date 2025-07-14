@@ -4,12 +4,13 @@ import { Link } from "react-router-dom";
 import { AuthHeader } from "./authComponents/AuthHeader";
 import { AuthFooter } from "./authComponents/AuthFooter";
 import { AuthLeftPanel } from "./authComponents/AuthLeftPanel";
+import { toast } from "react-toastify";
 
 export const Register = () => {
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { refreshUser } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export const Register = () => {
     termsAccepted: false,
   });
 
+  // Handle input change for all fields
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -30,18 +32,43 @@ export const Register = () => {
     }));
   };
 
+  // Step navigation
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords Do Not Match");
-      return;
+  // Step validation logic
+  const validateStep = () => {
+    if (step === 1) {
+      if (!formData.fullName || !formData.email) {
+        toast.error("Please fill in all required fields in Step 1");
+        return false;
+      }
+    } else if (step === 2) {
+      if (!formData.gender || !formData.dob) {
+        toast.error("Please select gender and date of birth");
+        return false;
+      }
+    } else if (step === 3) {
+      if (!formData.password || !formData.confirmPassword) {
+        toast.error("Please enter and confirm your password");
+        return false;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        toast.error("Passwords do not match");
+        return false;
+      }
+      if (!formData.termsAccepted) {
+        toast.error("Please accept the terms and conditions");
+        return false;
+      }
     }
+    return true;
+  };
 
+  // Form submission
+  const handleSubmit = async () => {
+    if (!validateStep()) return;
+    setIsSubmitting(true);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/auth/register`,
@@ -62,23 +89,24 @@ export const Register = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.msg || "Registration Failed");
+        throw new Error(data.msg || "Registration failed");
       }
+
       await refreshUser();
-      nextStep();
+      setStep(4);
+      toast.success("Registration successful!");
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50">
-      {/* Header */}
       <AuthHeader />
-
       <main className="flex-grow flex items-center justify-center px-4 py-4">
         <div className="w-full max-w-7xl bg-white/30 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
-          {/* Left Panel */}
           <AuthLeftPanel
             title={
               <>
@@ -87,15 +115,12 @@ export const Register = () => {
             }
             subtitle={
               <>
-                Book, relax, and let &nbsp;{" "}
-                <span className="text-yellow-300">FlyTix</span> &nbsp; handle
-                the rest.
+                Book, relax, and let{" "}
+                <span className="text-yellow-300">FlyTix</span> handle the rest.
               </>
             }
             quote={`"Adventure awaits with every booking"`}
           />
-
-          {/* Right Panel - Multi Step Form */}
           <div className="w-full md:w-1/2 px-8 py-14 sm:px-6 sm:py-18 lg:px-14 lg:py-20 flex items-center justify-center bg-white backdrop-blur-lg shadow-lg relative">
             <span className="absolute top-4 left-4 sm:top-6 sm:left-6 text-pink-700 flex items-center gap-2 hover:text-pink-800 transition-all">
               <i className="fas fa-house text-sm sm:text-base mb-[3px]"></i>
@@ -103,6 +128,7 @@ export const Register = () => {
                 Home
               </Link>
             </span>
+
             <div className="w-full max-w-sm sm:max-w-md space-y-5 sm:space-y-6 min-h-[404px]">
               <h2 className="text-center text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent drop-shadow-sm">
                 Create an Account
@@ -113,17 +139,8 @@ export const Register = () => {
                 start booking today.
               </p>
 
-              {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-sm">
-                  {error}
-                </div>
-              )}
-
               {step <= 3 && (
-                <form
-                  className="space-y-4 sm:space-y-5"
-                  onSubmit={handleSubmit}
-                >
+                <form className="space-y-4 sm:space-y-5">
                   {step === 1 && (
                     <>
                       {/* Full Name */}
@@ -182,7 +199,6 @@ export const Register = () => {
                                 value={g}
                                 checked={formData.gender === g}
                                 onChange={handleChange}
-                                required
                               />
                               {g}
                             </label>
@@ -190,7 +206,7 @@ export const Register = () => {
                         </div>
                       </div>
 
-                      {/* DOB */}
+                      {/* Date of Birth */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
                           Date of Birth
@@ -202,7 +218,6 @@ export const Register = () => {
                             name="dob"
                             value={formData.dob}
                             onChange={handleChange}
-                            required
                             className="flex-1 bg-transparent text-gray-700 focus:outline-none text-sm"
                           />
                         </div>
@@ -305,7 +320,9 @@ export const Register = () => {
                     {step < 3 ? (
                       <button
                         type="button"
-                        onClick={nextStep}
+                        onClick={() => {
+                          if (validateStep()) nextStep();
+                        }}
                         className="ml-auto flex items-center gap-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 text-white font-semibold py-2 px-5 rounded-xl shadow-lg hover:from-orange-700 hover:to-pink-700"
                       >
                         Next <i className="fas fa-arrow-right"></i>
@@ -314,9 +331,19 @@ export const Register = () => {
                       <button
                         type="button"
                         onClick={handleSubmit}
+                        disabled={isSubmitting}
                         className="ml-auto flex items-center gap-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 text-white font-semibold py-2 px-5 rounded-xl shadow-lg hover:from-orange-700 hover:to-pink-700"
                       >
-                        <i className="fas fa-user-plus"></i> Sign Up
+                        {isSubmitting ? (
+                          <>
+                            <i className="fas fa-spinner fa-spin text-white text-sm"></i>
+                            <span className="font-medium">Registering...</span>
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-user-plus"></i> Sign Up
+                          </>
+                        )}
                       </button>
                     )}
                   </div>
@@ -357,8 +384,6 @@ export const Register = () => {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
       <AuthFooter />
     </div>
   );

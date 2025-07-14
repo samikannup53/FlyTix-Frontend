@@ -84,6 +84,9 @@ export const FareSummary = ({ booking }) => {
 
             toast.success("Payment Successful!");
             navigate(`/booking/confirm/${booking.bookingId}`);
+
+            localStorage.removeItem("cachedFlightResults");
+            localStorage.removeItem("cachedSearchMeta");
           } catch (err) {
             setIsProcessing(false);
             toast.error("Verification failed. Please contact support.");
