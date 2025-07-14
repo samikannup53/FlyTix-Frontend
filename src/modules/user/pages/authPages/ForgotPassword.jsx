@@ -1,37 +1,42 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import { AuthHeader } from "./authComponents/AuthHeader";
 import { AuthFooter } from "./authComponents/AuthFooter";
 import { AuthLeftPanel } from "./authComponents/AuthLeftPanel";
 
 export const ForgotPassword = () => {
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [step, setStep] = useState(1);
+  const [isGenerateLoading, setIsGenerateLoading] = useState(false); // “Generate OTP”
+  const [isResendLoading, setIsResendLoading] = useState(false); // “Resend OTP”
+  const [isUpdateLoading, setIsUpdateLoading] = useState(false); // “Update Password”
+
   const [formData, setFormData] = useState({
     email: "",
     otp: "",
     newPassword: "",
     confirmNewPassword: "",
   });
+
+  // Show / hide password fields
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleGenerateOtp = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setIsGenerateLoading(true);
+
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/auth/forgot-password/initiate`,
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/api/auth/forgot-password/initiate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -39,29 +44,56 @@ export const ForgotPassword = () => {
           body: JSON.stringify({ email: formData.email }),
         }
       );
-
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.msg || "Something Went Wrong");
-        return;
+        toast.error(data.msg || "Failed to send OTP");
+      } else {
+        toast.success("OTP sent to your email");
+        setStep(2);
       }
+    } catch {
+      toast.error("Server error. Please try again.");
+    } finally {
+      setIsGenerateLoading(false);
+    }
+  };
 
-      setSuccess("OTP Sent to your Email");
-      setStep(2);
-    } catch (error) {
-      setError(error.message);
+  const handleResendOtp = async () => {
+    setIsResendLoading(true);
+
+    try {
+      const res = await fetch(
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/api/auth/forgot-password/resend-otp`,
+        { method: "POST", credentials: "include" }
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.msg || "Failed to resend OTP");
+      } else {
+        toast.success("OTP resent successfully");
+      }
+    } catch {
+      toast.error("Server error. Please try again.");
+    } finally {
+      setIsResendLoading(false);
     }
   };
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+
+    // simple client validation
     if (formData.newPassword !== formData.confirmNewPassword) {
-      setError("Passwords do not Match");
+      toast.error("Passwords do not match");
       return;
     }
+
+    setIsUpdateLoading(true);
+
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/auth/forgot-password/reset`,
@@ -75,55 +107,27 @@ export const ForgotPassword = () => {
           }),
         }
       );
-
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.msg || "Something Went Wrong");
-        return;
+        toast.error(data.msg || "Failed to reset password");
+      } else {
+        toast.success("Password reset successful");
+        setStep(3); // success screen
       }
-
-      setSuccess("Password Reset Successful");
-      setStep(3);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    setError("");
-    setSuccess("");
-
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/auth/forgot-password/resend-otp`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.msg || "Failed to resend OTP");
-        return;
-      }
-
-      setSuccess("OTP resent successfully!");
-    } catch (err) {
-      setError("Server Error. Please try again.");
+    } catch {
+      toast.error("Server error. Please try again.");
+    } finally {
+      setIsUpdateLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-tr from-orange-50 via-pink-50 to-orange-50">
-      {/* Header */}
       <AuthHeader />
 
       <main className="flex-grow flex items-center justify-center px-4 py-4">
         <div className="w-full max-w-7xl bg-white/30 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
-          {/* Left Panel*/}
           <AuthLeftPanel
             title={
               <>
@@ -138,6 +142,7 @@ export const ForgotPassword = () => {
 
           {/* Right Panel */}
           <div className="w-full md:w-1/2 px-8 py-14 sm:px-6 sm:py-18 lg:px-14 lg:py-20 flex items-center justify-center bg-white backdrop-blur-lg shadow-lg relative">
+            {/* Back to home */}
             <span className="absolute top-4 left-4 sm:top-6 sm:left-6 text-pink-700 flex items-center gap-2 hover:text-pink-800 transition-all">
               <i className="fas fa-house text-sm sm:text-base mb-[3px]"></i>
               <Link to="/" className="text-sm sm:text-base font-medium">
@@ -145,28 +150,17 @@ export const ForgotPassword = () => {
               </Link>
             </span>
 
+            {/* Form container */}
             <div className="w-full max-w-sm sm:max-w-md space-y-5 min-h-[404px]">
               <h2 className="text-center text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 bg-clip-text text-transparent drop-shadow-sm">
                 Forgot Password?
               </h2>
               <p className="text-center text-sm text-gray-700">
-                Reset Password and Resume Your &nbsp;
-                <span className="text-pink-700 font-semibold">
-                  Booking
-                </span>{" "}
+                Reset Password and Resume Your&nbsp;
+                <span className="text-pink-700 font-semibold">Booking</span>
               </p>
-              {/* Step 1 - Email */}
-              {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-sm">
-                  {error}
-                </div>
-              )}
 
-              {success && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md text-sm">
-                  {success}
-                </div>
-              )}
+              {/* ---------- Step 1 : Enter Email ---------- */}
               {step === 1 && (
                 <form onSubmit={handleGenerateOtp} className="space-y-5">
                   <div>
@@ -188,19 +182,30 @@ export const ForgotPassword = () => {
 
                   <button
                     type="submit"
+                    disabled={isGenerateLoading}
                     className="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 text-white font-semibold py-2 px-5 rounded-xl shadow hover:from-orange-700 hover:to-pink-700"
                   >
-                    <i className="fas fa-gears"></i> Generate OTP
+                    {isGenerateLoading ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin text-white text-lg"></i>
+                        Sending OTP...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-gears"></i> Generate OTP
+                      </>
+                    )}
                   </button>
                 </form>
               )}
 
-              {/* Step 2 - OTP & New Password */}
+              {/* ---------- Step 2 : OTP & New Password ---------- */}
               {step === 2 && (
                 <form
                   onSubmit={handleUpdatePassword}
                   className="space-y-[10px]"
                 >
+                  {/* OTP */}
                   <div>
                     <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
                       Enter OTP
@@ -216,17 +221,20 @@ export const ForgotPassword = () => {
                         className="flex-1 bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none text-sm"
                       />
                     </div>
-                    <div className="flex justify-end  text-sm mt-1">
+                    {/* Resend */}
+                    <div className="flex justify-end text-sm mt-1">
                       <button
                         type="button"
                         onClick={handleResendOtp}
-                        className="text-pink-700 font-semibold cursor-pointer"
+                        disabled={isResendLoading}
+                        className="text-pink-700 font-semibold"
                       >
-                        Resend OTP
+                        {isResendLoading ? "Sending..." : "Resend OTP"}
                       </button>
                     </div>
                   </div>
 
+                  {/* New Password */}
                   <div>
                     <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
                       New Password
@@ -255,6 +263,7 @@ export const ForgotPassword = () => {
                     </div>
                   </div>
 
+                  {/* Confirm Password */}
                   <div>
                     <label className="block text-sm font-medium text-gray-800 mb-1 ml-1">
                       Confirm Password
@@ -285,16 +294,27 @@ export const ForgotPassword = () => {
                     </div>
                   </div>
 
+                  {/* Submit */}
                   <button
                     type="submit"
+                    disabled={isUpdateLoading}
                     className="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-orange-700 via-pink-700 to-pink-800 text-white font-semibold py-2 px-5 rounded-xl shadow hover:from-orange-700 hover:to-pink-700"
                   >
-                    <i className="fas fa-key"></i> Update Password
+                    {isUpdateLoading ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin text-white text-lg"></i>
+                        Updating...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-key"></i> Update Password
+                      </>
+                    )}
                   </button>
                 </form>
               )}
 
-              {/* Step 3 - Success */}
+              {/* ---------- Step 3 : Success ---------- */}
               {step === 3 && (
                 <div className="text-center space-y-4">
                   <i className="fas fa-circle-check text-4xl text-green-500"></i>
@@ -329,7 +349,6 @@ export const ForgotPassword = () => {
         </div>
       </main>
 
-      {/* Footer */}
       <AuthFooter />
     </div>
   );
