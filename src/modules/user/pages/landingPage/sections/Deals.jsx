@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const flightDeals = [
   {
@@ -100,12 +101,12 @@ export const Deals = () => {
 
                 <div className="flex justify-between items-center mt-auto">
                   <p className="text-lg font-bold text-pink-800">{deal.fare}</p>
-                  <a
-                    href="#"
+                  <Link
+                    to={"/flights"}
                     className="bg-gradient-to-r from-orange-700 via-pink-700 to-pink-800 text-white text-xs px-4 py-2 rounded-full font-semibold hover:opacity-90 transition-all"
                   >
                     Book Now <i className="fa-solid fa-arrow-right ml-1"></i>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

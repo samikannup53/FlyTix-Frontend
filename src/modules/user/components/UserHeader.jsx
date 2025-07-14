@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
 import { useState } from "react";
 import { useAuth } from "../../../shared/contexts/AuthContext";
@@ -6,6 +6,8 @@ import { useAuth } from "../../../shared/contexts/AuthContext";
 export const UserHeader = ({ onNavigate }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { isLoggedIn, logout, loading, refreshUser } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   if (loading) return null;
 

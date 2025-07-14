@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import mapImage from "../../../../../assets/images/map.png";
-import swapIcon from "../../../../../assets/images/swap.png";
 import { HeroFlightSearchBar } from "./HeroFlightSearchBar";
 
 export const HeroSection = () => {
