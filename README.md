@@ -1,12 +1,52 @@
-# React + Vite
+# ✈️ FlyTix – Full-Stack Flight Booking System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 🌐 A Real-Time, Scalable Travel Reservation App using the MERN Stack
 
-Currently, two official plugins are available:
+**FlyTix** is a modern flight booking system that enables users to search, compare, and reserve flights with real-time updates and secure payments. Designed with a clean UI, efficient backend, and Razorpay integration, it's perfect for learning and demonstrating full-stack web development using React, Node.js, Express, MongoDB, and Tailwind CSS.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Why FlyTix? 💡
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+FlyTix brings together a seamless booking experience with real-time flight updates, secure transactions via Razorpay, and a user-focused dashboard. With clear architecture, modular code, and responsive design, it’s a great base for full-featured travel apps.
+
+---
+
+## Key Highlights 🌟
+
+- 🔍 **Flight Search & Compare** – Real-time search by location, date, airline, and class.
+- 🎫 **Flight Booking** – Seat selection, booking history, download itineraries.
+- 💳 **Secure Payments** – Razorpay integration with instant confirmation.
+- 🛎️ **Notifications** – Booking confirmations via Email/SMS and flight status alerts.
+- 🔐 **Authentication** – JWT-based login with user account management.
+- 🎨 **Responsive UI** – Tailwind CSS-based modern design.
+- ☁️ **Deployment Ready** – Frontend on Netlify, Backend on Render.
+
+---
+
+## 🚀 Features
+
+- 🔐 User registration & login with JWT auth.
+- 🔍 Flight search with filters (location, date, class).
+- 💼 Booking system with seat selection and booking history.
+- 📬 Email and SMS alerts for booking updates and flight status.
+- 💳 Payment gateway (Razorpay) for secure bookings.
+
+---
+
+## Tech Stack 🛠️
+
+| Layer       | Tools Used                                 |
+|-------------|---------------------------------------------|
+| UI/UX       | React, Tailwind CSS                        |
+| Server      | Node.js, Express.js                        |
+| Database    | MongoDB, Mongoose                          |
+| Auth        | JWT, Bcrypt                                |
+| Payment     | Razorpay SDK                               |
+| Notifications | Nodemailer, Twilio                      |
+| Deployment  | Netlify (UI), Render (API)                 |
+
+---
+
+
+
