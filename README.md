@@ -74,6 +74,19 @@ Experience FlyTix in action:
 
 ---
 
+## 📄 Disclaimer
+
+🛑 This project is developed for educational and portfolio purposes only.  
+🚫 It is not intended for commercial use, nor is it connected to any real-world airline or service provider.
+
+🔐 The entire codebase and project design for **FlyTix** is original and owned solely by the developer.  
+Any resemblance to existing products is purely coincidental.
+
+📢 Do not use the code, assets, or branding (FlyTix) for commercial distribution without permission.
+
+---
+
+
 <h3 align= 'center' style="color: fuchsia"><b>👀 Thanks for Exploring My Repository! 💖</b></h3>
 
 
