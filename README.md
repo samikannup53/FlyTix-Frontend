@@ -12,6 +12,16 @@ FlyTix brings together a seamless booking experience with real-time flight updat
 
 ---
 
+
+## Deployed App 🚀
+
+#### For Live Demo Click the Below Link ⬇️ <br/>
+
+🌐 Live URL (Frontend) : https://flytix.netlify.app/  </br>
+🌐 Live URL (Backend)  : https://flytix.onrender.com/
+
+---
+
 ## Key Highlights 🌟
 
 - 🔍 **Flight Search & Compare** – Real-time search by location, date, airline, and class.
