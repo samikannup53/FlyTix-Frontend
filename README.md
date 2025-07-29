@@ -37,16 +37,18 @@ FlyTix brings together a seamless booking experience with real-time flight updat
 ## Tech Stack 🛠️
 
 | Layer       | Tools Used                                 |
-|-------------|---------------------------------------------|
+|-------------|--------------------------------------------|
 | UI/UX       | React, Tailwind CSS                        |
 | Server      | Node.js, Express.js                        |
 | Database    | MongoDB, Mongoose                          |
 | Auth        | JWT, Bcrypt                                |
 | Payment     | Razorpay SDK                               |
-| Notifications | Nodemailer, Twilio                      |
+| Notifications | Nodemailer                               |
 | Deployment  | Netlify (UI), Render (API)                 |
 
 ---
+
+<h3 align= 'center' style="color: fuchsia"><b>👀 Thanks for Exploring My Repository! 💖</b></h3>
 
 
 
